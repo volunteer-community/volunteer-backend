@@ -48,6 +48,9 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+    // swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
 

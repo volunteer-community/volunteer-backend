@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    include:
+      - db
+
+  # ??? swagger ??? ?? ?? ????.
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  # ???? update? ?? ????
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+

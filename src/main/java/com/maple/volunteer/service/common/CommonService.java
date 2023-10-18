@@ -1,0 +1,28 @@
+package com.maple.volunteer.service.common;
+
+import com.maple.volunteer.dto.common.CommonResponseDto;
+import com.maple.volunteer.type.ResponseStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CommonService {
+
+    public CommonResponseDto<Object> successResponse(String message, HttpStatus httpStatus, Object data) {
+        return CommonResponseDto.builder()
+                .httpStatus(httpStatus)
+                .status(ResponseStatus.SUCCESS.getDescription())
+                .message(message)
+                .data(data)
+                .build();
+    }
+
+    public CommonResponseDto<Object> errorResponse(String message, HttpStatus httpStatus, Object data) {
+        return CommonResponseDto.builder()
+                .httpStatus(httpStatus)
+                .status(ResponseStatus.FAIL.getDescription())
+                .message(message)
+                .data(data)
+                .build();
+    }
+}
