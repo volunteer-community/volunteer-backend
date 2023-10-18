@@ -3,6 +3,7 @@ package com.maple.volunteer.domain.user;
 import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.login.Login;
+import com.maple.volunteer.type.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class User extends BaseTime {
     private String name;    // 유저 이름
     private String phoneNumber; // 유저 핸드폰 번호
 
+    @Enumerated(EnumType.STRING)
+    private Role role;  // 유저 역할
+
     @OneToOne(mappedBy = "user")
     private Login login;
 
@@ -33,10 +37,11 @@ public class User extends BaseTime {
     private List<CommunityUser> communityUserList;
 
     @Builder
-    public User(String email, String profileImg, String name, String phoneNumber) {
+    public User(String email, String profileImg, String name, String phoneNumber, Role role) {
         this.email = email;
         this.profileImg = profileImg;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 }
