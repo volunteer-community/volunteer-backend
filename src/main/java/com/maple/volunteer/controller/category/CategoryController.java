@@ -18,12 +18,12 @@ public class CategoryController {
 
     // 카테고리 저장 API
     @PostMapping("/category")
-    public ResponseEntity<ResultDto<Void>> categoryInsert(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<ResultDto<Void>> categoryCreate(@RequestHeader("Authorization") String accessToken,
                                                           @RequestBody CategoryRequestDto categoryRequestDto) {
-        CommonResponseDto<Object> categoryInsert = categoryService.categoryInsert(accessToken, categoryRequestDto);
-        ResultDto<Void> result = ResultDto.in(categoryInsert.getStatus(), categoryInsert.getMessage());
+        CommonResponseDto<Object> categoryCreate = categoryService.categoryCreate(accessToken, categoryRequestDto);
+        ResultDto<Void> result = ResultDto.in(categoryCreate.getStatus(), categoryCreate.getMessage());
 
-        return ResponseEntity.status(categoryInsert.getHttpStatus()).body(result);
+        return ResponseEntity.status(categoryCreate.getHttpStatus()).body(result);
     }
 
     // 카테고리 조회 API (리스트 반환)
@@ -35,7 +35,6 @@ public class CategoryController {
 
         return ResponseEntity.status(categoryInquiry.getHttpStatus()).body(result);
     }
-
 
     // 카테고리 변경 API
     @PatchMapping("/category/{categoryId}")

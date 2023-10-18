@@ -26,7 +26,7 @@ public class CategoryService {
 
     // 카테고리 저장
     @Transactional
-    public CommonResponseDto<Object> categoryInsert(String accessToken, CategoryRequestDto categoryRequestDto) {
+    public CommonResponseDto<Object> categoryCreate(String accessToken, CategoryRequestDto categoryRequestDto) {
 
 
         categoryRepository.save(categoryRequestDto.toEntity());
