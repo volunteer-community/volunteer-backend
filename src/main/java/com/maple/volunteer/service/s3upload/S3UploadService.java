@@ -28,29 +28,48 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    // MultipartFile을 전달 받 File 로 변환
-    public List<String> upload(List<MultipartFile> multipartFile) {
+    // 커뮤니티 이미지 업로드
+    public List<String> communityUpload(List<MultipartFile> multipartFileList) {
 
         List<String> imgUrlList = new ArrayList<>();
 
-        for (MultipartFile file : multipartFile) {
+        for (MultipartFile file : multipartFileList) {
             String fileName = createFileName(file.getOriginalFilename());
             String fileContentType = file.getContentType();
-            System.out.println(fileContentType);
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(fileContentType);
 
             try (InputStream inputStream = file.getInputStream()){
-                amazonS3.putObject(new PutObjectRequest(bucket + "/image", fileName, inputStream, objectMetadata)
+                amazonS3.putObject(new PutObjectRequest(bucket + "/image/community", fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-                imgUrlList.add(amazonS3.getUrl(bucket+"/image", fileName).toString());
+                imgUrlList.add(amazonS3.getUrl(bucket+"/image/community", fileName).toString());
             } catch (IOException e) {
                 throw new UploadException(ErrorCode.IMAGE_UPLOAD_FAIL);
             }
         }
         return imgUrlList;
     }
+
+    // 게시판 이미지 업로드
+    public String posterUpload(MultipartFile multipartFile) {
+
+        String fileName = createFileName(multipartFile.getOriginalFilename());
+        String fileContentType = multipartFile.getContentType();
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(multipartFile.getSize());
+        objectMetadata.setContentType(fileContentType);
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            amazonS3.putObject(new PutObjectRequest(bucket + "/image/poster", fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            return amazonS3.getUrl(bucket + "/image/poster", fileName).toString();
+        } catch (IOException e) {
+            throw new UploadException(ErrorCode.IMAGE_UPLOAD_FAIL);
+        }
+    }
+
+
 
     // 이미지 파일명 중복 방지
     private String createFileName(String fileName) {

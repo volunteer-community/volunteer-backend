@@ -71,7 +71,7 @@ public class CommunityService {
     // 이미지 저장
     private void createCommunityImage(List<MultipartFile> multipartFileList, Community community) {
 
-        List<String> communityImageUrlList = s3UploadService.upload(multipartFileList);
+        List<String> communityImageUrlList = s3UploadService.communityUpload(multipartFileList);
 
         Integer imgNum = 1;
 
