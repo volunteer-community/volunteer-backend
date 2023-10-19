@@ -28,6 +28,7 @@ public class Community extends BaseTime {
     private String author;  // 커뮤니티 작성자
     private String status;  // 커뮤니티 활동 상태
     private String content; // 커뮤니티 내용
+    private String introduce;   // 커뮤니티 한줄 소개
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,12 +42,13 @@ public class Community extends BaseTime {
     private List<CommunityImg> communityImgList;
 
     @Builder
-    public Community(String title, Integer participant, String author, String status, String content, Category category) {
+    public Community(String title, Integer participant, String author, String status, String content, String introduce, Category category) {
         this.title = title;
         this.participant = participant;
         this.author = author;
         this.status = status;
         this.content = content;
+        this.introduce = introduce;
         this.category = category;
     }
 }

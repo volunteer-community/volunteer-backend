@@ -46,9 +46,6 @@ public class CommunityController {
         return ResponseEntity.status(allCommunityInquiry.getHttpStatus()).body(result);
     }
 
-
-
-
     // 커뮤니티 상세 보기 API
     @GetMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<CommunityDetailAndImgResponseDto>> communityDetailInquiry(@PathVariable Long communityId) {

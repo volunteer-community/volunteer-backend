@@ -31,6 +31,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.participant AS communityParticipant, " +
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
+            "c.introduce AS communityIntroduce," +
             "ci.imagePath AS communityMainImgPath)" +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
