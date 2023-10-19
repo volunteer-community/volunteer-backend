@@ -26,4 +26,8 @@ public class Category {
     public Category(String type) {
         this.type = type;
     }
+
+    public void categoryUpdate(String changeCategoryType) {
+        this.type = changeCategoryType;
+    }
 }
