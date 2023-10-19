@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaginationDto {
 
-    private Integer totalPages;
+    private int totalPages;
     private Long totalElements;
-    private Integer pageNo;
-    private Boolean isLastPage;
+    private int pageNo;
+    private boolean isLastPage;
 
     @Builder
     public PaginationDto(Integer totalPages, Long totalElements, Integer pageNo, Boolean isLastPage) {
