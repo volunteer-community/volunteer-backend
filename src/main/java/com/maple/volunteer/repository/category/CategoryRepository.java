@@ -13,8 +13,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT c " +
             "FROM Category c " +
             "WHERE c.id = :categoryId ")
-    Optional<Category> findCategoryId(@Param("categoryId") Long categoryId);
+    Optional<Category> findByCategoryId(@Param("categoryId") Long categoryId);
 
+    @Query("SELECT c " +
+            "FROM Category c " +
+            "WHERE c.type = :categoryType ")
+    Optional<Category> findByCategoryType(@Param("categoryType") String categoryType);
     void deleteById(Long categoryId);
 
 }

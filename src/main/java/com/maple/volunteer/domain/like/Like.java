@@ -1,25 +1,24 @@
-package com.maple.volunteer.domain.communityuser;
+package com.maple.volunteer.domain.like;
 
-import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Entity
-public class CommunityUser {
+public class Like {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;    // 커뮤니티_유저 ID
+    private Long id;    // 좋아요 ID
+
+    private Boolean status; // 좋아요 상태
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,15 +27,7 @@ public class CommunityUser {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id")
-    private Community community;
+    @JoinColumn(name = "poster_id")
+    private Poster poster;
 
-    @OneToMany(mappedBy = "communityUser")
-    private List<Poster> posterList;
-
-    @Builder
-    public CommunityUser(User user, Community community) {
-        this.user = user;
-        this.community = community;
-    }
 }

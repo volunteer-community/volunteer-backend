@@ -69,8 +69,6 @@ public class S3UploadService {
         }
     }
 
-
-
     // 이미지 파일명 중복 방지
     private String createFileName(String fileName) {
         return UUID.randomUUID().toString().concat(getFileExtension(fileName));

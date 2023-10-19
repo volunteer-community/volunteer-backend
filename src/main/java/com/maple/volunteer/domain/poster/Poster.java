@@ -3,6 +3,7 @@ package com.maple.volunteer.domain.poster;
 import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
+import com.maple.volunteer.domain.like.Like;
 import com.maple.volunteer.domain.posterimg.PosterImg;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class Poster extends BaseTime {
     private String title;   // 게시글 제목
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
+    private Integer likeCount;  // 게시글 좋아요 수
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,13 +39,25 @@ public class Poster extends BaseTime {
     @OneToMany(mappedBy = "poster")
     private List<PosterImg> posterImgList;
 
+    @OneToMany(mappedBy = "poster")
+    private List<Like> likeList;
+
 
 
     @Builder
-    public Poster(String title, String content, String author, CommunityUser communityUser) {
+    public Poster(String title, String content, String author, Integer likeCount, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.likeCount = likeCount;
         this.communityUser = communityUser;
+    }
+
+    public void likeIncrease() {
+        this.likeCount += 1;
+    }
+
+    public void likeDecrease() {
+        this.likeCount -= 1;
     }
 }
