@@ -13,17 +13,19 @@ public class CommunityResponseDto {
     private Integer communityParticipant;
     private String communityAuthor;
     private String communityStatus;
-    private String communityIntroduce;
+    private String communityContent;
+    private String communityLocation;
     private String communityMainImgPath;
 
     @Builder
-    public CommunityResponseDto(String communityId, String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityIntroduce, String communityMainImgPath) {
+    public CommunityResponseDto(String communityId, String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath) {
         this.communityId = communityId;
         this.communityTitle = communityTitle;
         this.communityParticipant = communityParticipant;
         this.communityAuthor = communityAuthor;
         this.communityStatus = communityStatus;
-        this.communityIntroduce = communityIntroduce;
+        this.communityContent = communityContent;
+        this.communityLocation = communityLocation;
         this.communityMainImgPath = communityMainImgPath;
     }
 }
