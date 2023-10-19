@@ -50,7 +50,7 @@ public class CategoryService {
     @Transactional
     public CommonResponseDto<Object> categoryUpdate(String accessToken, Long categoryId, CategoryRequestDto categoryRequestDto) {
 
-        Category category = categoryRepository.findCategoryId(categoryId)
+        Category category = categoryRepository.findByCategoryId(categoryId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.categoryUpdate(categoryRequestDto.getCategoryType());
