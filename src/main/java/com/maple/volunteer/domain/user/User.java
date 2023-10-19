@@ -2,10 +2,9 @@ package com.maple.volunteer.domain.user;
 
 import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
-import com.maple.volunteer.domain.like.Like;
+import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.type.Role;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +37,7 @@ public class User extends BaseTime {
     private List<CommunityUser> communityUserList;
 
     @OneToMany(mappedBy = "user")
-    private List<Like> likeList;
+    private List<Heart> heartList;
 
     @Builder
     public User(String email, String profileImg, String name, String phoneNumber, Role role) {

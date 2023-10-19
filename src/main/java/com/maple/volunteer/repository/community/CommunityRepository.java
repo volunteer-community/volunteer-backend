@@ -34,8 +34,8 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
-            "c.introduce AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath)" +
+            "c.location AS communityLocation," +
+            "ci.imagePath AS communityMainImgPath) " +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
             "WHERE ci.imageNum = 1 ")
@@ -43,7 +43,14 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     // 커뮤니티 카테고리 별 조회
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
-            ")" +
+            "c.id AS communityId," +
+            "c.title AS communityTitle, " +
+            "c.participant AS communityParticipant, " +
+            "c.author AS communityAuthor," +
+            "c.status AS communityStatus," +
+            "c.content AS communityContent," +
+            "c.location AS communityLocation," +
+            "ci.imagePath AS communityMainImgPath) " +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
             "LEFT JOIN c.category cg " +
@@ -59,7 +66,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
-            "c.introduce AS communityLocation," +
+            "c.location AS communityLocation," +
             "ci.imagePath AS communityMainImgPath) " +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
@@ -74,7 +81,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
-            "c.introduce AS communityLocation," +
+            "c.location AS communityLocation," +
             "ci.imagePath AS communityMainImgPath) " +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +

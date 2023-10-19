@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommunityResponseDto {
 
-    private String communityId;
+    private Long communityId;
     private String communityTitle;
     private Integer communityParticipant;
     private String communityAuthor;
@@ -18,7 +18,7 @@ public class CommunityResponseDto {
     private String communityMainImgPath;
 
     @Builder
-    public CommunityResponseDto(String communityId, String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath) {
+    public CommunityResponseDto(Long communityId, String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath) {
         this.communityId = communityId;
         this.communityTitle = communityTitle;
         this.communityParticipant = communityParticipant;

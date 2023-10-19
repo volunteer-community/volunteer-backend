@@ -1,4 +1,4 @@
-package com.maple.volunteer.domain.like;
+package com.maple.volunteer.domain.heart;
 
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class Like {
+public class Heart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

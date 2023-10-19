@@ -3,7 +3,7 @@ package com.maple.volunteer.domain.poster;
 import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
-import com.maple.volunteer.domain.like.Like;
+import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.posterimg.PosterImg;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +40,7 @@ public class Poster extends BaseTime {
     private List<PosterImg> posterImgList;
 
     @OneToMany(mappedBy = "poster")
-    private List<Like> likeList;
+    private List<Heart> heartList;
 
 
 
