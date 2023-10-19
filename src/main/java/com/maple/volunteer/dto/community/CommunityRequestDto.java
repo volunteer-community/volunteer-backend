@@ -15,16 +15,16 @@ public class CommunityRequestDto {
     private String communityAuthor;
     private String communityStatus;
     private String communityContent;
-    private String communityIntroduce;
+    private String communityLocation;
 
     @Builder
-    public CommunityRequestDto(String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityIntroduce) {
+    public CommunityRequestDto(String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation) {
         this.communityTitle = communityTitle;
         this.communityParticipant = communityParticipant;
         this.communityAuthor = communityAuthor;
         this.communityStatus = communityStatus;
         this.communityContent = communityContent;
-        this.communityIntroduce = communityIntroduce;
+        this.communityLocation = communityLocation;
     }
 
 
@@ -34,7 +34,7 @@ public class CommunityRequestDto {
                 .participant(communityParticipant)
                 .author(communityAuthor)
                 .content(communityContent)
-                .introduce(communityIntroduce)
+                .location(communityLocation)
                 .category(category)
                 .build();
     }

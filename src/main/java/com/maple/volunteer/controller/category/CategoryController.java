@@ -39,7 +39,7 @@ public class CategoryController {
     // 카테고리 변경 API
     @PatchMapping("/category/{categoryId}")
     public ResponseEntity<ResultDto<Void>> categoryUpdate(@RequestHeader("Authorization") String accessToken,
-                                                          @PathVariable Long categoryId,
+                                                          @PathVariable(value = "categoryId") Long categoryId,
                                                           @RequestBody CategoryRequestDto categoryRequestDto) {
         CommonResponseDto<Object> categoryUpdate = categoryService.categoryUpdate(accessToken, categoryId, categoryRequestDto);
         ResultDto<Void> result = ResultDto.in(categoryUpdate.getStatus(), categoryUpdate.getMessage());
@@ -49,7 +49,7 @@ public class CategoryController {
 
     @DeleteMapping("/category/{categoryId}")
     public ResponseEntity<ResultDto<Void>> categoryDelete(@RequestHeader("Authorization") String accessToken,
-                                                          @PathVariable Long categoryId) {
+                                                          @PathVariable(value = "categoryId") Long categoryId) {
         CommonResponseDto<Object> categoryDelete = categoryService.categoryDelete(accessToken, categoryId);
         ResultDto<Void> result = ResultDto.in(categoryDelete.getStatus(), categoryDelete.getMessage());
 

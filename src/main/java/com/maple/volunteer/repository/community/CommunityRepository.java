@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
 
+    // 커뮤니티 상세
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityDetailResponseDto(" +
             "c.id AS communityId, " +
             "c.title AS communityTitle," +
@@ -25,6 +26,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
     Optional<CommunityDetailResponseDto> findCommunityDetailByCommunityId(@Param("communityId") Long communityId);
 
 
+    // 커뮤니티 전체
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
@@ -39,5 +41,44 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE ci.imageNum = 1 ")
     Page<CommunityResponseDto> findAllCommunityList(Pageable pageable);
 
+    // 커뮤니티 카테고리 별 조회
+    @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
+            ")" +
+            "FROM Community c " +
+            "LEFT JOIN c.communityImgList ci " +
+            "LEFT JOIN c.category cg " +
+            "WHERE cg.type = :categoryType ")
+    Page<CommunityResponseDto> findCommunityListByCategoryType(@Param("categoryType") String categoryType, Pageable pageable);
+
+
+    // 커뮤니티 제목 검색 (keyword를 기준으로 앞쪽 뒤쪽에 글자가 붙은 정보를 가져옴)
+    @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
+            "c.id AS communityId," +
+            "c.title AS communityTitle, " +
+            "c.participant AS communityParticipant, " +
+            "c.author AS communityAuthor," +
+            "c.status AS communityStatus," +
+            "c.content AS communityContent," +
+            "c.introduce AS communityLocation," +
+            "ci.imagePath AS communityMainImgPath) " +
+            "FROM Community c " +
+            "LEFT JOIN c.communityImgList ci " +
+            "WHERE c.title Like %:keyword% ")
+    Page<CommunityResponseDto> findCommunityListBySearchTitle(@Param("keyword") String keyword, Pageable pageable);
+
+    // 커뮤니티 작성자 검색
+    @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
+            "c.id AS communityId," +
+            "c.title AS communityTitle, " +
+            "c.participant AS communityParticipant, " +
+            "c.author AS communityAuthor," +
+            "c.status AS communityStatus," +
+            "c.content AS communityContent," +
+            "c.introduce AS communityLocation," +
+            "ci.imagePath AS communityMainImgPath) " +
+            "FROM Community c " +
+            "LEFT JOIN c.communityImgList ci " +
+            "WHERE c.author Like %:keyword% ")
+    Page<CommunityResponseDto> findCommunityListBySearchAuthor(@Param("keyword") String keyword, Pageable pageable);
 
 }

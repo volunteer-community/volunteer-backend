@@ -78,6 +78,78 @@ public class CommunityService {
         return commonService.successResponse(SuccessCode.ALL_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allCommunityListResponseDto);
     }
 
+    // 커뮤니티 카테고리 별 조회 (페이지 네이션)
+    public CommonResponseDto<Object> categoryCommunityInquiry(String categoryType, int page, int size, String sortBy) {
+
+        PageRequest pageable = PageRequest.of(page -1 , size, Sort.by(sortBy).descending());
+
+        Page<CommunityResponseDto> data = communityRepository.findCommunityListByCategoryType(categoryType, pageable);
+
+        List<CommunityResponseDto> categoryCommunityList = data.getContent();
+
+        PaginationDto paginationDto = PaginationDto.builder()
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
+
+        CommunityListResponseDto categoryCommunityListResponseDto = CommunityListResponseDto.builder()
+                .communityList(categoryCommunityList)
+                .paginationDto(paginationDto)
+                .build();
+
+        return commonService.successResponse(SuccessCode.ALL_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, categoryCommunityListResponseDto);
+    }
+
+    // 커뮤니티 리스트 검색 (페이지 네이션) -> 커뮤니티 제목
+    public CommonResponseDto<Object> searchTitleCommunityInquiry(String keyword , int page, int size, String sortBy) {
+
+        PageRequest pageable = PageRequest.of(page -1 , size, Sort.by(sortBy).descending());
+
+        Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchTitle(keyword, pageable);
+
+        List<CommunityResponseDto> searchTitleCommunityList = data.getContent();
+
+        PaginationDto paginationDto = PaginationDto.builder()
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
+
+        CommunityListResponseDto searchTitleCommunityListResponseDto = CommunityListResponseDto.builder()
+                .communityList(searchTitleCommunityList)
+                .paginationDto(paginationDto)
+                .build();
+
+        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchTitleCommunityListResponseDto);
+    }
+
+    // 커뮤니티 리스트 검색 (페이지 네이션) -> 커뮤니티 작성자
+    public CommonResponseDto<Object> searchAuthorCommunityInquiry(String keyword , int page, int size, String sortBy) {
+
+        PageRequest pageable = PageRequest.of(page -1 , size, Sort.by(sortBy).descending());
+
+        Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchAuthor(keyword, pageable);
+
+        List<CommunityResponseDto> searchAuthorCommunityList = data.getContent();
+
+        PaginationDto paginationDto = PaginationDto.builder()
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
+
+        CommunityListResponseDto searchAuthorCommunityListResponseDto = CommunityListResponseDto.builder()
+                .communityList(searchAuthorCommunityList)
+                .paginationDto(paginationDto)
+                .build();
+
+        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchAuthorCommunityListResponseDto);
+    }
+
     // 커뮤니티 상세 조회
     public CommonResponseDto<Object> communityDetailInquiry(Long communityId) {
 
@@ -113,4 +185,7 @@ public class CommunityService {
             imgNum++;
         }
     }
+
+    // 페이지 네이션
+
 }

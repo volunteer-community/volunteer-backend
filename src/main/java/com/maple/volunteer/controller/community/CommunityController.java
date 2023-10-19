@@ -23,7 +23,7 @@ public class CommunityController {
     // 커뮤니티 생성 API
     @PostMapping("/community")
     public ResponseEntity<ResultDto<Void>> communityCreate(@RequestHeader("Authorization") String accessToken,
-                                                           @RequestParam String categoryType,
+                                                           @RequestParam(value = "categoryType") String categoryType,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
                                                            @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
 
@@ -44,6 +44,41 @@ public class CommunityController {
         result.setData((CommunityListResponseDto) allCommunityInquiry.getData());
 
         return ResponseEntity.status(allCommunityInquiry.getHttpStatus()).body(result);
+    }
+
+    // 카테고리 별 커뮤니티 리스트 API (페이지 네이션)
+    @GetMapping("/community/category")
+    public ResponseEntity<ResultDto<CommunityListResponseDto>> categoryCommunityInquiry(@RequestParam(value = "categoryType") String categoryType,
+                                                                                        @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+                                                                                        @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                                                        @RequestParam(value = "sortBy", defaultValue = "modifiedAt", required = false) String sortBy) {
+
+        CommonResponseDto<Object> categoryCommunityInquiry = communityService.categoryCommunityInquiry(categoryType, page, size, sortBy);
+        ResultDto<CommunityListResponseDto> result = ResultDto.in(categoryCommunityInquiry.getStatus(), categoryCommunityInquiry.getMessage());
+        result.setData((CommunityListResponseDto) categoryCommunityInquiry.getData());
+
+        return ResponseEntity.status(categoryCommunityInquiry.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 리스트 검색 API (페이지 네이션) -> 커뮤니티 제목, 작성자, 활동 장소(보류)
+    @GetMapping("/community/search/{type}")
+    public ResponseEntity<ResultDto<CommunityListResponseDto>> searchCommunityInquiry(@PathVariable(value = "type") String type,
+                                                                                      @RequestParam(value = "keyword") String keyword,
+                                                                                      @RequestParam(value = "page", defaultValue = "1", required = false) int page,
+                                                                                      @RequestParam(value = "size", defaultValue = "10", required = false) int size,
+                                                                                      @RequestParam(value = "sortBy", defaultValue = "modifiedAt", required = false) String sortBy) {
+        CommonResponseDto<Object> searchCommunityInquiry;
+
+        if (type.equals("title")) {
+            searchCommunityInquiry = communityService.searchTitleCommunityInquiry(keyword, page, size, sortBy);
+        } else {
+            searchCommunityInquiry = communityService.searchAuthorCommunityInquiry(keyword, page, size, sortBy);
+        }
+
+        ResultDto<CommunityListResponseDto> result = ResultDto.in(searchCommunityInquiry.getStatus(), searchCommunityInquiry.getMessage());
+        result.setData((CommunityListResponseDto) searchCommunityInquiry.getData());
+
+        return ResponseEntity.status(searchCommunityInquiry.getHttpStatus()).body(result);
     }
 
     // 커뮤니티 상세 보기 API
