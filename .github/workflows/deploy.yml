@@ -19,7 +19,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    // JDK 설정
+    # JDK 설정
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
@@ -65,7 +65,7 @@ jobs:
         username: ubuntu
         host: ${{ secrets.EC2_HOST }}
         key: ${{ secrets.EC2_PRIVATE_KEY }}
-        source: "./env"
+        source: "./.env"
         target: "/home/ubuntu"
 
 
