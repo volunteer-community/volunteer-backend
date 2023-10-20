@@ -13,6 +13,4 @@ DATABASE_NAME=${DATABASE_NAME}
 # 빌드 파일 컨테이너로 복사
 COPY ${JAR_FILE} app.jar
 # jar 파일 실행
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod",
-"-Dspring.config.location=classpath:/application.yml,/application-aws.yml,/application-db.yml",
-"-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-Dspring.config.location=classpath:/application.yml,/application-aws.yml,/application-db.yml", "-jar", "/app.jar"]
