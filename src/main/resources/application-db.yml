@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DATABASE_URL}/${DATABASE_NAME}?useUnicode=true&characterEncoding=UTF-8
