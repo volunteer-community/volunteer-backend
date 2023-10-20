@@ -48,8 +48,12 @@ dependencies {
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    // mysql
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // AWS
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // mariadb
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.1'
+
 
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
