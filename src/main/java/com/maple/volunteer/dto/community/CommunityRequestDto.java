@@ -2,6 +2,7 @@ package com.maple.volunteer.dto.community;
 
 import com.maple.volunteer.domain.category.Category;
 import com.maple.volunteer.domain.community.Community;
+import com.maple.volunteer.type.CommunityStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,18 +12,16 @@ import lombok.NoArgsConstructor;
 public class CommunityRequestDto {
 
     private String communityTitle;
-    private Integer communityParticipant;
+    private Integer communityMaxParticipant;
     private String communityAuthor;
-    private String communityStatus;
     private String communityContent;
     private String communityLocation;
 
     @Builder
-    public CommunityRequestDto(String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation) {
+    public CommunityRequestDto(String communityTitle, Integer communityMaxParticipant, String communityAuthor, String communityContent, String communityLocation) {
         this.communityTitle = communityTitle;
-        this.communityParticipant = communityParticipant;
+        this.communityMaxParticipant = communityMaxParticipant;
         this.communityAuthor = communityAuthor;
-        this.communityStatus = communityStatus;
         this.communityContent = communityContent;
         this.communityLocation = communityLocation;
     }
@@ -31,9 +30,11 @@ public class CommunityRequestDto {
     public Community toEntity(Category category) {
         return Community.builder()
                 .title(communityTitle)
-                .participant(communityParticipant)
+                .participant(0)
+                .maxParticipant(communityMaxParticipant)
                 .author(communityAuthor)
                 .content(communityContent)
+                .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
                 .location(communityLocation)
                 .category(category)
                 .build();

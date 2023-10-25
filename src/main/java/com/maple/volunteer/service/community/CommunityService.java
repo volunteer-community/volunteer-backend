@@ -6,18 +6,21 @@ import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.community.*;
+import com.maple.volunteer.exception.CommunityRecruitmentException;
+import com.maple.volunteer.exception.CommunityUpdateException;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.category.CategoryRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
 import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
+import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.service.s3upload.S3UploadService;
+import com.maple.volunteer.type.CommunityStatus;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ public class CommunityService {
 
     private final CategoryRepository categoryRepository;
     private final CommunityRepository communityRepository;
+    private final CommunityUserRepository communityUserRepository;
     private final CommunityImgRepository communityImgRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
@@ -166,6 +170,52 @@ public class CommunityService {
         return commonService.successResponse(SuccessCode.COMMUNITY_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, communityDetailAndImgResponseDto);
     }
 
+    // 커뮤니티 수정 (추후 로직 수정)
+    @Transactional
+    public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityUpdateRequestDto communityUpdateRequestDto) {
+
+
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        if (community.getParticipant() > communityUpdateRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
+            throw new CommunityUpdateException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
+        }
+
+        if (community.getParticipant().equals(communityUpdateRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
+            community.communityRecruitmentEnd();
+        }
+
+        if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) { // 상태가 모집 마감일 때
+            community.communityRecruitmentIng();
+        }
+
+        community.communityUpdate(communityUpdateRequestDto.getCommunityContent(), communityUpdateRequestDto.getCommunityMaxParticipant());
+
+        return commonService.successResponse(SuccessCode.COMMUNITY_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
+    }
+
+    // 커뮤니티 참가
+    // 유저 생성이 되면 유저를 넣어서 저장
+    @Transactional
+    public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
+
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
+            throw new CommunityRecruitmentException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
+        }
+
+        community.communityParticipantIncrease();
+
+        if (community.getParticipant().equals(community.getMaxParticipant())) {
+            community.communityRecruitmentEnd();
+        }
+
+        return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP.getDescription(), HttpStatus.CREATED, null);
+    }
+
     // 이미지 저장
     private void createCommunityImage(List<MultipartFile> multipartFileList, Community community) {
 
@@ -185,7 +235,4 @@ public class CommunityService {
             imgNum++;
         }
     }
-
-    // 페이지 네이션
-
 }

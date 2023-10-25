@@ -11,6 +11,7 @@ public class CommunityResponseDto {
     private Long communityId;
     private String communityTitle;
     private Integer communityParticipant;
+    private Integer communityMaxParticipant;
     private String communityAuthor;
     private String communityStatus;
     private String communityContent;
@@ -18,10 +19,11 @@ public class CommunityResponseDto {
     private String communityMainImgPath;
 
     @Builder
-    public CommunityResponseDto(Long communityId, String communityTitle, Integer communityParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath) {
+    public CommunityResponseDto(Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath) {
         this.communityId = communityId;
         this.communityTitle = communityTitle;
         this.communityParticipant = communityParticipant;
+        this.communityMaxParticipant = communityMaxParticipant;
         this.communityAuthor = communityAuthor;
         this.communityStatus = communityStatus;
         this.communityContent = communityContent;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/maple")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -28,8 +28,8 @@ public class CategoryController {
 
     // 카테고리 조회 API (리스트 반환)
     @GetMapping("/category")
-    public ResponseEntity<ResultDto<CategoryListResponseDto>> categoryInquiry(@RequestHeader("Authorization") String accessToken) {
-        CommonResponseDto<Object> categoryInquiry = categoryService.categoryInquiry(accessToken);
+    public ResponseEntity<ResultDto<CategoryListResponseDto>> categoryInquiry() {
+        CommonResponseDto<Object> categoryInquiry = categoryService.categoryInquiry();
         ResultDto<CategoryListResponseDto> result = ResultDto.in(categoryInquiry.getStatus(), categoryInquiry.getMessage());
         result.setData((CategoryListResponseDto) categoryInquiry.getData());
 
@@ -47,6 +47,7 @@ public class CategoryController {
         return ResponseEntity.status(categoryUpdate.getHttpStatus()).body(result);
     }
 
+    // 카테고리 삭제 API
     @DeleteMapping("/category/{categoryId}")
     public ResponseEntity<ResultDto<Void>> categoryDelete(@RequestHeader("Authorization") String accessToken,
                                                           @PathVariable(value = "categoryId") Long categoryId) {

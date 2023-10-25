@@ -14,10 +14,12 @@ import java.util.Optional;
 public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     // 커뮤니티 상세
+    // 이미지도 추가해서 재생성 필요
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityDetailResponseDto(" +
             "c.id AS communityId, " +
             "c.title AS communityTitle," +
             "c.participant AS communityParticipant," +
+            "c.maxParticipant AS communityMaxParticipant," +
             "c.author AS communityAuhtor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent) " +
@@ -31,6 +33,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
             "c.participant AS communityParticipant, " +
+            "c.maxParticipant AS communityMaxParticipant, " +
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
@@ -46,6 +49,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
             "c.participant AS communityParticipant, " +
+            "c.maxParticipant AS communityMaxParticipant," +
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
@@ -63,6 +67,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
             "c.participant AS communityParticipant, " +
+            "c.maxParticipant AS communityMaxParticipant," +
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
@@ -78,6 +83,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
             "c.participant AS communityParticipant, " +
+            "c.maxParticipant AS communityMaxParticipant, " +
             "c.author AS communityAuthor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +

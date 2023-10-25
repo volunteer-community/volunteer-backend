@@ -5,6 +5,7 @@ import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityDetailAndImgResponseDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.community.CommunityRequestDto;
+import com.maple.volunteer.dto.community.CommunityUpdateRequestDto;
 import com.maple.volunteer.service.community.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/maple")
 public class CommunityController {
 
     private final CommunityService communityService;
@@ -83,12 +84,35 @@ public class CommunityController {
 
     // 커뮤니티 상세 보기 API
     @GetMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<CommunityDetailAndImgResponseDto>> communityDetailInquiry(@PathVariable Long communityId) {
+    public ResponseEntity<ResultDto<CommunityDetailAndImgResponseDto>> communityDetailInquiry(@PathVariable(value = "communityId") Long communityId) {
 
         CommonResponseDto<Object> communityDetailInquiry = communityService.communityDetailInquiry(communityId);
         ResultDto<CommunityDetailAndImgResponseDto> result = ResultDto.in(communityDetailInquiry.getStatus(), communityDetailInquiry.getMessage());
         result.setData((CommunityDetailAndImgResponseDto) communityDetailInquiry.getData());
 
         return ResponseEntity.status(communityDetailInquiry.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 수정 API
+    @PutMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityUpdate(@RequestHeader("Authorization") String accessToken,
+                                                           @PathVariable(value = "communityId") Long communityId,
+                                                           @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
+                                                           @RequestPart(value = "communityUpdateRequestDto") CommunityUpdateRequestDto communityUpdateRequestDto) {
+
+        CommonResponseDto<Object> communityUpdate = communityService.communityUpdate(accessToken, communityId, multipartFileList, communityUpdateRequestDto);
+        ResultDto<Void> result = ResultDto.in(communityUpdate.getStatus(), communityUpdate.getMessage());
+
+        return ResponseEntity.status(communityUpdate.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 참가 API
+    @PostMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communitySignup(@RequestHeader("Authorization") String accessToken,
+                                                           @PathVariable(value = "communityId") Long communityId) {
+        CommonResponseDto<Object> communitySignup = communityService.communitySignup(accessToken, communityId);
+        ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
+
+        return ResponseEntity.status(communitySignup.getHttpStatus()).body(result);
     }
 }

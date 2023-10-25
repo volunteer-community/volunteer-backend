@@ -35,7 +35,7 @@ public class CategoryService {
     }
 
     // 카테고리 조회
-    public CommonResponseDto<Object> categoryInquiry(String accessToken) {
+    public CommonResponseDto<Object> categoryInquiry() {
 
         List<Category> categoryList = categoryRepository.findAll();
 
