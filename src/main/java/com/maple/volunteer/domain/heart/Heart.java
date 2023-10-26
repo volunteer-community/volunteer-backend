@@ -18,7 +18,7 @@ public class Heart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 좋아요 ID
 
-    private Boolean status; // 좋아요 상태
+    private Boolean status; // 좋아요 상태 true +1 / false -1 // true ->false 변환과정
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)

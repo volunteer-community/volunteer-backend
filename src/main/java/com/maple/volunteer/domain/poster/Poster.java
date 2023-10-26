@@ -26,11 +26,12 @@ public class Poster extends BaseTime {
     private String title;   // 게시글 제목
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
-    private Integer likeCount;  // 게시글 좋아요 수
+    private Integer heartCount;  // 게시글 좋아요 수
+    //댓글 개수 추가해야함
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
 
     @OneToMany(mappedBy = "poster")
@@ -43,21 +44,20 @@ public class Poster extends BaseTime {
     private List<Heart> heartList;
 
 
-
     @Builder
-    public Poster(String title, String content, String author, Integer likeCount, CommunityUser communityUser) {
+    public Poster(String title, String content, String author, Integer heartCount, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.likeCount = likeCount;
+        this.heartCount = heartCount;
         this.communityUser = communityUser;
     }
 
-    public void likeIncrease() {
-        this.likeCount += 1;
+    public void heartIncrease() {
+        this.heartCount += 1;
     }
 
-    public void likeDecrease() {
-        this.likeCount -= 1;
+    public void heartDecrease() {
+        this.heartCount -= 1;
     }
 }
