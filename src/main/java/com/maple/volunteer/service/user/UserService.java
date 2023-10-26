@@ -27,7 +27,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     public CommonResponseDto<Object> exampleGet() {
-        return null;
+        return commonService.successResponse(SuccessCode.EXAMPLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
     public ResponseEntity<?> login(String email, String role) {

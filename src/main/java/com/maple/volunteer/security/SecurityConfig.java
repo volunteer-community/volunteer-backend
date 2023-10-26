@@ -14,11 +14,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("local")
 public class SecurityConfig {
 
     private final MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
@@ -30,26 +35,41 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .headers().frameOptions().sameOrigin()
+                .and()
+                .formLogin().disable()
                 .httpBasic().disable()
-                .cors().and()
+                .cors().configurationSource(configurationSource()).and()
                 .csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/token/**").permitAll()
-                .antMatchers("/").permitAll() // 권한 허용 경로 설정
-                .anyRequest().authenticated()
+                    .antMatchers("/maple/**").permitAll()
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정
-                .userInfoEndpoint().userService(customOAuth2UserService)
-                .and()
+                .successHandler(myAuthenticationSuccessHandler)
                 .failureHandler(myAuthenticationFailureHandler)
-                .successHandler(myAuthenticationSuccessHandler);
+                .userInfoEndpoint().userService(customOAuth2UserService);
+
 
         return httpSecurity
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthFilter.class)
                 .build();
+    }
+
+
+    @Bean
+    public CorsConfigurationSource configurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of());
+        configuration.setAllowCredentials(true);  // 토큰 주고 받을 때
+        configuration.addAllowedHeader("*");
+        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PATCH", "PUT", "DELETE", "OPTIONS"));
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
