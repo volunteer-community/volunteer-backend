@@ -55,7 +55,7 @@ public class UserService {
     }
 
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
-        if(findByPhoneNumber(signupDto.getPhoneNumber())){
+        if(!findByPhoneNumber(signupDto.getPhoneNumber())){
             User user = User.builder()
                     .phoneNumber(signupDto.getPhoneNumber())
                     .name(signupDto.getName())
