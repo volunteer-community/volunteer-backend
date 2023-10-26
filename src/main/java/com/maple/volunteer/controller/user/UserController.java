@@ -23,7 +23,7 @@ public class UserController {
 
     //처음 로그인 한 회원 추가정보 받고 회원가입하기
     @PostMapping("/signup")
-    public ResponseEntity<ResultDto<SignupDto>> exampleGet(@ModelAttribute SignupDto signupDto) {
+    public ResponseEntity<ResultDto<SignupDto>> exampleGet(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<SignupDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
         result.setData((SignupDto) commonResponseDto.getData());
