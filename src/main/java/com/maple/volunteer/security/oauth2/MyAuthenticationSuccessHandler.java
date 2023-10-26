@@ -32,8 +32,10 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                 .findFirst() // 권한이 하나씩이므로
                 .orElseThrow(IllegalAccessError::new)
                 .getAuthority();
-
-        // 회원이 존재하면
+        String name = oAuth2User.getAttribute("name");
+        String picture = oAuth2User.getAttribute("picture");
+        System.out.println(email+" "+provider+" "+role+" "+name+" "+picture);
+        // 이미 로그인 했던 회원
         if (isExist){
             // user 정보를 쿼리스트링에 담는 url 생성
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/login")
@@ -46,19 +48,19 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
 
-            // 로그인 확인 페이지로 리다이렉트
+            // 정보 받아서 Controller url 리다이렉트
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
             // 회원이 존재하지 않으면
-            // provider와 email을 쿼리스트링으로 전달하는 url 생성
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/loginSuccess")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/signup.html")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
+                    .queryParam("role", role)
+                    .queryParam("name", name)
+                    .queryParam("picture", picture)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
-
-            // 회원가입 페이지로 리다이렉트
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
     }
