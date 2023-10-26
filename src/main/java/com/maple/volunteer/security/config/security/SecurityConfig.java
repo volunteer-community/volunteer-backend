@@ -33,7 +33,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/**").permitAll();
+                .antMatchers("/maple/**").permitAll();
 
         return http.build();
     }

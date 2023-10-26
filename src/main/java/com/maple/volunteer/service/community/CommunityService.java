@@ -42,11 +42,11 @@ public class CommunityService {
 
     // 커뮤니티 생성
     @Transactional
-    public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+    public CommonResponseDto<Object> communityCreate(String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
 
         Category category = categoryRepository.findByCategoryType(categoryType)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
         Community community = communityRequestDto.toEntity(category);
         communityRepository.save(community);
@@ -103,7 +103,7 @@ public class CommunityService {
                 .paginationDto(paginationDto)
                 .build();
 
-        return commonService.successResponse(SuccessCode.ALL_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, categoryCommunityListResponseDto);
+        return commonService.successResponse(SuccessCode.CATEGORY_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, categoryCommunityListResponseDto);
     }
 
     // 커뮤니티 리스트 검색 (페이지 네이션) -> 커뮤니티 제목
@@ -127,7 +127,7 @@ public class CommunityService {
                 .paginationDto(paginationDto)
                 .build();
 
-        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchTitleCommunityListResponseDto);
+        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_TITLE_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchTitleCommunityListResponseDto);
     }
 
     // 커뮤니티 리스트 검색 (페이지 네이션) -> 커뮤니티 작성자
@@ -151,7 +151,7 @@ public class CommunityService {
                 .paginationDto(paginationDto)
                 .build();
 
-        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchAuthorCommunityListResponseDto);
+        return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_AUTHOR_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchAuthorCommunityListResponseDto);
     }
 
     // 커뮤니티 상세 조회
@@ -172,17 +172,19 @@ public class CommunityService {
 
     // 커뮤니티 수정 (추후 로직 수정)
     @Transactional
-    public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityUpdateRequestDto communityUpdateRequestDto) {
+    public CommonResponseDto<Object> communityUpdate(Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
 
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-        if (community.getParticipant() > communityUpdateRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
+        communityImgRepository.deleteByCommunityId(communityId);
+
+        if (community.getParticipant() > communityRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
             throw new CommunityUpdateException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
         }
 
-        if (community.getParticipant().equals(communityUpdateRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
+        if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
             community.communityRecruitmentEnd();
         }
 
@@ -190,7 +192,11 @@ public class CommunityService {
             community.communityRecruitmentIng();
         }
 
-        community.communityUpdate(communityUpdateRequestDto.getCommunityContent(), communityUpdateRequestDto.getCommunityMaxParticipant());
+        community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
+                communityRequestDto.getCommunityMaxParticipant(), communityRequestDto.getCommunityAuthor(),
+                community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
+
+        createCommunityImage(multipartFileList, community);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -198,7 +204,7 @@ public class CommunityService {
     // 커뮤니티 참가
     // 유저 생성이 되면 유저를 넣어서 저장
     @Transactional
-    public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
+    public CommonResponseDto<Object> communitySignup(Long communityId) {
 
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
@@ -215,6 +221,10 @@ public class CommunityService {
 
         return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP.getDescription(), HttpStatus.CREATED, null);
     }
+
+    // 커뮤니티 탈퇴
+    // 커뮤니티 삭제
+
 
     // 이미지 저장
     private void createCommunityImage(List<MultipartFile> multipartFileList, Community community) {

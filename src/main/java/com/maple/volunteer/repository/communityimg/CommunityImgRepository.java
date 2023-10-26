@@ -17,4 +17,6 @@ public interface CommunityImgRepository extends JpaRepository<CommunityImg, Long
             "LEFT JOIN ci.community c " +
             "WHERE c.id = :communityId ")
     List<CommunityImgResponseDto> findCommunityImgListByCommunityId(@Param("communityId") Long communityId);
+
+    void deleteByCommunityId(Long communityId);
 }

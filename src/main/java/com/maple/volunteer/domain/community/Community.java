@@ -55,9 +55,14 @@ public class Community extends BaseTime {
     }
 
     // 커뮤니티 수정
-    public void communityUpdate(String contentUpdate, Integer maxParticipant) {
-        this.content = contentUpdate;
+    public void communityUpdate(String title, Integer participant, Integer maxParticipant, String author, String status, String content, String location) {
+        this.title = title;
+        this.participant = participant;
         this.maxParticipant = maxParticipant;
+        this.author = author;
+        this.status = status;
+        this.content = content;
+        this.location = location;
     }
 
     // 커뮤니티 참여 인원 증가

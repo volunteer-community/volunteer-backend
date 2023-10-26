@@ -18,9 +18,8 @@ public class CategoryController {
 
     // 카테고리 저장 API
     @PostMapping("/category")
-    public ResponseEntity<ResultDto<Void>> categoryCreate(@RequestHeader("Authorization") String accessToken,
-                                                          @RequestBody CategoryRequestDto categoryRequestDto) {
-        CommonResponseDto<Object> categoryCreate = categoryService.categoryCreate(accessToken, categoryRequestDto);
+    public ResponseEntity<ResultDto<Void>> categoryCreate(@RequestBody CategoryRequestDto categoryRequestDto) {
+        CommonResponseDto<Object> categoryCreate = categoryService.categoryCreate(categoryRequestDto);
         ResultDto<Void> result = ResultDto.in(categoryCreate.getStatus(), categoryCreate.getMessage());
 
         return ResponseEntity.status(categoryCreate.getHttpStatus()).body(result);
@@ -38,10 +37,10 @@ public class CategoryController {
 
     // 카테고리 변경 API
     @PatchMapping("/category/{categoryId}")
-    public ResponseEntity<ResultDto<Void>> categoryUpdate(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<ResultDto<Void>> categoryUpdate(
                                                           @PathVariable(value = "categoryId") Long categoryId,
                                                           @RequestBody CategoryRequestDto categoryRequestDto) {
-        CommonResponseDto<Object> categoryUpdate = categoryService.categoryUpdate(accessToken, categoryId, categoryRequestDto);
+        CommonResponseDto<Object> categoryUpdate = categoryService.categoryUpdate(categoryId, categoryRequestDto);
         ResultDto<Void> result = ResultDto.in(categoryUpdate.getStatus(), categoryUpdate.getMessage());
 
         return ResponseEntity.status(categoryUpdate.getHttpStatus()).body(result);
@@ -49,9 +48,8 @@ public class CategoryController {
 
     // 카테고리 삭제 API
     @DeleteMapping("/category/{categoryId}")
-    public ResponseEntity<ResultDto<Void>> categoryDelete(@RequestHeader("Authorization") String accessToken,
-                                                          @PathVariable(value = "categoryId") Long categoryId) {
-        CommonResponseDto<Object> categoryDelete = categoryService.categoryDelete(accessToken, categoryId);
+    public ResponseEntity<ResultDto<Void>> categoryDelete(@PathVariable(value = "categoryId") Long categoryId) {
+        CommonResponseDto<Object> categoryDelete = categoryService.categoryDelete(categoryId);
         ResultDto<Void> result = ResultDto.in(categoryDelete.getStatus(), categoryDelete.getMessage());
 
         return ResponseEntity.status(categoryDelete.getHttpStatus()).body(result);

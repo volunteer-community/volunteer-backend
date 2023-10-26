@@ -12,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 public class CategoryListResponseDto {
 
-    private List<Category> categoryList;
+    private List<CategoryResponseDto> categoryList;
 
     @Builder
-    public CategoryListResponseDto(List<Category> categoryList) {
+    public CategoryListResponseDto(List<CategoryResponseDto> categoryList) {
         this.categoryList = categoryList;
     }
 }
