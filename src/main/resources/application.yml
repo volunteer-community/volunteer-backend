@@ -3,7 +3,8 @@ spring:
     include:
       - db
       - aws
-
+      - jwt
+      - oauth
   # ??? swagger ??? ?? ?? ????.
   mvc:
     pathmatch:
@@ -12,9 +13,8 @@ spring:
   # ???? update? ?? ????
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
     show-sql: true
-

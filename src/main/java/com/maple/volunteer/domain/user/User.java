@@ -41,11 +41,12 @@ public class User extends BaseTime {
     private List<Heart> heartList;
 
     @Builder
-    public User(String email, String profileImg, String name, String phoneNumber, Role role) {
+    public User(String email, String profileImg, String name, String phoneNumber, Role role,String nickname) {
         this.email = email;
         this.profileImg = profileImg;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.role = role;
+        this.nickname = nickname;
     }
 }

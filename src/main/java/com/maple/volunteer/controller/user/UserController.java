@@ -26,7 +26,7 @@ public class UserController {
     public ResponseEntity<ResultDto<SignupDto>> exampleGet(@ModelAttribute SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<SignupDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-//        result.setData((SignupDto) commonResponseDto.getData());
+        result.setData((SignupDto) commonResponseDto.getData());
 
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
 

@@ -56,11 +56,20 @@ public class UserService {
 
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
         if(findByPhoneNumber(signupDto.getPhoneNumber())){
+            User user = User.builder()
+                    .phoneNumber(signupDto.getPhoneNumber())
+                    .name(signupDto.getName())
+                    .role(signupDto.getRole())
+                    .email(signupDto.getEmail())
+                    .nickname(signupDto.getNickname())
+                    .build();
+            userRepository.save(user);
 
-            return null;
+
+            return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);
         }else {
             //이미 가입한 핸드폰 번호
-            return commonService.successResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
+            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
         }
     }
 
