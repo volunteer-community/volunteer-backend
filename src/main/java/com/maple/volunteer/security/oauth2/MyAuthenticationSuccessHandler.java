@@ -27,7 +27,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
         String provider = oAuth2User.getAttribute("provider");
-        boolean isExist = oAuth2User.getAttribute("exist"); // 그럴일 없대 ㅋ
+        boolean isExist = oAuth2User.getAttribute("exist");
         String role = oAuth2User.getAuthorities().stream()
                 .findFirst() // 권한이 하나씩이므로
                 .orElseThrow(IllegalAccessError::new)
@@ -35,12 +35,13 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
         // 회원이 존재하면
         if (isExist){
-            // JWT 발행
-            GeneratedToken token = jwtUtil.generteToken(email, role);
-
-            // accessToken을 쿼리스트링에 담는 url 생성
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/loginSuccess")
-                    .queryParam("accessToken", token.getAccessToken())
+            // user 정보를 쿼리스트링에 담는 url 생성
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/login")
+                    .queryParam("email", email)
+                    .queryParam("provider", provider)
+                    .queryParam("role", role)
+                    .queryParam("name", name)
+                    .queryParam("picture", picture)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();

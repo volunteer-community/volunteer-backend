@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LoginController {
     private final CustomOAuth2UserService loginService;
-    @GetMapping("/code/{registrationId}")
-    public void googleLogin(@RequestParam String code , @PathVariable String registrationId){
-        loginService.socialLogin(code, registrationId);
-    }
+//    @GetMapping("/code/{registrationId}")
+//    public void googleLogin(@RequestParam String code , @PathVariable String registrationId){
+//        loginService.socialLogin(code, registrationId);
+//    }
 
 
 }

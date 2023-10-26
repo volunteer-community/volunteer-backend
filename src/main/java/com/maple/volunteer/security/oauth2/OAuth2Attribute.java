@@ -1,5 +1,6 @@
 package com.maple.volunteer.security.oauth2;
 
+import com.maple.volunteer.type.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class OAuth2Attribute {
         return OAuth2Attribute.builder()
                 .email((String) attributes.get("email"))
                 .provider(provider)
+                .name((String)attributes.get("name"))
+                .picture((String)attributes.get("picture"))
                 .attributes(attributes)
                 .attributeKey(attributeKey)
                 .build();
@@ -38,6 +41,8 @@ public class OAuth2Attribute {
         map.put("key", attributeKey);
         map.put("email", email);
         map.put("provider", provider);
+        map.put("name", name);
+        map.put("picture", picture);
 
         return map;
     }

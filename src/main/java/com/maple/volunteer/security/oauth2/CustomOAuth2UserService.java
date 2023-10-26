@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserRequest, OAuth2User> {
     // 서버에서 유저 정보 가져오는 역할
-    private final UserService userService;
+
     private final UserRepository userRepository;
 
     @Override
@@ -49,7 +49,6 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
         // 사용자 email get 및 회원 여부 판별
         String email = (String) userAttribute.get("email");
         Optional<User> findUser = userRepository.findByEmail(email);
-        System.out.println(userAttribute);
 
         if(findUser.isEmpty()){
             userAttribute.put("exist", false);
@@ -64,11 +63,7 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
 
         // 권한과 userAttribute(email)을 통해 DefaultOAuth2User 객체 반환
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_".concat(findUser.get().getRole().USER.getKey()))), // 추후 수정 가능성 o
+                Collections.singleton(new SimpleGrantedAuthority(Role.USER.getKey())),
                 userAttribute, "email");
-
-    }
-
-    public void socialLogin(String code, String registrationId) {
     }
 }

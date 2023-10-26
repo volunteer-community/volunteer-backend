@@ -30,11 +30,6 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         String accessToken = generateAccessToken(email, role);
         String refreshToken = generateRefreshToken(email, role);
 
-        // 토큰 db에 저장
-        Login login = Login.builder()
-                .refreshToken(refreshToken)
-                .build();
-
         return new GeneratedToken(accessToken, refreshToken);
     }
 
