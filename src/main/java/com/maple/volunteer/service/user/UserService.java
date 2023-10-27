@@ -1,8 +1,11 @@
 package com.maple.volunteer.service.user;
 
+import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.user.SignupDto;
+import com.maple.volunteer.dto.user.TokenDto;
+import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final LoginRepository loginRepository;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
 
@@ -30,28 +34,29 @@ public class UserService {
         return commonService.successResponse(SuccessCode.EXAMPLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
-    public ResponseEntity<?> login(String email, String role) {
+    // 기존회원 로그인
+    public CommonResponseDto<Object> login(String email, String role) {
 
-        //1. 먼저 토큰 둘다 발행하기
-        GeneratedToken token = jwtUtil.generteToken(email, role);
+        // accessToken, refreshToken 발행
+        GeneratedToken token = jwtUtil.generateToken(email, role);
 
-        //2. 리프레시 토큰 유저pk로 가져오기
+        // 기존 refreshToken 변경
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()){
+            User user = userOptional.get();
 
-        //3-1. 리프레시 토큰 있으면?
+            Login login = user.getLogin();
+            loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
-        //리프레시토큰 만료되어있는지 확인하기
-        //만료 되었으면? 지우고 쌔거 저장하기
-        //아니면 말구
+            TokenDto tokenDto = TokenDto.builder()
+                    .accessToken(token.getAccessToken())
+                    .refreshToken(token.getRefreshToken())
+                    .build();
 
-
-
-        //3-2. 없으면?(없을수가있나?)
-        //쌔거 저장하기
-
-        //그다음 리프레시토큰, 엑세스토큰, 이메일?(을 보내줬었던가요?) 을 바디에 담아서 보내주기 (dto하나 만들 것)
-
-
-        return null;
+            return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+        } else {
+            return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND, token); //조금 애매
+        }
     }
 
     public CommonResponseDto<Object> signup(SignupDto signupDto) {

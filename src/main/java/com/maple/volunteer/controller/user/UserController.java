@@ -4,6 +4,7 @@ import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.example.ExampleDto;
 import com.maple.volunteer.dto.user.SignupDto;
+import com.maple.volunteer.dto.user.TokenDto;
 import com.maple.volunteer.security.oauth2.CustomOAuth2UserService;
 import com.maple.volunteer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,13 @@ public class UserController {
 
     //로그인하기
     @GetMapping("/login")
-    public ResponseEntity<?> memberLogin(@RequestParam("email") String email,
-                                         @RequestParam("role") String role) {
+    public ResponseEntity<ResultDto<TokenDto>> memberLogin(@RequestParam("email") String email,
+                                                           @RequestParam("role") String role) {
 
-        return userService.login(email, role);
+        CommonResponseDto<Object> login = userService.login(email, role);
+        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
+        result.setData((TokenDto) login.getData());
+
+        return ResponseEntity.status(login.getHttpStatus()).body(result);
     }
 }
