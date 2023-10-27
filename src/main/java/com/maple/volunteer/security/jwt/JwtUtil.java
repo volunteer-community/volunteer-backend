@@ -1,6 +1,7 @@
 package com.maple.volunteer.security.jwt;
 
 import com.maple.volunteer.domain.login.Login;
+import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
 import io.jsonwebtoken.*;
 import lombok.Generated;
@@ -11,12 +12,14 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
 
     private final JwtProperties jwtProperties;
+    private final UserRepository userRepository;
     
     private String secretKey;
 
@@ -25,7 +28,7 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
     }
 
-    public GeneratedToken generteToken(String email, String role) {
+    public GeneratedToken generateToken(String email, String role) {
         // accessToken, refreshToken 생성
         String accessToken = generateAccessToken(email, role);
         String refreshToken = generateRefreshToken(email, role);
@@ -34,6 +37,7 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
     }
 
     public String generateRefreshToken(String email, String role) {
+
         // 토큰 유효기간 설정
         long refreshPeriod = 1000L * 60L * 60L * 24L* 14L;
 
