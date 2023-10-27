@@ -16,7 +16,9 @@ public enum SuccessCode {
     ALL_COMMUNITY_INQUIRY_SUCCESS("모든 커뮤니티 정보 조회에 성공 했습니다."),
     CATEGORY_COMMUNITY_INQUIRY_SUCCESS("카테고리 별 커뮤니티 조회에 성공 했습니다."),
     SEARCH_COMMUNITY_INQUIRY_SUCCESS("해당 검색어로 커뮤니티 조회에 성공 했습니다."),
-    COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다.");
+    COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다."),
+    USER_LOGIN_SUCCESS("로그인에 성공 했습니다.");
+
 
     private final String description;
 }
