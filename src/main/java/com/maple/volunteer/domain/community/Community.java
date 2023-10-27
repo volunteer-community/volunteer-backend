@@ -65,6 +65,7 @@ public class Community extends BaseTime {
         this.location = location;
     }
 
+
     // 커뮤니티 참여 인원 증가
     public void communityParticipantIncrease() {
         this.participant += 1;

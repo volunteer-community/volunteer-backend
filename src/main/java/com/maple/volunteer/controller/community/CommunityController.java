@@ -5,7 +5,6 @@ import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityDetailAndImgResponseDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.community.CommunityRequestDto;
-import com.maple.volunteer.dto.community.CommunityUpdateRequestDto;
 import com.maple.volunteer.service.community.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,12 +48,12 @@ public class CommunityController {
 
     // 카테고리 별 커뮤니티 리스트 API (페이지 네이션)
     @GetMapping("/community/category")
-    public ResponseEntity<ResultDto<CommunityListResponseDto>> categoryCommunityInquiry(@RequestParam(value = "categoryType") String categoryType,
+    public ResponseEntity<ResultDto<CommunityListResponseDto>> categoryCommunityInquiry(@RequestParam(value = "categoryId") Long categoryId,
                                                                                         @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                         @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                                         @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
 
-        CommonResponseDto<Object> categoryCommunityInquiry = communityService.categoryCommunityInquiry(categoryType, page, size, sortBy);
+        CommonResponseDto<Object> categoryCommunityInquiry = communityService.categoryCommunityInquiry(categoryId, page, size, sortBy);
         ResultDto<CommunityListResponseDto> result = ResultDto.in(categoryCommunityInquiry.getStatus(), categoryCommunityInquiry.getMessage());
         result.setData((CommunityListResponseDto) categoryCommunityInquiry.getData());
 

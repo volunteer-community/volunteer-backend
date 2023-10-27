@@ -48,7 +48,18 @@ public class CommunityService {
         Category category = categoryRepository.findByCategoryType(categoryType)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
-        Community community = communityRequestDto.toEntity(category);
+
+
+        Community community = Community.builder()
+                .title(communityRequestDto.getCommunityTitle())
+                .participant(0)
+                .maxParticipant(communityRequestDto.getCommunityMaxParticipant())
+                .content(communityRequestDto.getCommunityContent())
+                .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
+                .location(communityRequestDto.getCommunityLocation())
+                .category(category)
+                .build();
+
         communityRepository.save(community);
 
         createCommunityImage(multipartFileList, community);
@@ -83,11 +94,11 @@ public class CommunityService {
     }
 
     // 커뮤니티 카테고리 별 조회 (페이지 네이션)
-    public CommonResponseDto<Object> categoryCommunityInquiry(String categoryType, int page, int size, String sortBy) {
+    public CommonResponseDto<Object> categoryCommunityInquiry(Long categoryId, int page, int size, String sortBy) {
 
         PageRequest pageable = PageRequest.of(page -1 , size, Sort.by(sortBy).descending());
 
-        Page<CommunityResponseDto> data = communityRepository.findCommunityListByCategoryType(categoryType, pageable);
+        Page<CommunityResponseDto> data = communityRepository.findCommunityListByCategoryType(categoryId, pageable);
 
         List<CommunityResponseDto> categoryCommunityList = data.getContent();
 

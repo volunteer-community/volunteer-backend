@@ -13,30 +13,17 @@ public class CommunityRequestDto {
 
     private String communityTitle;
     private Integer communityMaxParticipant;
-    private String communityAuthor;
     private String communityContent;
     private String communityLocation;
 
     @Builder
-    public CommunityRequestDto(String communityTitle, Integer communityMaxParticipant, String communityAuthor, String communityContent, String communityLocation) {
+    public CommunityRequestDto(String communityTitle, Integer communityMaxParticipant, String communityContent, String communityLocation) {
         this.communityTitle = communityTitle;
         this.communityMaxParticipant = communityMaxParticipant;
-        this.communityAuthor = communityAuthor;
         this.communityContent = communityContent;
         this.communityLocation = communityLocation;
     }
 
 
-    public Community toEntity(Category category) {
-        return Community.builder()
-                .title(communityTitle)
-                .participant(0)
-                .maxParticipant(communityMaxParticipant)
-                .author(communityAuthor)
-                .content(communityContent)
-                .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
-                .location(communityLocation)
-                .category(category)
-                .build();
-    }
+
 }
