@@ -49,7 +49,7 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
 
-
+    // 토큰 값으로 Author 추가 필요
         Community community = Community.builder()
                 .title(communityRequestDto.getCommunityTitle())
                 .participant(0)
@@ -204,7 +204,7 @@ public class CommunityService {
         }
 
         community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
-                communityRequestDto.getCommunityMaxParticipant(), communityRequestDto.getCommunityAuthor(),
+                communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
                 community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
         createCommunityImage(multipartFileList, community);
