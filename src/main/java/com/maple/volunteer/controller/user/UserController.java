@@ -22,19 +22,8 @@ public class UserController {
 
     private final UserService userService;
 
-    //처음 로그인 한 회원 추가정보 받고 회원가입하기
-    @PostMapping("/signup")
-    public ResponseEntity<ResultDto<SignupDto>> exampleGet(@ModelAttribute SignupDto signupDto) {
-        CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
-        ResultDto<SignupDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-//        result.setData((SignupDto) commonResponseDto.getData());
-
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-
-    }
-
-    //로그인하기
-    @GetMapping("/login")
+    //로그인
+    @PostMapping("/login")
     public ResponseEntity<ResultDto<TokenDto>> memberLogin(@RequestParam("email") String email,
                                                            @RequestParam("role") String role) {
 
@@ -44,4 +33,8 @@ public class UserController {
 
         return ResponseEntity.status(login.getHttpStatus()).body(result);
     }
+
+    // 로그아웃
+
+    // 토큰 갱신
 }
