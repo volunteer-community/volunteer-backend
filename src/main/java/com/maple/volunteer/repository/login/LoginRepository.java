@@ -16,5 +16,5 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Login l SET l.refreshToken = :refreshToken WHERE l.id = :id")
-    void updateRefreshTokenById(@Param("id") Long id, @Param("refeshToken") String refreshToken);
+    void updateRefreshTokenById(@Param("id") Long id, @Param("refreshToken") String refreshToken);
 }
