@@ -40,6 +40,7 @@ public class UserService {
         // accessToken, refreshToken 발행
         GeneratedToken token = jwtUtil.generateToken(email, role);
 
+
         // 기존 refreshToken 변경
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()){
@@ -51,11 +52,12 @@ public class UserService {
             TokenDto tokenDto = TokenDto.builder()
                     .accessToken(token.getAccessToken())
                     .refreshToken(token.getRefreshToken())
+                    .accessTokenExpireTime(token.getAccessTokenExpireTime())
                     .build();
 
             return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
         } else {
-            return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND, token); //조금 애매
+            return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND, null);
         }
     }
 

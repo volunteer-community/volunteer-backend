@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -32,8 +35,9 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         // accessToken, refreshToken 생성
         String accessToken = generateAccessToken(email, role);
         String refreshToken = generateRefreshToken(email, role);
+        LocalDateTime accessTokenExpireTime = LocalDateTime.now().plus(30, ChronoUnit.MINUTES);
 
-        return new GeneratedToken(accessToken, refreshToken);
+        return new GeneratedToken(accessToken, refreshToken, accessTokenExpireTime);
     }
 
     public String generateRefreshToken(String email, String role) {
