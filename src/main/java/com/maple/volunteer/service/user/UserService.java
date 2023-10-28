@@ -34,12 +34,11 @@ public class UserService {
         return commonService.successResponse(SuccessCode.EXAMPLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
-    // 기존회원 로그인
+    // 로그인
     public CommonResponseDto<Object> login(String email, String role) {
 
         // accessToken, refreshToken 발행
         GeneratedToken token = jwtUtil.generateToken(email, role);
-
 
         // 기존 refreshToken 변경
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -61,18 +60,22 @@ public class UserService {
         }
     }
 
-    public CommonResponseDto<Object> signup(SignupDto signupDto) {
-        if(findByPhoneNumber(signupDto.getPhoneNumber())){
+    // 로그아웃
+    public CommonResponseDto<Object> logout(String email) {
 
-            return null;
-        }else {
-            //이미 가입한 핸드폰 번호
-            return commonService.successResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
+        // email로 유저 조회
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        // refreshToken -> null 변경
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            Login login = user.getLogin();
+            loginRepository.updateRefreshTokenById(login.getId(), null);
+
+            return commonService.successResponse(SuccessCode.USER_LOGOUT_SUCCESS.getDescription(), HttpStatus.OK, null);
+        } else {
+            return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND, null);
         }
-    }
-
-    private boolean findByPhoneNumber(String phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        return user != null;
     }
 }

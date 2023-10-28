@@ -24,7 +24,7 @@ public class UserController {
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> memberLogin(@RequestParam("email") String email,
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
                                                            @RequestParam("role") String role) {
 
         CommonResponseDto<Object> login = userService.login(email, role);
@@ -35,6 +35,14 @@ public class UserController {
     }
 
     // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<ResultDto<Void>> userLogout(@RequestHeader("Email") String email){
+
+        CommonResponseDto<Object> logout = userService.logout(email);
+        ResultDto<Void> result = ResultDto.in(logout.getStatus(), logout.getMessage());
+
+        return ResponseEntity.status(logout.getHttpStatus()).body(result);
+    }
 
     // 토큰 갱신
 }
