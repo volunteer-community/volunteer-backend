@@ -82,6 +82,10 @@ public class CommunityService {
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findAllCommunityList(pageable);
 
+        if (data.isEmpty()) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_NOT_FOUND);
+        }
+
         // 커뮤니티 리스트 가져오기
         List<CommunityResponseDto> allCommunityList = data.getContent();
 
@@ -110,6 +114,10 @@ public class CommunityService {
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListByCategoryType(categoryId, pageable);
+
+        if (data.isEmpty()) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_NOT_FOUND);
+        }
 
         // 커뮤니티 리스트 가져오기
         List<CommunityResponseDto> categoryCommunityList = data.getContent();
@@ -140,6 +148,9 @@ public class CommunityService {
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchTitle(keyword, pageable);
 
+        if (data.isEmpty()) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_NOT_FOUND);
+        }
         // 커뮤니티 리스트 가져오기
         List<CommunityResponseDto> searchTitleCommunityList = data.getContent();
 
@@ -168,6 +179,10 @@ public class CommunityService {
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchAuthor(keyword, pageable);
+
+        if (data.isEmpty()) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_NOT_FOUND);
+        }
 
         // 커뮤니티 리스트 가져오기
         List<CommunityResponseDto> searchAuthorCommunityList = data.getContent();
