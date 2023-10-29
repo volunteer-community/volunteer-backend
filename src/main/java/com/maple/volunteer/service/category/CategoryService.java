@@ -28,7 +28,7 @@ public class CategoryService {
     @Transactional
     public CommonResponseDto<Object> categoryCreate(CategoryRequestDto categoryRequestDto) {
 
-
+        // 커뮤니티 저장
         categoryRepository.save(categoryRequestDto.toEntity());
 
         return commonService.successResponse(SuccessCode.CATEGORY_INSERT_SUCCESS.getDescription(), HttpStatus.CREATED, null);
@@ -37,6 +37,7 @@ public class CategoryService {
     // 카테고리 조회
     public CommonResponseDto<Object> categoryInquiry() {
 
+        // 커뮤니티 리스트 가져오기
         List<CategoryResponseDto> categoryList = categoryRepository.findAllCategoryList();
 
         CategoryListResponseDto categoryListResponseDto = CategoryListResponseDto.builder()
@@ -50,9 +51,12 @@ public class CategoryService {
     @Transactional
     public CommonResponseDto<Object> categoryUpdate(Long categoryId, CategoryRequestDto categoryRequestDto) {
 
+        // 카테고리 가져오기
         Category category = categoryRepository.findByCategoryId(categoryId)
+                // 값이 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_ID_NOT_FOUND));
 
+        // 카테고리 업데이트
         category.categoryUpdate(categoryRequestDto.getCategoryType());
 
         return commonService.successResponse(SuccessCode.CATEGORY_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
@@ -62,6 +66,7 @@ public class CategoryService {
     @Transactional
     public CommonResponseDto<Object> categoryDelete(Long categoryId) {
 
+        // 카테고리 삭제
         categoryRepository.deleteById(categoryId);
 
         return commonService.successResponse(SuccessCode.CATEGORY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);

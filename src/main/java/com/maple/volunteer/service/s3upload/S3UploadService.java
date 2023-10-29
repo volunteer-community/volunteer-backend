@@ -2,6 +2,7 @@ package com.maple.volunteer.service.s3upload;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.maple.volunteer.exception.FailImageResizeException;
@@ -150,5 +151,10 @@ public class S3UploadService {
             }
         }
         throw new UploadException(ErrorCode.FILE_DELETE_FAIL);  // 파일 삭제 실패
+    }
+
+    // 이미지 삭제
+    public void deleteFile(String imageUrl) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, imageUrl));
     }
 }
