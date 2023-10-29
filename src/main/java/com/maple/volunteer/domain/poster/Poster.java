@@ -27,6 +27,7 @@ public class Poster extends BaseTime {
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
     private Integer likeCount;  // 게시글 좋아요 수
+    private Boolean isDelete; // 게시글 삭제
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,19 +46,28 @@ public class Poster extends BaseTime {
 
 
     @Builder
-    public Poster(String title, String content, String author, Integer likeCount, CommunityUser communityUser) {
+    public Poster(String title, String content, String author, Integer likeCount, Boolean isDelete, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.likeCount = likeCount;
+        this.isDelete = isDelete;
         this.communityUser = communityUser;
     }
 
+
+    // 좋아요 수 증가
     public void likeIncrease() {
         this.likeCount += 1;
     }
 
+    // 좋아요 수 감소
     public void likeDecrease() {
         this.likeCount -= 1;
+    }
+
+    // 게시글 삭제
+    public void posterDelete() {
+        this.isDelete = true;
     }
 }
