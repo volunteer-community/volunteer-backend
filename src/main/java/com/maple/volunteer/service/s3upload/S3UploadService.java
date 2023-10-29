@@ -5,9 +5,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.maple.volunteer.exception.FailImageResizeException;
+import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.exception.NotFoundException;
-import com.maple.volunteer.exception.UploadException;
 import com.maple.volunteer.type.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
@@ -74,7 +73,7 @@ public class S3UploadService {
             objectMetadata.setContentType(file.getContentType());
         } catch (IOException e) {
             // 이미지 크기 읽기 실패 시 예외 처리
-            throw new UploadException(ErrorCode.IMAGE_SIZE_READ_FAIL);
+            throw new BadRequestException(ErrorCode.IMAGE_SIZE_READ_FAIL);
         }
 
         try (InputStream inputStream = resizedImage.getInputStream()){
@@ -91,7 +90,7 @@ public class S3UploadService {
             return amazonS3.getUrl(bucket + path, fileName).toString();
         } catch (IOException e) {
             // 이미지 업로드 실패 시 예외 처리
-            throw new UploadException(ErrorCode.IMAGE_UPLOAD_FAIL);
+            throw new BadRequestException(ErrorCode.IMAGE_UPLOAD_FAIL);
         }
     }
 
@@ -137,7 +136,7 @@ public class S3UploadService {
 
         } catch (IOException e) {
             // 파일 리사이징 실패시 예외 처리
-            throw new FailImageResizeException(ErrorCode.IMAGE_RESIZING_FAIL);
+            throw new BadRequestException(ErrorCode.IMAGE_RESIZING_FAIL);
         }
     }
 
@@ -150,7 +149,7 @@ public class S3UploadService {
                 return;  // 파일이 성공적으로 삭제되었거나, 파일이 존재하지 않는 경우
             }
         }
-        throw new UploadException(ErrorCode.FILE_DELETE_FAIL);  // 파일 삭제 실패
+        throw new BadRequestException(ErrorCode.FILE_DELETE_FAIL);  // 파일 삭제 실패
     }
 
     // 이미지 삭제

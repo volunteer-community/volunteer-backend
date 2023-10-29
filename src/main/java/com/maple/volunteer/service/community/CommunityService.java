@@ -6,8 +6,7 @@ import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.community.*;
-import com.maple.volunteer.exception.CommunityRecruitmentException;
-import com.maple.volunteer.exception.CommunityUpdateException;
+import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.category.CategoryRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
@@ -234,7 +233,7 @@ public class CommunityService {
         communityImgRepository.deleteByCommunityId(communityId);
 
         if (community.getParticipant() > communityRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
-            throw new CommunityUpdateException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
+            throw new BadRequestException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
         }
 
         if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
@@ -283,7 +282,7 @@ public class CommunityService {
 
         // 현재 상태가 모집 마감이면 오류 반환
         if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
-            throw new CommunityRecruitmentException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
+            throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
         }
 
         // 참가 인원 증가
@@ -294,7 +293,7 @@ public class CommunityService {
             community.communityRecruitmentEnd();
         }
 
-        return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP.getDescription(), HttpStatus.CREATED, null);
+        return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
     // 커뮤니티 탈퇴
@@ -309,7 +308,7 @@ public class CommunityService {
 
         // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
 
-        return null;
+        return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
 
