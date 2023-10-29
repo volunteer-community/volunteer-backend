@@ -4,7 +4,6 @@ import com.maple.volunteer.type.Role;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

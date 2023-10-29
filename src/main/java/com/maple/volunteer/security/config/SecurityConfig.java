@@ -1,14 +1,13 @@
-package com.maple.volunteer.security;
+package com.maple.volunteer.security.config;
 
-import com.maple.volunteer.security.jwt.JwtAuthFilter;
-import com.maple.volunteer.security.jwt.JwtExceptionFilter;
+import com.maple.volunteer.security.jwt.config.JwtAuthFilter;
+import com.maple.volunteer.security.jwt.config.JwtExceptionFilter;
 import com.maple.volunteer.security.oauth2.CustomOAuth2UserService;
 import com.maple.volunteer.security.oauth2.MyAuthenticationFailureHandler;
 import com.maple.volunteer.security.oauth2.MyAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;

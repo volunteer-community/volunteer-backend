@@ -1,7 +1,6 @@
 package com.maple.volunteer.security.oauth2;
 
-import com.maple.volunteer.security.jwt.JwtUtil;
-import com.maple.volunteer.security.jwt.dto.GeneratedToken;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
