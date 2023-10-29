@@ -26,6 +26,7 @@ public class User extends BaseTime {
     private String profileImg;  // 유저 프로필 이미지
     private String name;    // 유저 이름
     private String phoneNumber; // 유저 핸드폰 번호
+    private String nickname; // 유저 닉네임
 
     @Enumerated(EnumType.STRING)
     private Role role;  // 유저 역할
