@@ -31,22 +31,21 @@ public class UserController {
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<ResultDto<LogoutDto>> userLogout(@RequestHeader("Authorization") String accessToken){
+    public ResponseEntity<ResultDto<Void>> userLogout(@RequestHeader("Authorization") String accessToken){
 
         CommonResponseDto<Object> logout = userService.logout(accessToken);
-        ResultDto<LogoutDto> result = ResultDto.in(logout.getStatus(), logout.getMessage());
-        result.setData((LogoutDto) logout.getData());
+        ResultDto<Void> result = ResultDto.in(logout.getStatus(), logout.getMessage());
 
         return ResponseEntity.status(logout.getHttpStatus()).body(result);
     }
 
     // 토큰 갱신
     @PostMapping("/newToken")
-    public ResponseEntity<ResultDto<NewTokenDto>> renewToken(@RequestHeader("Authorization") String accessToken){
+    public ResponseEntity<ResultDto<TokenDto>> renewToken(@RequestHeader("Authorization") String refreshToken){
 
-        CommonResponseDto<Object> renewToken = userService.renewToken(accessToken);
-        ResultDto<NewTokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
-        result.setData((NewTokenDto) renewToken.getData());
+        CommonResponseDto<Object> renewToken = userService.renewToken(refreshToken);
+        ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
+        result.setData((TokenDto) renewToken.getData());
 
         return ResponseEntity.status(renewToken.getHttpStatus()).body(result);
     }
