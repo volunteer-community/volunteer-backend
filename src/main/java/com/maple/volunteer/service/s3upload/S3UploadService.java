@@ -37,6 +37,9 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    private final String COMMUNITY_PATH = "/image/community";
+    private final String POSTER_PATH = "image/poster";
+
 
     // 커뮤니티 이미지 업로드
     public List<String> communityUpload(List<MultipartFile> multipartFileList) {
@@ -44,7 +47,7 @@ public class S3UploadService {
         // 리스트에 있는 모든 파일에 대해
         for (MultipartFile file : multipartFileList) {
             // 이미지 업로드 후 URL을 리스트에 추가
-            imgUrlList.add(uploadImage(file, "/image/community", 800, 600));
+            imgUrlList.add(uploadImage(file, COMMUNITY_PATH, 800, 600));
         }
         // 업로드된 모든 이미지의 URL 리스트를 반환
         return imgUrlList;
@@ -53,7 +56,7 @@ public class S3UploadService {
     // 게시판 이미지 업로드
     public String posterUpload(MultipartFile multipartFile) {
         // 이미지 업로드 후 URL 반환
-        return uploadImage(multipartFile, "/image/poster", 800, 600);
+        return uploadImage(multipartFile, POSTER_PATH, 800, 600);
     }
 
     // 이미지 업로드
@@ -152,8 +155,21 @@ public class S3UploadService {
         throw new BadRequestException(ErrorCode.FILE_DELETE_FAIL);  // 파일 삭제 실패
     }
 
-    // 이미지 삭제
-    public void deleteFile(String imageUrl) {
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, imageUrl));
+    // 이미지 삭제 (커뮤니티)
+    public void deleteCommunityImg(String imgPath) {
+
+        int lastIndex = imgPath.lastIndexOf("/") + 1;
+        String substringImgPath = imgPath.substring(lastIndex);
+
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket + COMMUNITY_PATH, substringImgPath));
+    }
+
+    // 이미지 삭제 (포스터)
+    public void deletePosterImg(String imgPath) {
+
+        int lastIndex = imgPath.lastIndexOf("/") + 1;
+        String substringImgPath = imgPath.substring(lastIndex);
+
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket + POSTER_PATH, substringImgPath));
     }
 }

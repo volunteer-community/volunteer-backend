@@ -240,8 +240,9 @@ public class CommunityService {
         for (CommunityImgPathDto communityImgPathDto : communityImgPathList) {
             String imgPath = communityImgPathDto.getCommunityImgPath();
 
+
             // s3 이미지 삭제
-            s3UploadService.deleteFile(imgPath);
+            s3UploadService.deleteCommunityImg(imgPath);
         }
 
         // db에 url 삭제
