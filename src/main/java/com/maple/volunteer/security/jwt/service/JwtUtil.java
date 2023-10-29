@@ -1,21 +1,17 @@
-package com.maple.volunteer.security.jwt;
+package com.maple.volunteer.security.jwt.service;
 
-import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.repository.user.UserRepository;
+import com.maple.volunteer.security.jwt.config.JwtProperties;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
 import io.jsonwebtoken.*;
-import lombok.Generated;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -89,37 +85,6 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         } catch (Exception e) {
             return false;
         }
-    }
-
-    // 만료시한이 짧은 토큰 발행 (무효화)
-    public String invalidateToken(String email, String role) {
-        long tokenPeriod = 1000L;
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
-
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenPeriod))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
-    }
-
-    public String generateNewAccessToken(String email, String role) {
-        long tokenPeriod = 1000L * 60L * 30L;
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
-
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenPeriod))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
     }
 
     // 추가 메소드 작성
