@@ -19,6 +19,12 @@ public enum SuccessCode {
     COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다."),
 
     //게시글
-    ALL_POSTER_INQUIRY_SUCCESS("해당 커뮤니티에 작성된 게시글 조회에 성공했습니다");
+    ALL_POSTER_INQUIRY_SUCCESS("해당 커뮤니티에 작성된 게시글 조회에 성공했습니다"),
+    POSTER_DETAIL_INQUIRY_SUCCESS("게시글 상세 정보 조회에 성공했습니다"),
+
+    //좋아요
+    HEART_TOGGLE_SUCCESS("좋아요 처리에 성공 하였습니다");
+    //HEART_CANCLE_SUCCESS("좋아요를 취소하는데 성공 했습니다");
+
     private final String description;
 }

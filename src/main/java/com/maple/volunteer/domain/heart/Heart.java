@@ -2,6 +2,7 @@ package com.maple.volunteer.domain.heart;
 
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -29,5 +30,15 @@ public class Heart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
     private Poster poster;
+
+    @Builder
+    public Heart(User user,Poster poster,Boolean status){
+
+        this.status = status;
+        this.user = user;
+        this.poster =poster;
+    }
+
+
 
 }

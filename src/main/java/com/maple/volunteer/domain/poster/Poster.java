@@ -58,6 +58,11 @@ public class Poster extends BaseTime {
     }
 
     public void heartDecrease() {
-        this.heartCount -= 1;
+        if(this.heartCount > 0){
+            this.heartCount -= 1;
+        }else {
+            this.heartCount = 0;
+        }
+
     }
 }

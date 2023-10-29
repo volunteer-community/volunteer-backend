@@ -63,7 +63,7 @@ public class PosterService {
                                                                                              .posterDetail(posterDetailResponseDto)
                                                                                              .build();
 
-        return commonService.successResponse(SuccessCode.ALL_POSTER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterDetailListResponseDto);
+        return commonService.successResponse(SuccessCode.POSTER_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterDetailListResponseDto);
     }
 
 

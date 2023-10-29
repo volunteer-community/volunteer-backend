@@ -12,6 +12,7 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAIL("이미지 업로드에 실패 했습니다."),
     FILE_EXTENSION_NOT_FOUND("확장자가 올바르지 않습니다."),
     COMMUNITY_NOT_FOUND("커뮤니티를 찾을 수 없습니다."),
-    POSTER_NOT_FOUND("게시글을 찾을 수 없습니다");
+    POSTER_NOT_FOUND("게시글을 찾을 수 없습니다"),
+    USER_NOT_FOUND("해당 유저를 찾을 수 없습니다");
     private final String description;
 }
