@@ -19,6 +19,7 @@ public enum SuccessCode {
     SEARCH_COMMUNITY_AUTHOR_INQUIRY_SUCCESS("작성자로 커뮤니티 조회에 성공 했습니다."),
     COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다."),
     COMMUNITY_UPDATE_SUCCESS("커뮤니티 수정에 성공 했습니다."),
+    COMMUNITY_DELETE_SUCCESS("커뮤니티 삭제에 성공 했습니다."),
     COMMUNITY_SIGNUP("커뮤니티 참가에 성공 했습니다.");
 
     private final String description;

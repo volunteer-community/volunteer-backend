@@ -30,6 +30,7 @@ public class Community extends BaseTime {
     private String status;  // 커뮤니티 활동 상태
     private String content; // 커뮤니티 내용
     private String location;   // 커뮤니티 한줄 소개
+    private Boolean isDelete;   // 커뮤니티 삭제
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +44,7 @@ public class Community extends BaseTime {
     private List<CommunityImg> communityImgList;
 
     @Builder
-    public Community(String title, Integer participant, Integer maxParticipant, String author, String status, String content, String location, Category category) {
+    public Community(String title, Integer participant, Integer maxParticipant, String author, String status, String content, String location, boolean isDelete, Category category) {
         this.title = title;
         this.participant = participant;
         this.maxParticipant = maxParticipant;
@@ -51,6 +52,7 @@ public class Community extends BaseTime {
         this.status = status;
         this.content = content;
         this.location = location;
+        this.isDelete = isDelete;
         this.category = category;
     }
 
@@ -78,5 +80,10 @@ public class Community extends BaseTime {
 
     public void communityRecruitmentIng() {
         this.status = CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription();
+    }
+
+    // 커뮤니티 삭제
+    public void communityDelete() {
+        this.isDelete = true;
     }
 }

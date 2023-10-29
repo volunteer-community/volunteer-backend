@@ -45,7 +45,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
-            "WHERE ci.imageNum = 1 ")
+            "WHERE ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findAllCommunityList(Pageable pageable);
 
     // 커뮤니티 카테고리 별 조회
@@ -63,7 +63,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
             "LEFT JOIN c.category cg " +
-            "WHERE cg.id = :categoryId AND ci.imageNum = 1 " )
+            "WHERE cg.id = :categoryId AND ci.imageNum = 1 AND c.isDelete = false " )
     Page<CommunityResponseDto> findCommunityListByCategoryType(@Param("categoryId") Long categoryId, Pageable pageable);
 
 
@@ -82,7 +82,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
-            "WHERE c.title Like %:keyword% AND ci.imageNum = 1 ")
+            "WHERE c.title Like %:keyword% AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListBySearchTitle(@Param("keyword") String keyword, Pageable pageable);
 
     // 커뮤니티 작성자 검색
@@ -100,7 +100,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
-            "WHERE c.author Like %:keyword% AND ci.imageNum = 1 ")
+            "WHERE c.author Like %:keyword% AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListBySearchAuthor(@Param("keyword") String keyword, Pageable pageable);
 
 }

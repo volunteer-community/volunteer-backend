@@ -57,6 +57,7 @@ public class CommunityService {
                 .content(communityRequestDto.getCommunityContent())
                 .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
                 .location(communityRequestDto.getCommunityLocation())
+                .isDelete(false)
                 .category(category)
                 .build();
 
@@ -212,6 +213,18 @@ public class CommunityService {
         return commonService.successResponse(SuccessCode.COMMUNITY_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
+    // 커뮤니티 삭제
+    @Transactional
+    public CommonResponseDto<Object> communityDelete(Long communityId) {
+
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        community.communityDelete();
+
+        return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
+    }
+
     // 커뮤니티 참가
     // 유저 생성이 되면 유저를 넣어서 저장
     @Transactional
@@ -234,7 +247,7 @@ public class CommunityService {
     }
 
     // 커뮤니티 탈퇴
-    // 커뮤니티 삭제
+
 
 
     // 이미지 저장

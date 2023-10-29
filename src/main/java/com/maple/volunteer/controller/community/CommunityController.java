@@ -104,6 +104,16 @@ public class CommunityController {
         return ResponseEntity.status(communityUpdate.getHttpStatus()).body(result);
     }
 
+    // 커뮤니티 삭제 API
+    @DeleteMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityDelete(@PathVariable(value = "communityId") Long communityId) {
+
+        CommonResponseDto<Object> communityDelete = communityService.communityDelete(communityId);
+        ResultDto<Void> result = ResultDto.in(communityDelete.getStatus(), communityDelete.getMessage());
+
+        return ResponseEntity.status(communityDelete.getHttpStatus()).body(result);
+    }
+
     // 커뮤니티 참가 API
     @PostMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communitySignup(
