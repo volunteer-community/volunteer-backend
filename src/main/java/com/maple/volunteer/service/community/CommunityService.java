@@ -276,7 +276,9 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communitySignup(Long communityId) {
 
+        // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
+                // 커뮤니티가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 현재 상태가 모집 마감이면 오류 반환
@@ -296,6 +298,19 @@ public class CommunityService {
     }
 
     // 커뮤니티 탈퇴
+    @Transactional
+    public CommonResponseDto<Object> communityWithdraw(Long communityId) {
+
+        // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
+
+        // 해당 레코드의 isWithdraw를 true로 변환
+
+        // 참가 인원 감소
+
+        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
+
+        return null;
+    }
 
 
 

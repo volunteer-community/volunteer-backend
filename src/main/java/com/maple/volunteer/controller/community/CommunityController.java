@@ -60,7 +60,7 @@ public class CommunityController {
         return ResponseEntity.status(categoryCommunityInquiry.getHttpStatus()).body(result);
     }
 
-    // 커뮤니티 리스트 검색 API (페이지 네이션) -> 커뮤니티 제목, 작성자, 활동 장소(보류)
+    // 커뮤니티 리스트 검색 API (페이지 네이션) -> 커뮤니티 제목, 작성자
     @GetMapping("/community/search/{type}")
     public ResponseEntity<ResultDto<CommunityListResponseDto>> searchCommunityInquiry(@PathVariable(value = "type") String type,
                                                                                       @RequestParam(value = "keyword") String keyword,
@@ -122,5 +122,13 @@ public class CommunityController {
         ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
 
         return ResponseEntity.status(communitySignup.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 탈퇴 API (수정 예정)
+    @DeleteMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityWithdraw(@PathVariable(value = "communityId") Long communityId) {
+        CommonResponseDto<Object> communityWithdraw = communityService.communityWithdraw(communityId);
+
+        return null;
     }
 }

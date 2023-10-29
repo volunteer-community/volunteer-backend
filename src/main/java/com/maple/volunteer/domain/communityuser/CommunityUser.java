@@ -21,6 +21,8 @@ public class CommunityUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 커뮤니티_유저 ID
 
+    private Boolean isWithdraw; // 커뮤니티 탈퇴 유무
+
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -35,8 +37,14 @@ public class CommunityUser {
     private List<Poster> posterList;
 
     @Builder
-    public CommunityUser(User user, Community community) {
+    public CommunityUser(User user, Boolean isWithdraw, Community community) {
         this.user = user;
+        this.isWithdraw = isWithdraw;
         this.community = community;
+    }
+
+    // 커뮤니티 탈퇴
+    public void communityWithdraw() {
+        this.isWithdraw = true;
     }
 }

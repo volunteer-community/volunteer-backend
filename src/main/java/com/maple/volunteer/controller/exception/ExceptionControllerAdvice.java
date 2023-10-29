@@ -1,6 +1,5 @@
 package com.maple.volunteer.controller.exception;
 
-import com.amazonaws.Response;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.exception.*;

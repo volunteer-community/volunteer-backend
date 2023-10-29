@@ -30,7 +30,7 @@ public class Community extends BaseTime {
     private String status;  // 커뮤니티 활동 상태
     private String content; // 커뮤니티 내용
     private String location;   // 커뮤니티 한줄 소개
-    private Boolean isDelete;   // 커뮤니티 삭제
+    private Boolean isDelete;   // 커뮤니티 삭제 유무
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)

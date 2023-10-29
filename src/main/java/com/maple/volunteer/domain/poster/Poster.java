@@ -27,7 +27,7 @@ public class Poster extends BaseTime {
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
     private Integer likeCount;  // 게시글 좋아요 수
-    private Boolean isDelete; // 게시글 삭제
+    private Boolean isDelete; // 게시글 삭제 유무
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
