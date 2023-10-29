@@ -31,7 +31,7 @@ public class Poster extends BaseTime {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
 
     @OneToMany(mappedBy = "poster")
