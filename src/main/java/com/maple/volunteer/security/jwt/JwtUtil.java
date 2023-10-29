@@ -77,8 +77,9 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
 
     public boolean verifyToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey) // secretKey 설정 후 파싱
+                    .build()
                     .parseClaimsJws(token); // 주어준 토큰을 파싱하여 Claims 객체 get
 
             // 시간 비교
@@ -88,6 +89,37 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // 만료시한이 짧은 토큰 발행 (무효화)
+    public String invalidateToken(String email, String role) {
+        long tokenPeriod = 1000L;
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenPeriod))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public String generateNewAccessToken(String email, String role) {
+        long tokenPeriod = 1000L * 60L * 30L;
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + tokenPeriod))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
     }
 
     // 추가 메소드 작성
