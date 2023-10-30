@@ -7,7 +7,6 @@ import com.maple.volunteer.dto.user.SignupDto;
 import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.dto.user.TokenDto;
 import com.maple.volunteer.exception.NotFoundException;
-import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
@@ -16,10 +15,8 @@ import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class UserService {
 
 
 
-    public ResponseEntity<?> login(String email, String role, String name, String picture) {
+    public CommonResponseDto<Object> login(String email, String role) {
 
         // accessToken, refreshToken 발행
         GeneratedToken token = jwtUtil.generateToken(email, role);
