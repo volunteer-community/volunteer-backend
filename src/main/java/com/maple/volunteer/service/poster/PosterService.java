@@ -2,6 +2,14 @@ package com.maple.volunteer.service.poster;
 
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.poster.Poster;
+
+import com.maple.volunteer.dto.common.PaginationDto;
+import com.maple.volunteer.dto.poster.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
 import com.maple.volunteer.domain.posterimg.PosterImg;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.poster.PosterRequestDto;
@@ -19,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -27,10 +34,61 @@ import java.util.Optional;
 public class PosterService {
 
     private final CommonService commonService;
-    private final S3UploadService s3UploadService;
-    private final PosterImgRepository posterImgRepository;
+
     private final PosterRepository posterRepository;
     private final CommunityUserRepository communityUserRepository;
+    private final S3UploadService s3UploadService;
+    private final PosterImgRepository posterImgRepository;
+
+
+    //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
+    //전체조회
+    public CommonResponseDto<Object> allPosterInquiry(Long communityId, int page, int size, String sortBy) {
+
+        Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
+
+        if (!posterExists.orElse(false)) {
+            throw new NotFoundException(ErrorCode.POSTER_NOT_FOUND);
+        }
+
+        PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
+                                                                  .descending());
+
+
+        Page<PosterResponseDto> data = posterRepository.findAllPosterList(communityId, pageable);
+        List<PosterResponseDto> posterResponseList = data.getContent();
+
+        PaginationDto paginationDto = PaginationDto.builder()
+                                                   .totalPages(data.getTotalPages())
+                                                   .totalElements(data.getTotalElements())
+                                                   .pageNo(data.getNumber())
+                                                   .isLastPage(data.isLast())
+                                                   .build();
+
+        PosterListResponseDto posterListResponseDto = PosterListResponseDto.builder()
+                                                                           .posterList(posterResponseList)
+                                                                           .paginationDto(paginationDto)
+                                                                           .build();
+
+        return commonService.successResponse(SuccessCode.ALL_POSTER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterListResponseDto);
+    }
+
+    //상세조회
+    public CommonResponseDto<Object> posterDetailInquiry(Long posterId, Long communityId) {
+
+        PosterDetailResponseDto posterDetailResponseDto = posterRepository.findPosterDetailByCommunityIdAndPosterId(communityId, posterId)
+                                                                          .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
+
+        PosterDetailListResponseDto posterDetailListResponseDto = PosterDetailListResponseDto.builder()
+                                                                                             .posterDetail(posterDetailResponseDto)
+                                                                                             .build();
+
+        return commonService.successResponse(SuccessCode.POSTER_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterDetailListResponseDto);
+    }
+
+
+
+
 
     // 게시글 생성
     @Transactional

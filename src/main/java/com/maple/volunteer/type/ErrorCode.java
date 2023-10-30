@@ -20,6 +20,5 @@ public enum ErrorCode {
     TOKEN_NOT_FOUND("토큰 조회에 실패 했습니다."),
     EXISTED_NICKNAME("이미 가입된 닉네임입니다.");
 
-
     private final String description;
 }
