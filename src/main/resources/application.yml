@@ -15,7 +15,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  # ???? update? ?? ????
   jpa:
     hibernate:
       ddl-auto: update
