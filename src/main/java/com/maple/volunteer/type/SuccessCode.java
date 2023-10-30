@@ -17,11 +17,15 @@ public enum SuccessCode {
     CATEGORY_COMMUNITY_INQUIRY_SUCCESS("카테고리 별 커뮤니티 조회에 성공 했습니다."),
     SEARCH_COMMUNITY_INQUIRY_SUCCESS("해당 검색어로 커뮤니티 조회에 성공 했습니다."),
     COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다."),
-
+  
     POSTER_CREATE_SUCCESS("게시글 등록에 성공 했습니다."),
     POSTER_UPDATE_SUCCESS("게시글 수정에 성공 했습니다."),
-    POSTER_DELETE_SUCCESS("게시글 삭제에 성공 했습니다.");
+    POSTER_DELETE_SUCCESS("게시글 삭제에 성공 했습니다."),
 
-
+    USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),
+    USER_LOGOUT_SUCCESS("로그아웃에 성공 했습니다."),
+    USER_RENEW_SUCCESS("로그인 갱신에 성공 했습니다."),
+    SIGNUP_SUCCESS("회원가입이 완료되었습니다.");
+  
     private final String description;
 }
