@@ -42,7 +42,8 @@ public enum SuccessCode {
     USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),
     USER_LOGOUT_SUCCESS("로그아웃에 성공 했습니다."),
     USER_RENEW_SUCCESS("로그인 갱신에 성공 했습니다."),
-    SIGNUP_SUCCESS("회원가입이 완료되었습니다.");
+    SIGNUP_SUCCESS("회원가입이 완료되었습니다."),
+    NEW_USER_SUCCESS("처음 로그인하는 회원입니다.");
   
     private final String description;
 }
