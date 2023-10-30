@@ -34,7 +34,6 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                 .getAuthority();
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
-        System.out.println(email+" "+provider+" "+role+" "+name+" "+picture);
         // 이미 로그인 했던 회원
         if (isExist){
             // user 정보를 쿼리스트링에 담는 url 생성
