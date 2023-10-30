@@ -1,2 +1,2 @@
 jwt:
-  secret: R8ZnLAKesLjHVoLCdgYhrAVtc24I0hAykB1s5r4jA+0=
+  secret: ${JWT_SECRET}
