@@ -15,8 +15,8 @@ public enum ErrorCode {
     EXISTED_PHONE_NUMBER("이미 가입된 핸드폰 번호 입니다."),
     USER_NOT_FOUND("유저 정보 조회에 실패 했습니다."),
     TOKEN_NOT_VALIDATE("토큰이 만료되었습니다."),
-    TOKEN_NOT_FOUND("토큰 조회에 실패 했습니다.");
-
+    TOKEN_NOT_FOUND("토큰 조회에 실패 했습니다."),
+    EXISTED_NICKNAME("이미 가입된 닉네임입니다.");
 
     private final String description;
 }

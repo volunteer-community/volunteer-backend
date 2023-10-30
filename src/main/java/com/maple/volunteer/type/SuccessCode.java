@@ -19,8 +19,8 @@ public enum SuccessCode {
     COMMUNITY_DETAIL_INQUIRY_SUCCESS("커뮤니티 상세 정보 조회에 성공 했습니다."),
     USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),
     USER_LOGOUT_SUCCESS("로그아웃에 성공 했습니다."),
-    USER_RENEW_SUCCESS("로그인 갱신에 성공 했습니다.");
-
+    USER_RENEW_SUCCESS("로그인 갱신에 성공 했습니다."),
+    SIGNUP_SUCCESS("회원가입이 완료되었습니다.");
 
     private final String description;
 }
