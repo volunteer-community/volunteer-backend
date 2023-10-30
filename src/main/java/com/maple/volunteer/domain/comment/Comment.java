@@ -32,6 +32,8 @@ public class Comment extends BaseTime {
     public Comment(String content, String author, Poster poster) {
         this.content = content;
         this.author = author;
+        this.isDelete = isDelete;
+        this.communityUser = communityUser;
         this.poster = poster;
     }
 }
