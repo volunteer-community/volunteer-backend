@@ -41,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // AccessToken을 검증 후 만료시 예외 발생
         if (!jwtUtil.verifyToken(atc)) {
             // AccessToken 내부의 payload에 있는 email로 user 조회. 없으면 예외
-            User findUser = userRepository.findByEmail(jwtUtil.getUserEmail(atc))
+            User findUser = userRepository.findByEmail(jwtUtil.getUserId(atc))
                     .orElseThrow(IllegalStateException::new);
 
             // SecurityContext에 등록할 User 객체 생성
