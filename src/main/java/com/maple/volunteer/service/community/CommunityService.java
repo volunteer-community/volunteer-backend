@@ -327,6 +327,10 @@ public class CommunityService {
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
+    // 내가 만든 커뮤니티 리스트
+
+    // 내가 가입한 커뮤니티 리스트
+
 
 
     // 이미지 저장
