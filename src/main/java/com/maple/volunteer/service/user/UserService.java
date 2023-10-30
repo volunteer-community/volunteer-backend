@@ -1,8 +1,10 @@
 package com.maple.volunteer.service.user;
 
+import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.user.SignupDto;
+import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
@@ -12,10 +14,8 @@ import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,17 +25,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
+    private final LoginRepository loginRepository;
 
     public CommonResponseDto<Object> exampleGet() {
         return commonService.successResponse(SuccessCode.EXAMPLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
-    public ResponseEntity<?> login(String email, String role) {
+    public ResponseEntity<?> login(String email, String role, String name, String picture) {
 
         //1. 먼저 토큰 둘다 발행하기
         GeneratedToken token = jwtUtil.generteToken(email, role);
 
         //2. 리프레시 토큰 유저pk로 가져오기
+
 
         //3-1. 리프레시 토큰 있으면?
 
@@ -56,6 +58,7 @@ public class UserService {
 
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
         if(!findByPhoneNumber(signupDto.getPhoneNumber())){
+            if(!findByNickName(signupDto.getName())){
             User user = User.builder()
                     .phoneNumber(signupDto.getPhoneNumber())
                     .name(signupDto.getName())
@@ -66,11 +69,20 @@ public class UserService {
             userRepository.save(user);
 
 
-            return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);
+            return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
+            else{
+                //이미 가입한 닉네임
+                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
+            }
         }else {
             //이미 가입한 핸드폰 번호
             return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
         }
+    }
+
+    private boolean findByNickName(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user != null;
     }
 
     private boolean findByPhoneNumber(String phoneNumber) {
