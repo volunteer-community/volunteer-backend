@@ -30,6 +30,7 @@ public class PosterRequestDto {
                 .content(posterContent)
                 .author(posterAuthor)
                 .heartCount(0)
+                .isDelete(false)
                 // 자동으로 매핑이 들어갈거임
                 .communityUser(communityUser)
                 .build();
