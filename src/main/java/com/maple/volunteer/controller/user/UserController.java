@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/maple/user")
@@ -30,11 +33,10 @@ public class UserController {
     }
 
     //로그인
-    @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
-                                                           @RequestParam("role") String role) {
+    @GetMapping("/login")
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email){
 
-        CommonResponseDto<Object> login = userService.login(email, role);
+        CommonResponseDto<Object> login = userService.login(email);
         ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
         result.setData((TokenDto) login.getData());
 
