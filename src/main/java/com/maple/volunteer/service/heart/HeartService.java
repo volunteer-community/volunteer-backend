@@ -1,11 +1,13 @@
 package com.maple.volunteer.service.heart;
 
+import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.heart.HeartRequestDto;
 import com.maple.volunteer.exception.NotFoundException;
+import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
 import com.maple.volunteer.repository.user.UserRepository;
@@ -24,7 +26,7 @@ import javax.transaction.Transactional;
 public class HeartService {
     private final HeartRepository heartRepository;
 
-    private final UserRepository userRepository;
+    private final CommunityUserRepository communityUserRepository;
 
     private final PosterRepository posterRepository;
 
@@ -33,11 +35,11 @@ public class HeartService {
 
     @Transactional
     public CommonResponseDto<Object> toggleHeart(HeartRequestDto heartRequestDto) {
-        Long userId = heartRequestDto.getUserId();
+        Long communityUserId = heartRequestDto.getCommunityUserId();
         Long posterId = heartRequestDto.getPosterId();
 
         //유저 존재 여부 확인
-        User user = userRepository.findById(userId)
+        CommunityUser communityUser = communityUserRepository.findById(communityUserId)
                                   .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         //게시글 존재 여부 확인
@@ -45,7 +47,7 @@ public class HeartService {
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         // 기존 좋아요 존재
-        Heart existingHeart = heartRepository.findUserAndPoster(userId, posterId);
+        Heart existingHeart = heartRepository.findUserAndPoster(communityUserId, posterId);
 
 
         if (existingHeart == null) {

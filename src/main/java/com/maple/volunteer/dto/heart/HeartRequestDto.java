@@ -1,5 +1,6 @@
 package com.maple.volunteer.dto.heart;
 
+import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
@@ -11,20 +12,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HeartRequestDto {
 
-    private Long userId;
+    private Long communityUserId;
     private Long posterId;
 
     @Builder
-    public HeartRequestDto(Long userId, Long posterId){
-        this.userId = userId;
+    public HeartRequestDto(Long communityUserId, Long posterId){
+        this.communityUserId = communityUserId;
         this.posterId = posterId;
     }
 
 
     //좋아요 처음 생성
-    public Heart toAddHeartEntity(User user, Poster poster){
+    public Heart toAddHeartEntity(CommunityUser communityUser, Poster poster){
         return Heart.builder()
-                .user(user)
+                .communityUser(communityUser)
                 .poster(poster)
                 .status(true)
                 .build();
