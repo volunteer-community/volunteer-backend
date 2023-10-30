@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public interface PosterRepository extends JpaRepository<Poster, Long> {
 
+    //게시글 전체 조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterResponseDto(" +
             "p.id AS posterId, "+
             "p.title AS posterTitle, "+
@@ -30,7 +31,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     Page<PosterResponseDto> findAllPosterList(@Param("communityId") Long communityId, Pageable pageable);
 
 
-
+    //게시글 상세조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterDetailResponseDto(" +
             "p.id AS posterId, "+
             "p.title AS posterTitle, "+
@@ -44,4 +45,13 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "LEFT JOIN cu.community c " +
             "WHERE c.id = :communityId AND p.id = :posterId")
     Optional<PosterDetailResponseDto> findPosterDetailByCommunityIdAndPosterId(@Param("communityId") Long communityId, @Param("posterId") Long posterId);
+
+    //게시글이 존재 여부 확인
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
+            + "FROM Poster p "
+            + "LEFT JOIN p.communityUser cu "
+            + "LEFT JOIN cu.community c "
+            + "WHERE c.id = :communityId")
+    Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 }

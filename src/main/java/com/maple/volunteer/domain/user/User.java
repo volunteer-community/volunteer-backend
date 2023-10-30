@@ -47,4 +47,6 @@ public class User extends BaseTime {
         this.phoneNumber = phoneNumber;
         this.role = role;
     }
+
+
 }

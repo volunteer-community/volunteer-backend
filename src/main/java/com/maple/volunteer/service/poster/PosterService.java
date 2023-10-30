@@ -1,6 +1,7 @@
 package com.maple.volunteer.service.poster;
 
 import com.maple.volunteer.domain.communityuser.CommunityUser;
+import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.poster.*;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,8 +30,15 @@ public class PosterService {
     private final PosterRepository posterRepository;
     private final CommunityUserRepository communityUserRepository;
 
+    //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
     //전체조회
     public CommonResponseDto<Object> allPosterInquiry(Long communityId, int page, int size, String sortBy) {
+
+        Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
+
+        if (!posterExists.orElse(false)) {
+            throw new NotFoundException(ErrorCode.POSTER_NOT_FOUND);
+        }
 
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
                                                                   .descending());
