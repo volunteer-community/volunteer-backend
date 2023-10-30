@@ -172,4 +172,8 @@ public class S3UploadService {
 
         amazonS3.deleteObject(new DeleteObjectRequest(bucket + POSTER_PATH, substringImgPath));
     }
+
+    public void deleteImg(String fileName) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
 }

@@ -3,7 +3,8 @@ spring:
     include:
       - db
       - aws
-
+      - jwt
+      - oauth
   # ??? swagger ??? ?? ?? ????.
   mvc:
     pathmatch:
@@ -17,4 +18,3 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-

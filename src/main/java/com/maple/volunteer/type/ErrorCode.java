@@ -13,12 +13,22 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAIL("이미지 업로드에 실패 했습니다."),
     FILE_EXTENSION_NOT_FOUND("확장자가 올바르지 않습니다."),
     COMMUNITY_NOT_FOUND("커뮤니티를 찾을 수 없습니다."),
+
     MAX_PARTICIPANT_LOW_ERROR("참여 인원보다 낮거나 같으면 변경 할 수 없습니다."),
     COMMUNITY_RECRUITMENT_END_ERROR("모집 마감이 된 커뮤니티 입니다."),
     IMAGE_RESIZING_FAIL("이미지 리사이징에 실패 했습니다."),
     FAIL_CREATE_NEW_FILE("새로운 파일 생성에 실패 했습니다."),
     IMAGE_SIZE_READ_FAIL("이미지 크기를 읽는데 실패 했습니다."),
-    FILE_DELETE_FAIL("임시 파일 삭제에 실패 했습니다.");
+    FILE_DELETE_FAIL("임시 파일 삭제에 실패 했습니다."),
+
+
+    POSTER_NOT_FOUND("게시글을 찾을 수 없습니다."),
+    EXISTED_PHONE_NUMBER("이미 가입된 핸드폰 번호 입니다."),
+    USER_NOT_FOUND("유저 정보 조회에 실패 했습니다."),
+    TOKEN_NOT_VALIDATE("토큰이 만료되었습니다."),
+    TOKEN_NOT_FOUND("토큰 조회에 실패 했습니다."),
+    EXISTED_NICKNAME("이미 가입된 닉네임입니다.");
+
 
     private final String description;
 }

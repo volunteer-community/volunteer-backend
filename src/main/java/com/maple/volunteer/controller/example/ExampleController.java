@@ -36,6 +36,5 @@ public class ExampleController {
         result.setData((ExampleDto) commonResponseDto.getData());
 
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-
     }
 }
