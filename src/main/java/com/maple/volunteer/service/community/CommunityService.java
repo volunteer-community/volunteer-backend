@@ -3,6 +3,8 @@ package com.maple.volunteer.service.community;
 import com.maple.volunteer.domain.category.Category;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
+import com.maple.volunteer.domain.communityuser.CommunityUser;
+import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.community.*;
@@ -12,6 +14,8 @@ import com.maple.volunteer.repository.category.CategoryRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
 import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
+import com.maple.volunteer.repository.user.UserRepository;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.service.s3upload.S3UploadService;
 import com.maple.volunteer.type.CommunityStatus;
@@ -38,10 +42,15 @@ public class CommunityService {
     private final CommunityImgRepository communityImgRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     // 커뮤니티 생성
     @Transactional
-    public CommonResponseDto<Object> communityCreate(String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+    public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+
+        // 유저 닉네임 가져오기
+        String nickName = findUserNickname(accessToken);
 
         // 카테고리 가져오기
         Category category = categoryRepository.findByCategoryType(categoryType)
@@ -49,12 +58,13 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
 
-        // 토큰 값으로 Author 추가 필요
+        // 토큰 값으로 Author 추가
         // Author 값을 따로 넣어주기 위해 따로
         Community community = Community.builder()
                 .title(communityRequestDto.getCommunityTitle())
                 .participant(0)
                 .maxParticipant(communityRequestDto.getCommunityMaxParticipant())
+                .author(nickName)
                 .content(communityRequestDto.getCommunityContent())
                 .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
                 .location(communityRequestDto.getCommunityLocation())
@@ -224,14 +234,22 @@ public class CommunityService {
         return commonService.successResponse(SuccessCode.COMMUNITY_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, communityDetailAndImgResponseDto);
     }
 
-    // 커뮤니티 수정 (추후 로직 수정)
+    // 커뮤니티 수정
     @Transactional
-    public CommonResponseDto<Object> communityUpdate(Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+    public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+
+        // 유저 닉네임 가져오기
+        String nickName = findUserNickname(accessToken);
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
                 // 커뮤니티가 없으면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
+        if (!community.getAuthor().equals(nickName)) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_AUTHOR_NOT_EQUAL);
+        }
 
         // 이미지 url 값만 가져오기
         List<CommunityImgPathDto> communityImgPathList = communityImgRepository.findCommunityImgPathList(communityId);
@@ -239,7 +257,6 @@ public class CommunityService {
         // url 값 삭제
         for (CommunityImgPathDto communityImgPathDto : communityImgPathList) {
             String imgPath = communityImgPathDto.getCommunityImgPath();
-
 
             // s3 이미지 삭제
             s3UploadService.deleteCommunityImg(imgPath);
@@ -273,12 +290,20 @@ public class CommunityService {
 
     // 커뮤니티 삭제
     @Transactional
-    public CommonResponseDto<Object> communityDelete(Long communityId) {
+    public CommonResponseDto<Object> communityDelete(String accessToken, Long communityId) {
+
+        // 유저 닉네임 가져오기
+        String nickName = findUserNickname(accessToken);
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
                 // 커뮤니티가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
+        if (!community.getAuthor().equals(nickName)) {
+            throw new BadRequestException(ErrorCode.COMMUNITY_AUTHOR_NOT_EQUAL);
+        }
 
         // isDelete 값을 true로 변경
         community.communityDelete();
@@ -289,7 +314,10 @@ public class CommunityService {
     // 커뮤니티 참가
     // 유저 생성이 되면 유저를 넣어서 저장
     @Transactional
-    public CommonResponseDto<Object> communitySignup(Long communityId) {
+    public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
+
+        // 유저 가져오기
+        User user = findUser(accessToken);
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
@@ -300,6 +328,16 @@ public class CommunityService {
         if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
             throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
         }
+    
+        // 커뮤니티 유저 생성
+        CommunityUser communityUser = CommunityUser.builder()
+                .user(user)
+                .community(community)
+                .isWithdraw(false)
+                .build();
+
+        // 커뮤니티 유저 저장
+        communityUserRepository.save(communityUser);
 
         // 참가 인원 증가
         community.communityParticipantIncrease();
@@ -354,5 +392,30 @@ public class CommunityService {
 
             imgNum++;
         }
+    }
+
+    // 유저 닉네임 가져오기
+    private String findUserNickname(String accessToken) {
+        // 이메일 가져오기
+        String email = jwtUtil.getUserEmail(accessToken);
+
+        // 유저 가져오기
+        User user = userRepository.findByEmail(email)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        // 유저 닉네임 가져오기
+        return user.getNickname();
+    }
+
+    // 유저 가져오기
+    private User findUser(String accessToken) {
+        // 이메일 가져오기
+        String email = jwtUtil.getUserEmail(accessToken);
+
+        // 유저 가져오기
+        return userRepository.findByEmail(email)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

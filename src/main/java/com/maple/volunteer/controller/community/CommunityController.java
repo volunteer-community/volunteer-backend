@@ -22,12 +22,12 @@ public class CommunityController {
 
     // 커뮤니티 생성 API
     @PostMapping("/community")
-    public ResponseEntity<ResultDto<Void>> communityCreate(
+    public ResponseEntity<ResultDto<Void>> communityCreate(@RequestHeader("Authorization") String accessToken,
                                                            @RequestParam(value = "categoryType") String categoryType,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
                                                            @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
 
-        CommonResponseDto<Object> communityCreate = communityService.communityCreate(categoryType, multipartFileList, communityRequestDto);
+        CommonResponseDto<Object> communityCreate = communityService.communityCreate(accessToken, categoryType, multipartFileList, communityRequestDto);
         ResultDto<Void> result = ResultDto.in(communityCreate.getStatus(), communityCreate.getMessage());
 
         return ResponseEntity.status(communityCreate.getHttpStatus()).body(result);
@@ -94,11 +94,12 @@ public class CommunityController {
 
     // 커뮤니티 수정 API
     @PutMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> communityUpdate(@PathVariable(value = "communityId") Long communityId,
+    public ResponseEntity<ResultDto<Void>> communityUpdate(@RequestHeader("Authorization") String accessToken,
+                                                           @PathVariable(value = "communityId") Long communityId,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
                                                            @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
 
-        CommonResponseDto<Object> communityUpdate = communityService.communityUpdate(communityId, multipartFileList, communityRequestDto);
+        CommonResponseDto<Object> communityUpdate = communityService.communityUpdate(accessToken, communityId, multipartFileList, communityRequestDto);
         ResultDto<Void> result = ResultDto.in(communityUpdate.getStatus(), communityUpdate.getMessage());
 
         return ResponseEntity.status(communityUpdate.getHttpStatus()).body(result);
@@ -106,9 +107,10 @@ public class CommunityController {
 
     // 커뮤니티 삭제 API
     @DeleteMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> communityDelete(@PathVariable(value = "communityId") Long communityId) {
+    public ResponseEntity<ResultDto<Void>> communityDelete(@RequestHeader("Authorization") String accessToken,
+                                                           @PathVariable(value = "communityId") Long communityId) {
 
-        CommonResponseDto<Object> communityDelete = communityService.communityDelete(communityId);
+        CommonResponseDto<Object> communityDelete = communityService.communityDelete(accessToken, communityId);
         ResultDto<Void> result = ResultDto.in(communityDelete.getStatus(), communityDelete.getMessage());
 
         return ResponseEntity.status(communityDelete.getHttpStatus()).body(result);
@@ -116,9 +118,9 @@ public class CommunityController {
 
     // 커뮤니티 참가 API
     @PostMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> communitySignup(
+    public ResponseEntity<ResultDto<Void>> communitySignup(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable(value = "communityId") Long communityId) {
-        CommonResponseDto<Object> communitySignup = communityService.communitySignup(communityId);
+        CommonResponseDto<Object> communitySignup = communityService.communitySignup(accessToken, communityId);
         ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
 
         return ResponseEntity.status(communitySignup.getHttpStatus()).body(result);
