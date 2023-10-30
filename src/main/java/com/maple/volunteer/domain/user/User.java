@@ -37,9 +37,6 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     private List<CommunityUser> communityUserList;
 
-    @OneToMany(mappedBy = "user")
-    private List<Heart> heartList;
-
     @Builder
     public User(String email, String profileImg, String name, String phoneNumber, Role role,String nickname) {
         this.email = email;

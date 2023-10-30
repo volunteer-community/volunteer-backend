@@ -1,5 +1,6 @@
 package com.maple.volunteer.domain.heart;
 
+import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import lombok.Builder;
@@ -23,8 +24,8 @@ public class Heart {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "community_user_id")
+    private CommunityUser communityUser;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,13 +33,9 @@ public class Heart {
     private Poster poster;
 
     @Builder
-    public Heart(User user,Poster poster,Boolean status){
-
+    public Heart(CommunityUser communityUser, Poster poster, Boolean status){
         this.status = status;
-        this.user = user;
-        this.poster =poster;
+        this.communityUser = communityUser;
+        this.poster = poster;
     }
-
-
-
 }

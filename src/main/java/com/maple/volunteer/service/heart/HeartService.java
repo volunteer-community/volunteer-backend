@@ -53,7 +53,7 @@ public class HeartService {
 
             Heart newHeart = new Heart().builder()
                                         .status(true)
-                                        .user(user)
+                                        .communityUser(communityUser)
                                         .poster(poster)
                                         .build();
 

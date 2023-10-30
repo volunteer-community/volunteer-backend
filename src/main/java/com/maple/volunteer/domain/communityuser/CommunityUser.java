@@ -1,6 +1,8 @@
 package com.maple.volunteer.domain.communityuser;
 
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
+import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import lombok.Builder;
@@ -35,6 +37,12 @@ public class CommunityUser {
 
     @OneToMany(mappedBy = "communityUser")
     private List<Poster> posterList;
+
+    @OneToMany(mappedBy = "communityUser")
+    private List<Comment> commentList;
+
+    @OneToMany(mappedBy = "communityUser")
+    private List<Heart> heartList;
 
     @Builder
     public CommunityUser(User user, Boolean isWithdraw, Community community) {
