@@ -5,8 +5,11 @@ import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.user.SignupDto;
 import com.maple.volunteer.repository.login.LoginRepository;
+import com.maple.volunteer.dto.user.TokenDto;
+import com.maple.volunteer.exception.NotFoundException;
+import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.repository.user.UserRepository;
-import com.maple.volunteer.security.jwt.JwtUtil;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
@@ -23,70 +26,103 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final LoginRepository loginRepository;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
-    private final LoginRepository loginRepository;
 
-    public CommonResponseDto<Object> exampleGet() {
-        return commonService.successResponse(SuccessCode.EXAMPLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
-    }
+
 
     public ResponseEntity<?> login(String email, String role, String name, String picture) {
 
-        //1. 먼저 토큰 둘다 발행하기
-        GeneratedToken token = jwtUtil.generteToken(email, role);
+        // accessToken, refreshToken 발행
+        GeneratedToken token = jwtUtil.generateToken(email, role);
 
-        //2. 리프레시 토큰 유저pk로 가져오기
+        // 기존 refreshToken 변경
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
+        Login login = user.getLogin();
+        loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
-        //3-1. 리프레시 토큰 있으면?
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .build();
 
-        //리프레시토큰 만료되어있는지 확인하기
-        //만료 되었으면? 지우고 쌔거 저장하기
-        //아니면 말구
-
-
-
-        //3-2. 없으면?(없을수가있나?)
-        //쌔거 저장하기
-
-        //그다음 리프레시토큰, 엑세스토큰, 이메일?(을 보내줬었던가요?) 을 바디에 담아서 보내주기 (dto하나 만들 것)
-
-
-        return null;
+        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
-    public CommonResponseDto<Object> signup(SignupDto signupDto) {
-        if(!findByPhoneNumber(signupDto.getPhoneNumber())){
-            if(!findByNickName(signupDto.getName())){
-            User user = User.builder()
-                    .phoneNumber(signupDto.getPhoneNumber())
-                    .name(signupDto.getName())
-                    .role(signupDto.getRole())
-                    .email(signupDto.getEmail())
-                    .nickname(signupDto.getNickname())
-                    .build();
-            userRepository.save(user);
+    // 로그아웃
+    public CommonResponseDto<Object> logout(String accessToken) {
+
+        // 토큰 통해 email, get -> 유저 조회
+        String email = jwtUtil.getUserEmail(accessToken);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        // refreshToken -> null 변경
+        Login login = user.getLogin();
+        loginRepository.updateRefreshTokenById(login.getId(), null);
+
+        return commonService.successResponse(SuccessCode.USER_LOGOUT_SUCCESS.getDescription(), HttpStatus.OK, null);
+    }
+
+    // accessToken 갱신
+    public CommonResponseDto<Object> renewToken(String refreshToken) {
+
+        // 토큰 통해 유저 get
+        Login login = loginRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.TOKEN_NOT_FOUND));
+
+        User user = login.getUser();
+        String email = user.getEmail();
+        String role = user.getRole().getKey();
+
+        // accessToken, refreshToken 재발급
+        GeneratedToken token = jwtUtil.generateToken(email, role);
+
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .build();
+
+        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+    }
+
+        public CommonResponseDto<Object> signup(SignupDto signupDto) {
+            if(!findByPhoneNumber(signupDto.getPhoneNumber())){
+                if(!findByNickName(signupDto.getName())){
+                    User user = User.builder()
+                            .phoneNumber(signupDto.getPhoneNumber())
+                            .name(signupDto.getName())
+                            .role(signupDto.getRole())
+                            .email(signupDto.getEmail())
+                            .nickname(signupDto.getNickname())
+                            .build();
+                    userRepository.save(user);
 
 
-            return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
-            else{
-                //이미 가입한 닉네임
-                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
+                    return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
+                else{
+                    //이미 가입한 닉네임
+                    return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
+                }
+            }else {
+                //이미 가입한 핸드폰 번호
+                return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
             }
-        }else {
-            //이미 가입한 핸드폰 번호
-            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
         }
-    }
 
-    private boolean findByNickName(String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        return user != null;
-    }
+        private boolean findByNickName(String nickname) {
+            User user = userRepository.findByNickname(nickname);
+            return user != null;
+        }
 
-    private boolean findByPhoneNumber(String phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        return user != null;
-    }
+        private boolean findByPhoneNumber(String phoneNumber) {
+            User user = userRepository.findByPhoneNumber(phoneNumber);
+            return user != null;
+        }
 }

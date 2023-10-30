@@ -2,18 +2,15 @@ package com.maple.volunteer.controller.user;
 
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.dto.example.ExampleDto;
+import com.maple.volunteer.dto.user.LogoutDto;
+import com.maple.volunteer.dto.user.NewTokenDto;
 import com.maple.volunteer.dto.user.SignupDto;
-import com.maple.volunteer.security.oauth2.CustomOAuth2UserService;
+import com.maple.volunteer.dto.user.TokenDto;
 import com.maple.volunteer.service.user.UserService;
 import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,13 +29,36 @@ public class UserController {
 
     }
 
-    //로그인하기
-    @GetMapping("/login")
-    public ResponseEntity<?> memberLogin(@RequestParam("email") String email,
-                                         @RequestParam("role") String role,
-                                         @RequestParam("name") String name,
-                                         @RequestParam("picture") String picture) {
+    //로그인
+    @PostMapping("/login")
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+                                                           @RequestParam("role") String role) {
 
-        return userService.login(email, role,name,picture);
+        CommonResponseDto<Object> login = userService.login(email, role);
+        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
+        result.setData((TokenDto) login.getData());
+
+        return ResponseEntity.status(login.getHttpStatus()).body(result);
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<ResultDto<Void>> userLogout(@RequestHeader("Authorization") String accessToken){
+
+        CommonResponseDto<Object> logout = userService.logout(accessToken);
+        ResultDto<Void> result = ResultDto.in(logout.getStatus(), logout.getMessage());
+
+        return ResponseEntity.status(logout.getHttpStatus()).body(result);
+    }
+
+    // 토큰 갱신
+    @PostMapping("/newToken")
+    public ResponseEntity<ResultDto<TokenDto>> renewToken(@RequestHeader("Authorization") String refreshToken){
+
+        CommonResponseDto<Object> renewToken = userService.renewToken(refreshToken);
+        ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
+        result.setData((TokenDto) renewToken.getData());
+
+        return ResponseEntity.status(renewToken.getHttpStatus()).body(result);
     }
 }

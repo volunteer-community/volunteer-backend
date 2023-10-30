@@ -1,4 +1,4 @@
-package com.maple.volunteer.security.jwt;
+package com.maple.volunteer.security.jwt.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.volunteer.security.jwt.dto.ResponseStatusDto;

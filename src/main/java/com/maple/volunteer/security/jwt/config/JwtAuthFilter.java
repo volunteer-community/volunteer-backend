@@ -1,12 +1,11 @@
-package com.maple.volunteer.security.jwt;
+package com.maple.volunteer.security.jwt.config;
 
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.repository.user.UserRepository;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.SecurityUserDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             SecurityUserDto securityUserDto = SecurityUserDto.builder()
                     .id(findUser.getId())
                     .email(findUser.getEmail())
-                    .role((findUser.getRole().USER))
+                    .role((findUser.getRole()))
                     .nickname(findUser.getNickname())
                     .build();
 
@@ -63,6 +62,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     public Authentication getAuthentication(SecurityUserDto securityUserDto) {
         return new UsernamePasswordAuthenticationToken(securityUserDto, "",
-                List.of(new SimpleGrantedAuthority(securityUserDto.getRole().USER.getKey())));
+                List.of(new SimpleGrantedAuthority(securityUserDto.getRole().getKey())));
     }
 }
