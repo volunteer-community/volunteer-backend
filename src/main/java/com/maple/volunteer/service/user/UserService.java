@@ -3,6 +3,7 @@ package com.maple.volunteer.service.user;
 import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
+import com.maple.volunteer.dto.user.NewUserDto;
 import com.maple.volunteer.dto.user.SignupDto;
 import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.dto.user.TokenDto;
