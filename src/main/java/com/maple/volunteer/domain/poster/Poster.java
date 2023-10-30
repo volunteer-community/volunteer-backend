@@ -8,6 +8,7 @@ import com.maple.volunteer.domain.posterimg.PosterImg;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Poster extends BaseTime {
@@ -27,7 +29,9 @@ public class Poster extends BaseTime {
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
     private Integer heartCount;  // 게시글 좋아요 수
+
     //댓글 개수 추가해야함
+
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,11 +62,14 @@ public class Poster extends BaseTime {
     }
 
     public void heartDecrease() {
+
         if(this.heartCount > 0){
             this.heartCount -= 1;
         }else {
             this.heartCount = 0;
         }
+
+        this.heartCount -= 1;
 
     }
 }
