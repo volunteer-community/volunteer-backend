@@ -27,6 +27,8 @@ public class User extends BaseTime {
     private String name;    // 유저 이름
     private String phoneNumber; // 유저 핸드폰 번호
     private String nickname; // 유저 닉네임
+    private boolean isDeleted; //탈퇴 유무
+
 
     @Enumerated(EnumType.STRING)
     private Role role;  // 유저 역할
@@ -45,6 +47,7 @@ public class User extends BaseTime {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.nickname = nickname;
+        this.isDeleted = false;
     }
 
 
