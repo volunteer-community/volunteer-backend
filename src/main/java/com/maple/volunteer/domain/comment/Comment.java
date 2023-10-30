@@ -1,6 +1,7 @@
 package com.maple.volunteer.domain.comment;
 
 import com.maple.volunteer.domain.common.BaseTime;
+import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.poster.Poster;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,11 +26,16 @@ public class Comment extends BaseTime {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "community_user_id")
+    private CommunityUser communityUser;
+
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
     private Poster poster;
 
     @Builder
-    public Comment(String content, String author, Poster poster) {
+    public Comment(String content, String author, Boolean isDelete, CommunityUser communityUser, Poster poster) {
         this.content = content;
         this.author = author;
         this.isDelete = isDelete;

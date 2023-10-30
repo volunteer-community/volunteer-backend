@@ -50,7 +50,8 @@ public class Poster extends BaseTime {
     @OneToMany(mappedBy = "poster")
     private List<Heart> heartList;
 
-  
+
+    @Builder
     public Poster(String title, String content, String author, Integer heartCount, Boolean isDelete, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
