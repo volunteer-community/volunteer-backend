@@ -55,4 +55,9 @@ public class CommunityUser {
     public void communityWithdraw() {
         this.isWithdraw = true;
     }
+
+    // 커뮤니티 재가입
+    public void communityReSign() {
+        this.isWithdraw = false;
+    }
 }

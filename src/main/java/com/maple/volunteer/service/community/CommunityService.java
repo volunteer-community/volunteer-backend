@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -251,6 +252,10 @@ public class CommunityService {
             throw new BadRequestException(ErrorCode.COMMUNITY_AUTHOR_NOT_EQUAL);
         }
 
+        if (community.getParticipant() > communityRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
+            throw new BadRequestException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
+        }
+
         // 이미지 url 값만 가져오기
         List<CommunityImgPathDto> communityImgPathList = communityImgRepository.findCommunityImgPathList(communityId);
 
@@ -265,22 +270,18 @@ public class CommunityService {
         // db에 url 삭제
         communityImgRepository.deleteByCommunityId(communityId);
 
-        if (community.getParticipant() > communityRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
-            throw new BadRequestException(ErrorCode.MAX_PARTICIPANT_LOW_ERROR);
-        }
+        // 받아온 데이터 업데이트
+        community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
+                communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
+                community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
         if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
             community.communityRecruitmentEnd();
         }
 
-        if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) { // 상태가 모집 마감일 때
+        if (community.getParticipant() < community.getMaxParticipant() && community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) { // 상태가 모집 마감일 때
             community.communityRecruitmentIng();
         }
-
-        // 받아온 데이터 업데이트
-        community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
-                communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
-                community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
         // 이미지 새로 업로드
         createCommunityImage(multipartFileList, community);
@@ -319,48 +320,97 @@ public class CommunityService {
         // 유저 가져오기
         User user = findUser(accessToken);
 
-        // 커뮤니티 가져오기
-        Community community = communityRepository.findById(communityId)
-                // 커뮤니티가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+        // 유저 ID 가져오기
+        Long userId = user.getId();
 
-        // 현재 상태가 모집 마감이면 오류 반환
-        if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
-            throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
+        // 커뮤니티 재가입 회원인지
+        Optional<CommunityUser> communityUserOptional = communityUserRepository.findByUserIdAndCommunityId(userId, communityId);
+
+        if (communityUserOptional.isPresent()) {
+            CommunityUser communityUser = communityUserOptional.get();
+
+            // 커뮤니티 가져오기
+            Community community = communityUser.getCommunity();
+
+            // 현재 상태가 모집 마감이면 오류 반환
+            if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
+                throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
+            }
+
+            // 커뮤니티 참가 인원 증가
+            community.communityParticipantIncrease();
+
+            // 참가 인원 증가 후 모집 인원과 동일해지면 모집 마감으로 변경
+            if (community.getParticipant().equals(community.getMaxParticipant())) {
+                community.communityRecruitmentEnd();
+            }
+
+            communityUser.communityReSign();
+
+            return commonService.successResponse(SuccessCode.COMMUNITY_RE_SIGNUP_SUCCESS.getDescription(), HttpStatus.OK, null);
+
+        // 재가입 회원이 아닐 경우
+        } else {
+
+            // 커뮤니티 가져오기
+            Community community = communityRepository.findById(communityId)
+                    // 커뮤니티가 없다면 오류 반환
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+            // 현재 상태가 모집 마감이면 오류 반환
+            if (community.getStatus().equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
+                throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
+            }
+
+            // 커뮤니티 유저 생성
+            CommunityUser communityUser = CommunityUser.builder()
+                    .user(user)
+                    .community(community)
+                    .isWithdraw(false)
+                    .build();
+
+            // 커뮤니티 유저 저장
+            communityUserRepository.save(communityUser);
+
+            // 참가 인원 증가
+            community.communityParticipantIncrease();
+
+            // 참가 인원 증가 후 모집 인원과 동일해지면 모집 마감으로 변경
+            if (community.getParticipant().equals(community.getMaxParticipant())) {
+                community.communityRecruitmentEnd();
+            }
+
+            return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP_SUCCESS.getDescription(), HttpStatus.CREATED, null);
         }
-    
-        // 커뮤니티 유저 생성
-        CommunityUser communityUser = CommunityUser.builder()
-                .user(user)
-                .community(community)
-                .isWithdraw(false)
-                .build();
-
-        // 커뮤니티 유저 저장
-        communityUserRepository.save(communityUser);
-
-        // 참가 인원 증가
-        community.communityParticipantIncrease();
-
-        // 참가 인원 증가 후 모집 인원과 동일해지면 모집 마감으로 변경
-        if (community.getParticipant().equals(community.getMaxParticipant())) {
-            community.communityRecruitmentEnd();
-        }
-
-        return commonService.successResponse(SuccessCode.COMMUNITY_SIGNUP_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
-    // 커뮤니티 탈퇴
+    // 커뮤니티 나가기
     @Transactional
-    public CommonResponseDto<Object> communityWithdraw(Long communityId) {
+    public CommonResponseDto<Object> communityWithdraw(String accessToken, Long communityId) {
+
+        // 유저 가져오기
+        User user = findUser(accessToken);
+
+        // 유저 ID 가져오기
+        Long userId = user.getId();
 
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
+        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(userId, communityId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
+        // 커뮤니티 가져오기
+        Community community = communityUser.getCommunity();
 
         // 해당 레코드의 isWithdraw를 true로 변환
+        communityUser.communityWithdraw();
 
         // 참가 인원 감소
+        community.communityParticipantDecrease();
 
         // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
+        if (community.getParticipant() < community.getMaxParticipant()) {
+            community.communityRecruitmentIng();
+        }
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }

@@ -25,6 +25,7 @@ public enum SuccessCode {
     COMMUNITY_UPDATE_SUCCESS("커뮤니티 수정에 성공 했습니다."),
     COMMUNITY_DELETE_SUCCESS("커뮤니티 삭제에 성공 했습니다."),
     COMMUNITY_SIGNUP_SUCCESS("커뮤니티 참가에 성공 했습니다."),
+    COMMUNITY_RE_SIGNUP_SUCCESS("커뮤니티 재참가에 성공 했습니다."),
     COMMUNITY_WITHDRAW_SUCCESS("커뮤니티 탈퇴에 성공 했습니다."),
 
     // 게시글
