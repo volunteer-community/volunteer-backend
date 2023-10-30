@@ -17,7 +17,7 @@ public class PaginationDto {
     public PaginationDto(Integer totalPages, Long totalElements, Integer pageNo, Boolean isLastPage) {
         this.totalPages = totalPages;
         this.totalElements = totalElements;
-        this.pageNo = pageNo;
+        this.pageNo = pageNo + 1;
         this.isLastPage = isLastPage;
     }
 }

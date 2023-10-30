@@ -22,12 +22,12 @@ public class CommunityController {
 
     // 커뮤니티 생성 API
     @PostMapping("/community")
-    public ResponseEntity<ResultDto<Void>> communityCreate(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<ResultDto<Void>> communityCreate(
                                                            @RequestParam(value = "categoryType") String categoryType,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
                                                            @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
 
-        CommonResponseDto<Object> communityCreate = communityService.communityCreate(accessToken, categoryType, multipartFileList, communityRequestDto);
+        CommonResponseDto<Object> communityCreate = communityService.communityCreate(categoryType, multipartFileList, communityRequestDto);
         ResultDto<Void> result = ResultDto.in(communityCreate.getStatus(), communityCreate.getMessage());
 
         return ResponseEntity.status(communityCreate.getHttpStatus()).body(result);
@@ -37,7 +37,7 @@ public class CommunityController {
     @GetMapping("/community")
     public ResponseEntity<ResultDto<CommunityListResponseDto>> allCommunityInquiry(@RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                    @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                                                   @RequestParam(value = "sortBy", defaultValue = "modifiedAt", required = false) String sortBy) {
+                                                                                   @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
 
         CommonResponseDto<Object> allCommunityInquiry = communityService.allCommunityInquiry(page, size, sortBy);
         ResultDto<CommunityListResponseDto> result = ResultDto.in(allCommunityInquiry.getStatus(), allCommunityInquiry.getMessage());
@@ -48,25 +48,25 @@ public class CommunityController {
 
     // 카테고리 별 커뮤니티 리스트 API (페이지 네이션)
     @GetMapping("/community/category")
-    public ResponseEntity<ResultDto<CommunityListResponseDto>> categoryCommunityInquiry(@RequestParam(value = "categoryType") String categoryType,
+    public ResponseEntity<ResultDto<CommunityListResponseDto>> categoryCommunityInquiry(@RequestParam(value = "categoryId") Long categoryId,
                                                                                         @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                         @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                                                        @RequestParam(value = "sortBy", defaultValue = "modifiedAt", required = false) String sortBy) {
+                                                                                        @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
 
-        CommonResponseDto<Object> categoryCommunityInquiry = communityService.categoryCommunityInquiry(categoryType, page, size, sortBy);
+        CommonResponseDto<Object> categoryCommunityInquiry = communityService.categoryCommunityInquiry(categoryId, page, size, sortBy);
         ResultDto<CommunityListResponseDto> result = ResultDto.in(categoryCommunityInquiry.getStatus(), categoryCommunityInquiry.getMessage());
         result.setData((CommunityListResponseDto) categoryCommunityInquiry.getData());
 
         return ResponseEntity.status(categoryCommunityInquiry.getHttpStatus()).body(result);
     }
 
-    // 커뮤니티 리스트 검색 API (페이지 네이션) -> 커뮤니티 제목, 작성자, 활동 장소(보류)
+    // 커뮤니티 리스트 검색 API (페이지 네이션) -> 커뮤니티 제목, 작성자
     @GetMapping("/community/search/{type}")
     public ResponseEntity<ResultDto<CommunityListResponseDto>> searchCommunityInquiry(@PathVariable(value = "type") String type,
                                                                                       @RequestParam(value = "keyword") String keyword,
                                                                                       @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                       @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                                                      @RequestParam(value = "sortBy", defaultValue = "modifiedAt", required = false) String sortBy) {
+                                                                                      @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
         CommonResponseDto<Object> searchCommunityInquiry;
 
         if (type.equals("title")) {
@@ -83,12 +83,53 @@ public class CommunityController {
 
     // 커뮤니티 상세 보기 API
     @GetMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<CommunityDetailAndImgResponseDto>> communityDetailInquiry(@PathVariable Long communityId) {
+    public ResponseEntity<ResultDto<CommunityDetailAndImgResponseDto>> communityDetailInquiry(@PathVariable(value = "communityId") Long communityId) {
 
         CommonResponseDto<Object> communityDetailInquiry = communityService.communityDetailInquiry(communityId);
         ResultDto<CommunityDetailAndImgResponseDto> result = ResultDto.in(communityDetailInquiry.getStatus(), communityDetailInquiry.getMessage());
         result.setData((CommunityDetailAndImgResponseDto) communityDetailInquiry.getData());
 
         return ResponseEntity.status(communityDetailInquiry.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 수정 API
+    @PutMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityUpdate(@PathVariable(value = "communityId") Long communityId,
+                                                           @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
+                                                           @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
+
+        CommonResponseDto<Object> communityUpdate = communityService.communityUpdate(communityId, multipartFileList, communityRequestDto);
+        ResultDto<Void> result = ResultDto.in(communityUpdate.getStatus(), communityUpdate.getMessage());
+
+        return ResponseEntity.status(communityUpdate.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 삭제 API
+    @DeleteMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityDelete(@PathVariable(value = "communityId") Long communityId) {
+
+        CommonResponseDto<Object> communityDelete = communityService.communityDelete(communityId);
+        ResultDto<Void> result = ResultDto.in(communityDelete.getStatus(), communityDelete.getMessage());
+
+        return ResponseEntity.status(communityDelete.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 참가 API
+    @PostMapping("/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communitySignup(
+                                                           @PathVariable(value = "communityId") Long communityId) {
+        CommonResponseDto<Object> communitySignup = communityService.communitySignup(communityId);
+        ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
+
+        return ResponseEntity.status(communitySignup.getHttpStatus()).body(result);
+    }
+
+    // 커뮤니티 탈퇴 API (수정 예정)
+    @DeleteMapping("/community/withdraw/{communityId}")
+    public ResponseEntity<ResultDto<Void>> communityWithdraw(@PathVariable(value = "communityId") Long communityId) {
+        CommonResponseDto<Object> communityWithdraw = communityService.communityWithdraw(communityId);
+        ResultDto<Void> result = ResultDto.in(communityWithdraw.getStatus(), communityWithdraw.getMessage());
+
+        return ResponseEntity.status(communityWithdraw.getHttpStatus()).body(result);
     }
 }

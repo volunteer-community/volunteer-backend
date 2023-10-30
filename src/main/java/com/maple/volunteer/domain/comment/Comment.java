@@ -21,6 +21,7 @@ public class Comment extends BaseTime {
 
     private String content; // 댓글 내용
     private String author; // 작성자
+    private Boolean isDelete;   // 댓글 삭제 유무
 
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,8 +2,8 @@ package com.maple.volunteer.exception;
 
 import com.maple.volunteer.type.ErrorCode;
 
-public class UploadException extends RuntimeException {
-    public UploadException(ErrorCode errorCode) {
+public class BadRequestException extends RuntimeException {
+    public BadRequestException(ErrorCode errorCode) {
         super(errorCode.getDescription());
     }
 }

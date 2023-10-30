@@ -54,6 +54,9 @@ dependencies {
     // AWS
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    // Thumbnailator (이미지 리사이징)
+    implementation 'net.coobird:thumbnailator:0.4.14'
+
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
 

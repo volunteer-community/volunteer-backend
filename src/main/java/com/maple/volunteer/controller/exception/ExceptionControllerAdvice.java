@@ -1,9 +1,9 @@
 package com.maple.volunteer.controller.exception;
 
+
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.exception.ExampleException;
-import com.maple.volunteer.exception.NotFoundException;
+import com.maple.volunteer.exception.*;
 import com.maple.volunteer.service.common.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,10 +29,19 @@ public class ExceptionControllerAdvice {
 
     // NotFoundException
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ResultDto<Void>> exampleException(NotFoundException nfe) {
-        CommonResponseDto<Object> notFoundReponse = commonService.errorResponse(nfe.getMessage(), HttpStatus.NOT_FOUND, null);
-        ResultDto<Void> result = ResultDto.in(notFoundReponse.getStatus(), notFoundReponse.getMessage());
+    public ResponseEntity<ResultDto<Void>> notFoundException(NotFoundException nfe) {
+        CommonResponseDto<Object> notFoundException = commonService.errorResponse(nfe.getMessage(), HttpStatus.NOT_FOUND, null);
+        ResultDto<Void> result = ResultDto.in(notFoundException.getStatus(), notFoundException.getMessage());
 
-        return ResponseEntity.status(notFoundReponse.getHttpStatus()).body(result);
+        return ResponseEntity.status(notFoundException.getHttpStatus()).body(result);
+    }
+
+    // BadRequestException
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ResultDto<Void>> badRequestException(BadRequestException bre) {
+        CommonResponseDto<Object> badRequestException = commonService.errorResponse(bre.getMessage(), HttpStatus.BAD_REQUEST, null);
+        ResultDto<Void> result = ResultDto.in(badRequestException.getStatus(), badRequestException.getMessage());
+
+        return ResponseEntity.status(badRequestException.getHttpStatus()).body(result);
     }
 }

@@ -28,6 +28,9 @@ public class Poster extends BaseTime {
     private String title;   // 게시글 제목
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
+
+    private Boolean isDelete; // 게시글 삭제 유무
+
     private Integer heartCount;  // 게시글 좋아요 수
 
     //댓글 개수 추가해야함
@@ -47,13 +50,13 @@ public class Poster extends BaseTime {
     @OneToMany(mappedBy = "poster")
     private List<Heart> heartList;
 
-
-    @Builder
-    public Poster(String title, String content, String author, Integer heartCount, CommunityUser communityUser) {
+  
+    public Poster(String title, String content, String author, Integer heartCount, Boolean isDelete, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.heartCount = heartCount;
+        this.isDelete = isDelete;
         this.communityUser = communityUser;
     }
 
@@ -70,6 +73,10 @@ public class Poster extends BaseTime {
         }
 
         this.heartCount -= 1;
+    }
 
+    // 게시글 삭제
+    public void posterDelete() {
+        this.isDelete = true;
     }
 }
