@@ -35,7 +35,10 @@ public enum ErrorCode {
     USER_NOT_FOUND("유저 정보 조회에 실패 했습니다."),
     TOKEN_NOT_VALIDATE("토큰이 만료되었습니다."),
     TOKEN_NOT_FOUND("토큰 조회에 실패 했습니다."),
-    EXISTED_NICKNAME("이미 가입된 닉네임입니다.");
+    EXISTED_NICKNAME("이미 가입된 닉네임입니다."),
+
+    // 댓글
+    COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다.");
 
 
     private final String description;

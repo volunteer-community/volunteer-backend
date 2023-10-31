@@ -37,9 +37,13 @@ public enum SuccessCode {
     POSTER_UPDATE_SUCCESS("게시글 수정에 성공 했습니다."),
     POSTER_DELETE_SUCCESS("게시글 삭제에 성공 했습니다."),
 
+    //댓글
+    COMMENT_CREATE_SUCCESS("댓글 등록에 성공 했습니다."),
+    COMMENT_UPDATE_SUCCESS("댓글 수정에 성공 했습니다."),
+
     // 좋아요
-    HEART_TOGGLE_SUCCESS("좋아요 처리에 성공 하였습니다"),
-    //HEART_CANCLE_SUCCESS("좋아요를 취소하는데 성공 했습니다");
+    HEART_TOGGLE_SUCCESS("좋아요 처리에 성공 했습니다."),
+
 
     // 유저
     USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),

@@ -74,4 +74,21 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void PosterDeleteByUserId(@Param("userId") Long userId);
 
+    // 좋아요 개수 증가
+    @Query("UPDATE Poster p "
+            + " SET p.heartCount = p.heartCount +1"
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountIncrease(@Param("posterId") Long posterId);
+
+
+    // 좋아요 개수 감소
+    @Query("UPDATE Poster p "
+            + " SET p.heartCount = CASE WHEN p.heartCount > 0"
+            + " THEN (p.heartCount -1)"
+            + " ELSE 0 END"
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountDecrease(@Param("posterId") Long posterId);
+
 }
