@@ -21,6 +21,7 @@ public enum ErrorCode {
     IMAGE_SIZE_READ_FAIL("이미지 크기를 읽는데 실패 했습니다."),
     FILE_DELETE_FAIL("임시 파일 삭제에 실패 했습니다."),
 
+
     // 커뮤니티
     COMMUNITY_NOT_FOUND("커뮤니티를 찾을 수 없습니다."),
     MAX_PARTICIPANT_LOW_ERROR("참여 인원보다 낮으면 변경 할 수 없습니다."),
