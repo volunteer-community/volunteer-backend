@@ -40,6 +40,7 @@ public enum SuccessCode {
     //댓글
     COMMENT_CREATE_SUCCESS("댓글 등록에 성공 했습니다."),
     COMMENT_UPDATE_SUCCESS("댓글 수정에 성공 했습니다."),
+    COMMENT_DELETE_SUCCESS("댓글 삭제에 성공 했습니다."),
 
     // 좋아요
     HEART_TOGGLE_SUCCESS("좋아요 처리에 성공 했습니다."),

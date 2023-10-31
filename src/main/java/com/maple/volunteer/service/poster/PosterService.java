@@ -1,5 +1,6 @@
 package com.maple.volunteer.service.poster;
 
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.poster.Poster;
 
@@ -171,6 +172,12 @@ public class PosterService {
 
     }
 
-
-
+    // 게시글 posterId에 해당 되는 글만 삭제
+    @Transactional
+    public CommonResponseDto<Object> posterDeleteByPosterId(Long posterId) {
+        Poster poster = posterRepository.findById(posterId)
+                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+        posterRepository.posterDeleteByPosterId(posterId);
+        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
+    }
 }

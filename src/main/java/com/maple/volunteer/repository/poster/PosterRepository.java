@@ -31,7 +31,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "LEFT JOIN p.posterImgList pi "+
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.community c " +
-            "WHERE c.id = :communityId ")
+            "WHERE c.id = :communityId AND p.isDelete = false")
     Page<PosterResponseDto> findAllPosterList(@Param("communityId") Long communityId, Pageable pageable);
 
 
@@ -56,7 +56,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + "FROM Poster p "
             + "LEFT JOIN p.communityUser cu "
             + "LEFT JOIN cu.community c "
-            + "WHERE c.id = :communityId")
+            + "WHERE c.id = :communityId AND p.isDelete = false")
     Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 
 
@@ -98,5 +98,14 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + " WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
+
+
+    // 게시글 posterId에 해당 되는 글만 삭제
+    @Query("UPDATE Poster p "
+            + " SET p.isDelete = true "
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void posterDeleteByPosterId(@Param("posterId") Long posterId);
+
 
 }

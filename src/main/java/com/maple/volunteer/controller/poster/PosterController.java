@@ -72,6 +72,15 @@ public class PosterController {
         return ResponseEntity.status(posterUpdate.getHttpStatus()).body(result);
     }
 
+    // 게시글 posterId에 해당 되는 글만 삭제
+    @DeleteMapping("/poster/{posterId}")
+    public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@PathVariable Long posterId) {
 
+        CommonResponseDto<Object> posterDelete = posterService.posterDeleteByPosterId(posterId);
+        ResultDto<Void> result = ResultDto.in(posterDelete.getStatus(), posterDelete.getMessage());
+
+        return ResponseEntity.status(posterDelete.getHttpStatus())
+                             .body(result);
+    }
 
 }
