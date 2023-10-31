@@ -15,6 +15,6 @@ public class SignupDto {
     private String provider;
     private String nickname;
     private String phoneNumber;
-    private String profileImg;
+    private String picture;
     private Role role;
 }
