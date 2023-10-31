@@ -49,7 +49,8 @@ public class SecurityConfig {
                 .oauth2Login() // OAuth2 로그인 설정
                 .successHandler(myAuthenticationSuccessHandler)
                 .failureHandler(myAuthenticationFailureHandler)
-                .userInfoEndpoint().userService(customOAuth2UserService);
+                .userInfoEndpoint().userService(customOAuth2UserService)
+                ;
 
 
         return httpSecurity

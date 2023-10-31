@@ -2,15 +2,15 @@ package com.maple.volunteer.controller.user;
 
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.dto.user.LogoutDto;
-import com.maple.volunteer.dto.user.NewTokenDto;
-import com.maple.volunteer.dto.user.SignupDto;
-import com.maple.volunteer.dto.user.TokenDto;
+import com.maple.volunteer.dto.user.*;
 import com.maple.volunteer.service.user.UserService;
 import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,22 +19,29 @@ public class UserController {
 
     private final UserService userService;
 
-    //처음 로그인 한 회원 추가정보 받고 회원가입하기
+    // 처음 로그인 한 회원 이메일과 프사 넘겨주기
+    @GetMapping("/addInfo")
+    public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email, @RequestParam("picture") String picture){
+        CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture);
+        ResultDto<NewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((NewUserDto) commonResponseDto.getData());
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
+
+    // 회원가입 시키기기
     @PostMapping("/signup")
     public ResponseEntity<ResultDto<SignupDto>> exampleGet(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<SignupDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
         result.setData((SignupDto) commonResponseDto.getData());
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-
     }
 
-    //로그인
+    // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
-                                                           @RequestParam("role") String role) {
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email){
 
-        CommonResponseDto<Object> login = userService.login(email, role);
+        CommonResponseDto<Object> login = userService.login(email);
         ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
         result.setData((TokenDto) login.getData());
 
