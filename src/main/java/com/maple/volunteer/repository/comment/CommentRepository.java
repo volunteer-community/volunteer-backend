@@ -37,4 +37,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             + " WHERE cm.id = :commentId")
     @Modifying(clearAutomatically = true)
     void updateCommentContent(@Param("commentId") Long commentId, @Param("content") String content);
+    
+    // 커뮤니티 ID에 해당하는 댓글 삭제
+    @Query("UPDATE Comment c " +
+            "SET c.isDelete = true " +
+            "WHERE c.communityUser.community.id = :communityId ")
+    @Modifying(clearAutomatically = true)
+    void CommentDeleteByCommunityId(@Param("communityId") Long communityId);
+
+    // 유저 ID에 해당하는 댓글 삭제
+    @Query("UPDATE Comment c " +
+            "SET c.isDelete = true " +
+            "WHERE c.communityUser.user.id = :userId ")
+    @Modifying(clearAutomatically = true)
+    void CommentDeleteByUserId(@Param("userId") Long userId);
 }

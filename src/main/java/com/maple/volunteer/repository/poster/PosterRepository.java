@@ -8,8 +8,6 @@ import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
 
-import org.springframework.data.domain.PageRequest;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -62,6 +60,20 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 
 
+    // 커뮤니티 ID에 해당하는 모든 게시글 삭제
+    @Query("UPDATE Poster p " +
+            "SET p.isDelete = true " +
+            "WHERE p.communityUser.community.id = :communityId ")
+    @Modifying(clearAutomatically = true)
+    void PosterDeleteByCommunityId(@Param("communityId") Long communityId);
+
+    // 유저 ID에 해당하는 모든 게시글 삭제
+    @Query("UPDATE Poster p " +
+            "SET p.isDelete = true " +
+            "WHERE p.communityUser.user.id = :userId ")
+    @Modifying(clearAutomatically = true)
+    void PosterDeleteByUserId(@Param("userId") Long userId);
+
     // 좋아요 개수 증가
     @Query("UPDATE Poster p "
             + " SET p.heartCount = p.heartCount +1"
@@ -78,4 +90,5 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + " WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
+
 }

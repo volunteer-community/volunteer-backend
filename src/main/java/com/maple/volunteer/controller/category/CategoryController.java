@@ -37,8 +37,7 @@ public class CategoryController {
 
     // 카테고리 변경 API
     @PatchMapping("/category/{categoryId}")
-    public ResponseEntity<ResultDto<Void>> categoryUpdate(
-                                                          @PathVariable(value = "categoryId") Long categoryId,
+    public ResponseEntity<ResultDto<Void>> categoryUpdate(@PathVariable(value = "categoryId") Long categoryId,
                                                           @RequestBody CategoryRequestDto categoryRequestDto) {
         CommonResponseDto<Object> categoryUpdate = categoryService.categoryUpdate(categoryId, categoryRequestDto);
         ResultDto<Void> result = ResultDto.in(categoryUpdate.getStatus(), categoryUpdate.getMessage());
