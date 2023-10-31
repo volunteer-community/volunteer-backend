@@ -78,4 +78,8 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + " WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
+
+
+
+
 }

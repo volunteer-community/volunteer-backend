@@ -40,7 +40,7 @@ public class CommentService {
 
         //TODO: userID & communityID & iswithDraw(false)
         CommunityUser communityUser = communityUserRepository.findByCommunityId(communityId)
-                                                             .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITYUSER_NOT_FOUND));
+                                                             .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Poster poster = posterRepository.findById(posterId)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
@@ -83,8 +83,8 @@ public class CommentService {
 
     }
 
-    @Transactional
     // 댓글 수정
+    @Transactional
     public CommonResponseDto<Object> commentUpdate(Long commentId, CommentUpdateDto commentUpdateDto) {
 
         Comment comment = commentRepository.findById(commentId)
@@ -94,5 +94,15 @@ public class CommentService {
         commentRepository.updateCommentContent(commentId, content);
 
         return commonService.successResponse(SuccessCode.COMMENT_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
+    }
+
+    // commentId에 해당되는 댓글 삭제
+    @Transactional
+    public CommonResponseDto<Object> commentDeleteByCommentId(Long commentId) {
+
+        Comment comment = commentRepository.findById(commentId)
+                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+        commentRepository.commentDeleteByCommentId(commentId);
+        return commonService.successResponse(SuccessCode.COMMENT_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
     }
 }
