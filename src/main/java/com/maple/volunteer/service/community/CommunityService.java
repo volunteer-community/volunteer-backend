@@ -324,11 +324,13 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
 
-        // 유저 가져오기
-        User user = findUser(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
-        // 유저 ID 가져오기
-        Long userId = user.getId();
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 커뮤니티 재가입 회원인지
         Optional<CommunityUser> communityUserOptional = communityUserRepository.findByUserIdAndCommunityId(userId, communityId);
@@ -396,11 +398,8 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityWithdraw(String accessToken, Long communityId) {
 
-        // 유저 가져오기
-        User user = findUser(accessToken);
-
-        // 유저 ID 가져오기
-        Long userId = user.getId();
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(userId, communityId)
@@ -452,26 +451,15 @@ public class CommunityService {
 
     // 유저 닉네임 가져오기
     private String findUserNickname(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 유저 가져오기
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 // 유저가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 유저 닉네임 가져오기
         return user.getNickname();
-    }
-
-    // 유저 가져오기
-    private User findUser(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
-
-        // 유저 가져오기
-        return userRepository.findByEmail(email)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
