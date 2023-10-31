@@ -16,13 +16,6 @@ public enum ErrorCode {
     // 이미지 업로드
     IMAGE_UPLOAD_FAIL("이미지 업로드에 실패 했습니다."),
     FILE_EXTENSION_NOT_FOUND("확장자가 올바르지 않습니다."),
-
-    COMMUNITY_NOT_FOUND("커뮤니티를 찾을 수 없습니다."),
-    COMMUNITY_USER_NOT_FOUND("커뮤니티 유저를 찾을 수 없습니다."),
-
-    MAX_PARTICIPANT_LOW_ERROR("참여 인원보다 낮거나 같으면 변경 할 수 없습니다."),
-    COMMUNITY_RECRUITMENT_END_ERROR("모집 마감이 된 커뮤니티 입니다."),
-
     IMAGE_RESIZING_FAIL("이미지 리사이징에 실패 했습니다."),
     FAIL_CREATE_NEW_FILE("새로운 파일 생성에 실패 했습니다."),
     IMAGE_SIZE_READ_FAIL("이미지 크기를 읽는데 실패 했습니다."),
