@@ -19,7 +19,7 @@ public class UserController {
 
     private final UserService userService;
 
-    //처음 로그인 한 회원 이메일과 프사 넘겨주기
+    // 처음 로그인 한 회원 이메일과 프사 넘겨주기
     @GetMapping("/addInfo")
     public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email, @RequestParam("picture") String picture){
         CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture);
@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 
-    //회원가입 시키기기
+    // 회원가입 시키기기
     @PostMapping("/signup")
     public ResponseEntity<ResultDto<SignupDto>> exampleGet(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
@@ -37,8 +37,8 @@ public class UserController {
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 
-    //로그인
-    @GetMapping("/login")
+    // 로그인
+    @PostMapping("/login")
     public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email){
 
         CommonResponseDto<Object> login = userService.login(email);
