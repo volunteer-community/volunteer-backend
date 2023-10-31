@@ -94,6 +94,7 @@ public class UserService {
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
                 .build();
 
+
         return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
@@ -106,13 +107,33 @@ public class UserService {
                         .name(signupDto.getName())
                         .role(signupDto.getRole())
                         .email(signupDto.getEmail())
-                        .profileImg(signupDto.getProfileImg())
+                        .profileImg(signupDto.getPicture())
                         .nickname(signupDto.getNickname())
                         .build();
                 userRepository.save(user);
 
+                // email로 User(false) get
+                User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                Long userId = user.getId();
 
-                return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
+                GeneratedToken token = jwtUtil.generateToken(userId);
+
+                Login login = Login.builder()
+                        .user(user)
+                        .provider(signupDto.getProvider())
+                        .refreshToken(token.getRefreshToken())
+                        .build();
+
+                loginRepository.save(login);
+
+                TokenDto tokenDto = TokenDto.builder()
+                        .accessToken(token.getAccessToken())
+                        .refreshToken(token.getRefreshToken())
+                        .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                        .build();
+
+                return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);}
             else{
                 //이미 가입한 닉네임
                 return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
