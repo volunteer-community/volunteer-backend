@@ -53,4 +53,10 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "LEFT JOIN c.communityImgList ci " +
             "WHERE u.id = :userId AND cu.isWithdraw = false ")
     Page<CommunityResponseDto> myCommunitySignList(@Param("userId") Long userId, Pageable pageable);
+
+    // 내가 가입한 커뮤니티 개수
+    @Query("SELECT count(cu) " +
+            "FROM CommunityUser cu " +
+            "WHERE cu.user.id = :userId AND cu.isWithdraw = false ")
+    Integer myCommunitySignNumber(@Param("userId") Long userId);
 }
