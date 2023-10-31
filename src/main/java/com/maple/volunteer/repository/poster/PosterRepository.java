@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 public interface PosterRepository extends JpaRepository<Poster, Long> {
 
-    //게시글 전체 조회
+    // 게시글 전체 조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterResponseDto(" +
             "p.id AS posterId, "+
             "p.title AS posterTitle, "+
@@ -36,7 +37,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     Page<PosterResponseDto> findAllPosterList(@Param("communityId") Long communityId, Pageable pageable);
 
 
-    //게시글 상세조회
+    // 게시글 상세조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterDetailResponseDto(" +
             "p.id AS posterId, "+
             "p.title AS posterTitle, "+
@@ -51,8 +52,8 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "WHERE c.id = :communityId AND p.id = :posterId")
     Optional<PosterDetailResponseDto> findPosterDetailByCommunityIdAndPosterId(@Param("communityId") Long communityId, @Param("posterId") Long posterId);
 
-    //게시글이 존재 여부 확인
 
+    // 게시글이 존재 여부 확인
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
             + "FROM Poster p "
             + "LEFT JOIN p.communityUser cu "
@@ -60,4 +61,21 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + "WHERE c.id = :communityId")
     Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 
+
+    // 좋아요 개수 증가
+    @Query("UPDATE Poster p "
+            + " SET p.heartCount = p.heartCount +1"
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountIncrease(@Param("posterId") Long posterId);
+
+
+    // 좋아요 개수 감소
+    @Query("UPDATE Poster p "
+            + " SET p.heartCount = CASE WHEN p.heartCount > 0"
+            + " THEN (p.heartCount -1)"
+            + " ELSE 0 END"
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountDecrease(@Param("posterId") Long posterId);
 }
