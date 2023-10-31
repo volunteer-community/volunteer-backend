@@ -11,9 +11,11 @@ import com.maple.volunteer.dto.community.*;
 import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.category.CategoryRepository;
+import com.maple.volunteer.repository.comment.CommentRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
 import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
+import com.maple.volunteer.repository.poster.PosterRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
@@ -41,9 +43,11 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final CommunityUserRepository communityUserRepository;
     private final CommunityImgRepository communityImgRepository;
+    private final PosterRepository posterRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
-    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
     // 커뮤니티 생성
@@ -81,7 +85,6 @@ public class CommunityService {
 
 
         return commonService.successResponse(SuccessCode.COMMUNITY_CREATE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
-
     }
 
     // 모든 커뮤니티 조회 (페이지 네이션)
@@ -309,11 +312,15 @@ public class CommunityService {
         // isDelete 값을 true로 변경
         community.communityDelete();
 
+        // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
+        posterRepository.PosterDeleteByCommunityId(communityId);
+        commentRepository.CommentDeleteByCommunityId(communityId);
+        communityUserRepository.CommunityUserDelete(communityId);
+
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
     // 커뮤니티 참가
-    // 유저 생성이 되면 유저를 넣어서 저장
     @Transactional
     public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
 
@@ -345,6 +352,7 @@ public class CommunityService {
                 community.communityRecruitmentEnd();
             }
 
+            // 커뮤니티 재가입
             communityUser.communityReSign();
 
             return commonService.successResponse(SuccessCode.COMMUNITY_RE_SIGNUP_SUCCESS.getDescription(), HttpStatus.OK, null);
@@ -412,14 +420,12 @@ public class CommunityService {
             community.communityRecruitmentIng();
         }
 
+        // 유저 ID에 해당하는 게시글 및 댓글 삭제
+        posterRepository.PosterDeleteByUserId(userId);
+        commentRepository.CommentDeleteByUserId(userId);
+
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
-
-    // 내가 만든 커뮤니티 리스트
-
-    // 내가 가입한 커뮤니티 리스트
-
-
 
     // 이미지 저장
     private void createCommunityImage(List<MultipartFile> multipartFileList, Community community) {

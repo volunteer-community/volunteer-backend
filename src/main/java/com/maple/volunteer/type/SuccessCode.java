@@ -27,6 +27,8 @@ public enum SuccessCode {
     COMMUNITY_SIGNUP_SUCCESS("커뮤니티 참가에 성공 했습니다."),
     COMMUNITY_RE_SIGNUP_SUCCESS("커뮤니티 재참가에 성공 했습니다."),
     COMMUNITY_WITHDRAW_SUCCESS("커뮤니티 탈퇴에 성공 했습니다."),
+    MY_COMMUNITY_CREATED_INQUIRY_SUCCESS("내가 만든 커뮤니티 조회에 성공 했습니다."),
+    MY_COMMUNITY_SIGN_INQUIRY_SUCCESS("내가 가입한 커뮤니티 조회에 성공 했습니다."),
 
     // 게시글
     ALL_POSTER_INQUIRY_SUCCESS("해당 커뮤니티에 작성된 게시글 조회에 성공했습니다"),
