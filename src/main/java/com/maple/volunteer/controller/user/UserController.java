@@ -4,13 +4,9 @@ import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.user.*;
 import com.maple.volunteer.service.user.UserService;
-import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +17,8 @@ public class UserController {
 
     // 처음 로그인 한 회원 이메일과 프사 넘겨주기
     @GetMapping("/addInfo")
-    public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email, @RequestParam("picture") String picture){
+    public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email,
+                                                         @RequestParam("picture") String picture){
         CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture);
         ResultDto<NewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
         result.setData((NewUserDto) commonResponseDto.getData());
@@ -30,10 +27,10 @@ public class UserController {
 
     // 회원가입 시키기기
     @PostMapping("/signup")
-    public ResponseEntity<ResultDto<SignupDto>> exampleGet(@RequestBody SignupDto signupDto) {
+    public ResponseEntity<ResultDto<TokenDto>> signUp(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
-        ResultDto<SignupDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((SignupDto) commonResponseDto.getData());
+        ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((TokenDto) commonResponseDto.getData());
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 
@@ -67,5 +64,32 @@ public class UserController {
         result.setData((TokenDto) renewToken.getData());
 
         return ResponseEntity.status(renewToken.getHttpStatus()).body(result);
+    }
+
+    // 닉네임 중복 체크
+    @PostMapping("/nicknameCheck")
+    public ResponseEntity<ResultDto<CheckDto>> checkNickname(@RequestBody CheckDto checkDto){
+        CommonResponseDto<Object> commonResponseDto = userService.nicknameCheck(checkDto);
+        ResultDto<CheckDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((CheckDto) commonResponseDto.getData());
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
+
+    // 핸드폰 번호 중복 체크
+    @PostMapping("/phoneCheck")
+    public ResponseEntity<ResultDto<CheckDto>> checkPhone(@RequestBody CheckDto phoneCheckDto){
+        CommonResponseDto<Object> commonResponseDto = userService.phoneCheck(phoneCheckDto);
+        ResultDto<CheckDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((CheckDto) commonResponseDto.getData());
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
+
+    // 유저 정보 수정 페이지 들어가기
+    @PostMapping("/viewUserInfo")
+    public ResponseEntity<ResultDto<CheckDto>> viewUserInfo(@RequestBody CheckDto phoneCheckDto){
+        CommonResponseDto<Object> commonResponseDto = userService.phoneCheck(phoneCheckDto);
+        ResultDto<CheckDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((CheckDto) commonResponseDto.getData());
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 }
