@@ -20,7 +20,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
             + "FROM Comment cm "
             + "LEFT JOIN cm.poster p "
-            + "WHERE p.id = :posterId")
+            + "WHERE p.id = :posterId AND cm.isDelete = false")
     Optional<Boolean> existsByPosterId(@Param("posterId") Long posterId);
 
     // 댓글 조회
@@ -30,7 +30,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "cm.author AS commentAuthor) "+
             "FROM Comment cm "+
             "LEFT JOIN cm.poster p " +
-            "WHERE p.id = :posterId ")
+            "WHERE p.id = :posterId AND cm.isDelete = false")
     Page<CommentResponseDto> findAllCommentList(@Param("posterId") Long posterId, PageRequest pageable);
 
     // 댓글 수정
