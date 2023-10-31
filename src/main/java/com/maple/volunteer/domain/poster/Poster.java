@@ -61,20 +61,18 @@ public class Poster extends BaseTime {
         this.communityUser = communityUser;
     }
 
-    public void heartIncrease() {
-        this.heartCount += 1;
-    }
-
-    public void heartDecrease() {
-
-        if(this.heartCount > 0){
-            this.heartCount -= 1;
-        }else {
-            this.heartCount = 0;
-        }
-
-        this.heartCount -= 1;
-    }
+//    public void heartIncrease() {
+//        this.heartCount += 1;
+//    }
+//
+//    public void heartDecrease() {
+//
+//        if(this.heartCount > 0){
+//            this.heartCount -= 1;
+//        }else {
+//            this.heartCount = 0;
+//        }
+//    }
 
     // 게시글 삭제
     public void posterDelete() {

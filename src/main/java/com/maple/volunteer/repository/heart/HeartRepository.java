@@ -25,12 +25,13 @@ public interface HeartRepository extends JpaRepository<Heart, Long> {
     @Modifying(clearAutomatically = true)
     void updateStatus(@Param("id") Long heartId, @Param("status") boolean b);
 
-//TODO 마이페이지에서 좋아요한 게시글 개수 로직짤 때 사용하기
-    //userId에 해당하는 유저가 좋아요한 게시글 개수
+    //TODO 마이페이지에서 좋아요한 게시글 개수 로직짤 때 사용하기
+    //CommunityUserId에 해당하는 유저가 좋아요한 게시글 개수
     @Query("SELECT COUNT(h) FROM Heart h "
             + " LEFT JOIN h.communityUser cu"
             + " WHERE cu.id = :communityUserId")
     long countByUserId(@Param("communityUserId") Long communityUserId);
+
 
 
 }
