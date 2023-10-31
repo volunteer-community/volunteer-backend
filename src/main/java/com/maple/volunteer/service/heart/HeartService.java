@@ -40,7 +40,7 @@ public class HeartService {
 
         //유저 존재 여부 확인
         CommunityUser communityUser = communityUserRepository.findById(communityUserId)
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITYUSER_NOT_FOUND));
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         //게시글 존재 여부 확인
         Poster poster = posterRepository.findById(posterId)

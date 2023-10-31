@@ -40,7 +40,7 @@ public class CommentService {
 
         //TODO: userID & communityID & iswithDraw(false)
         CommunityUser communityUser = communityUserRepository.findByCommunityId(communityId)
-                                                             .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITYUSER_NOT_FOUND));
+                                                             .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Poster poster = posterRepository.findById(posterId)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
