@@ -103,4 +103,22 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.author Like %:keyword% AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListBySearchAuthor(@Param("keyword") String keyword, Pageable pageable);
 
+
+    // 작성자로 커뮤니티 가져오기(내가 만든)
+    @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
+            "cg.id AS categoryId, " +
+            "c.id AS communityId," +
+            "c.title AS communityTitle, " +
+            "c.participant AS communityParticipant, " +
+            "c.maxParticipant AS communityMaxParticipant, " +
+            "c.author AS communityAuthor," +
+            "c.status AS communityStatus," +
+            "c.content AS communityContent," +
+            "c.location AS communityLocation," +
+            "ci.imagePath AS communityMainImgPath) " +
+            "FROM Community c " +
+            "LEFT JOIN c.category cg " +
+            "LEFT JOIN c.communityImgList ci " +
+            "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
+    Page<CommunityResponseDto> findCommunityListByAuthor(@Param("author") String author, Pageable pageable);
 }

@@ -40,7 +40,7 @@ public class HeartService {
 
         //유저 존재 여부 확인
         CommunityUser communityUser = communityUserRepository.findById(communityUserId)
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         //게시글 존재 여부 확인
         Poster poster = posterRepository.findById(posterId)
@@ -59,7 +59,8 @@ public class HeartService {
                                         .poster(poster)
                                         .build();
 
-            poster.heartIncrease();
+            //poster.heartIncrease();
+            posterRepository.updateHeartCountIncrease(posterId);
             heartRepository.save(newHeart);
 
         } else {
@@ -68,13 +69,17 @@ public class HeartService {
 
             if (existingHeart.getStatus()) {
                 //status:true -> false ( 좋아요 취소 )
-                poster.heartDecrease();
+
+                //poster.heartDecrease();
+                posterRepository.updateHeartCountDecrease(posterId);
                 heartRepository.updateStatus(heartId,false);
 
 
             } else {
                 //status:false -> true ( 좋아요 다시 생성 )
-                poster.heartIncrease();
+
+                //poster.heartIncrease();
+                posterRepository.updateHeartCountIncrease(posterId);
                 heartRepository.updateStatus(heartId,true);
             }
         }
@@ -82,7 +87,5 @@ public class HeartService {
 
         return commonService.successResponse(SuccessCode.HEART_TOGGLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
-
-
 
 }

@@ -42,6 +42,7 @@ public class PosterService {
 
 
     //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
+    //TODO: userID & communityID & iswithDraw(false)
     //전체조회
     public CommonResponseDto<Object> allPosterInquiry(Long communityId, int page, int size, String sortBy) {
 

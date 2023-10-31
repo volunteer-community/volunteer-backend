@@ -38,7 +38,7 @@ public class S3UploadService {
     private String bucket;
 
     private final String COMMUNITY_PATH = "/image/community";
-    private final String POSTER_PATH = "image/poster";
+    private final String POSTER_PATH = "/image/poster";
 
 
     // 커뮤니티 이미지 업로드

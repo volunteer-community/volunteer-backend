@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CommentResponseDto {
+    //private Long posterId;
     private Long commentId;
-    private String commnentContent;
+    private String commentContent;
     private String commentAuthor;
 
 
     @Builder
-    public CommentResponseDto(Long commentId, String commnentContent,String commentAuthor){
+    public CommentResponseDto(Long commentId, String commentContent, String commentAuthor) {
         this.commentId = commentId;
-        this.commnentContent = commnentContent;
+        this.commentContent = commentContent;
         this.commentAuthor = commentAuthor;
     }
 }

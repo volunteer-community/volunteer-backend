@@ -73,6 +73,11 @@ public class Community extends BaseTime {
         this.participant += 1;
     }
 
+    // 커뮤니티 참여 인원 감소
+    public void communityParticipantDecrease() {
+        this.participant -= 1;
+    }
+
     // 커뮤니티 상태 변경
     public void communityRecruitmentEnd() {
         this.status = CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription();
