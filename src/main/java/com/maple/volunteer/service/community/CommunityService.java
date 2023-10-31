@@ -313,9 +313,9 @@ public class CommunityService {
         community.communityDelete();
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
-        posterRepository.PosterDeleteByCommunityId(communityId);
-        commentRepository.CommentDeleteByCommunityId(communityId);
-        communityUserRepository.CommunityUserDelete(communityId);
+        posterRepository.PosterDeleteByCommunityId(communityId, true);
+        commentRepository.CommentDeleteByCommunityId(communityId, true);
+        communityUserRepository.CommunityUserDelete(communityId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -324,17 +324,24 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communitySignup(String accessToken, Long communityId) {
 
-        // 유저 가져오기
-        User user = findUser(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
-        // 유저 ID 가져오기
-        Long userId = user.getId();
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 커뮤니티 재가입 회원인지
-        Optional<CommunityUser> communityUserOptional = communityUserRepository.findByUserIdAndCommunityId(userId, communityId);
+        Optional<CommunityUser> communityUserOptional = communityUserRepository.findByUserIdAndCommunityId(communityId, userId);
 
         if (communityUserOptional.isPresent()) {
             CommunityUser communityUser = communityUserOptional.get();
+
+            // 이미 가입한 회원인지
+            if (!communityUser.getIsWithdraw()) {
+                throw new BadRequestException(ErrorCode.COMMUNITY_USER_DUPLICATE);
+            }
 
             // 커뮤니티 가져오기
             Community community = communityUser.getCommunity();
@@ -396,14 +403,13 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityWithdraw(String accessToken, Long communityId) {
 
-        // 유저 가져오기
-        User user = findUser(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
-        // 유저 ID 가져오기
-        Long userId = user.getId();
+        System.out.println(userId);
 
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(userId, communityId)
+        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         // 커뮤니티 가져오기
@@ -421,8 +427,8 @@ public class CommunityService {
         }
 
         // 유저 ID에 해당하는 게시글 및 댓글 삭제
-        posterRepository.PosterDeleteByUserId(userId);
-        commentRepository.CommentDeleteByUserId(userId);
+        posterRepository.PosterDeleteByUserId(userId, true);
+        commentRepository.CommentDeleteByUserId(userId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -452,26 +458,15 @@ public class CommunityService {
 
     // 유저 닉네임 가져오기
     private String findUserNickname(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 유저 가져오기
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 // 유저가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 유저 닉네임 가져오기
         return user.getNickname();
-    }
-
-    // 유저 가져오기
-    private User findUser(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
-
-        // 유저 가져오기
-        return userRepository.findByEmail(email)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

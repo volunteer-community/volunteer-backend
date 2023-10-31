@@ -62,17 +62,25 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 커뮤니티 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
-            "SET p.isDelete = true " +
-            "WHERE p.communityUser.community.id = :communityId ")
+            "SET p.isDelete = :status " +
+            "WHERE p.communityUser " +
+            "IN " +
+            "(SELECT cu " +
+            "   FROM CommunityUser cu " +
+            "   WHERE cu.community.id = :communityId)")
     @Modifying(clearAutomatically = true)
-    void PosterDeleteByCommunityId(@Param("communityId") Long communityId);
+    void PosterDeleteByCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 
     // 유저 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
-            "SET p.isDelete = true " +
-            "WHERE p.communityUser.user.id = :userId ")
+            "SET p.isDelete = :status " +
+            "WHERE p.communityUser " +
+            "IN " +
+            "(SELECT cu " +
+            "   FROM CommunityUser cu " +
+            "   WHERE cu.user.id =:userId)")
     @Modifying(clearAutomatically = true)
-    void PosterDeleteByUserId(@Param("userId") Long userId);
+    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
     // 좋아요 개수 증가
     @Query("UPDATE Poster p "

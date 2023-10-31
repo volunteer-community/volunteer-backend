@@ -73,7 +73,8 @@ public class MyPageService {
     // 내가 가입한 커뮤니티 리스트
     public CommonResponseDto<Object> myCommunitySignList(String accessToken, int page, int size, String sortBy) {
 
-        Long userId = findUserId(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 페이지, 요소 개수, 정렬 설정
         PageRequest pageable = PageRequest.of(page -1, size, Sort.by(sortBy).descending());
@@ -108,11 +109,11 @@ public class MyPageService {
 
     // 유저 닉네임 가져오기
     private String findUserNickname(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 유저 가져오기
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 // 유저가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
@@ -120,17 +121,8 @@ public class MyPageService {
         return user.getNickname();
     }
 
-    // 유저 아이디 가져오기
-    private Long findUserId(String accessToken) {
-        // 이메일 가져오기
-        String email = jwtUtil.getUserEmail(accessToken);
-
-        // 유저 가져오기
-        User user = userRepository.findByEmail(email)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        // 유저 닉네임 가져오기
-        return user.getId();
+    // 내가 가입한 커뮤니티 개수
+    private Integer findCommunityUserCount(Long userId) {
+        return communityUserRepository.myCommunitySignNumber(userId);
     }
 }
