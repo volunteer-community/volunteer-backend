@@ -1,6 +1,7 @@
 package com.maple.volunteer.domain.communityuser;
 
 import com.maple.volunteer.domain.comment.Comment;
+import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
-public class CommunityUser {
+public class CommunityUser extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

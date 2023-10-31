@@ -27,6 +27,7 @@ public enum ErrorCode {
     COMMUNITY_RECRUITMENT_END_ERROR("모집 마감이 된 커뮤니티 입니다."),
     COMMUNITY_AUTHOR_NOT_EQUAL("작성자가 일치하지 않습니다."),
     COMMUNITY_USER_NOT_FOUND("커뮤니티 회원 정보를 찾을 수 없습니다."),
+    COMMUNITY_USER_DUPLICATE("이미 커뮤니티에 가입된 회원 입니다."),
 
 
     // 게시글
