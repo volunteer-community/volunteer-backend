@@ -80,6 +80,12 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
 
 
+    // 게시글 posterId에 해당 되는 글만 삭제
+    @Query("UPDATE Poster p "
+            + " SET p.isDelete = true "
+            + " WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void posterDeleteByPosterId(@Param("posterId") Long posterId);
 
 
 }
