@@ -40,6 +40,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Modifying(clearAutomatically = true)
     void updateCommentContent(@Param("commentId") Long commentId, @Param("content") String content);
 
+
     // 게시글이 삭제 되었을 때 게시글에 해당되는 댓글 전체 삭제
 
 
@@ -49,5 +50,20 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             + " WHERE cm.id = :commentId")
     @Modifying(clearAutomatically = true)
     void commentDeleteByCommentId(@Param("commentId") Long commentId);
+
+    
+    // 커뮤니티 ID에 해당하는 댓글 삭제
+    @Query("UPDATE Comment c " +
+            "SET c.isDelete = true " +
+            "WHERE c.communityUser.community.id = :communityId ")
+    @Modifying(clearAutomatically = true)
+    void CommentDeleteByCommunityId(@Param("communityId") Long communityId);
+
+    // 유저 ID에 해당하는 댓글 삭제
+    @Query("UPDATE Comment c " +
+            "SET c.isDelete = true " +
+            "WHERE c.communityUser.user.id = :userId ")
+    @Modifying(clearAutomatically = true)
+    void CommentDeleteByUserId(@Param("userId") Long userId);
 
 }

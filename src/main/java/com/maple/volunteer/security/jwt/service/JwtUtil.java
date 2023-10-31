@@ -27,23 +27,22 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
     }
 
-    public GeneratedToken generateToken(String email, String role) {
+    public GeneratedToken generateToken(Long id) {
         // accessToken, refreshToken 생성
-        String accessToken = generateAccessToken(email, role);
-        String refreshToken = generateRefreshToken(email, role);
+        String accessToken = generateAccessToken(id);
+        String refreshToken = generateRefreshToken(id);
         LocalDateTime accessTokenExpireTime = LocalDateTime.now().plus(30, ChronoUnit.MINUTES);
 
         return new GeneratedToken(accessToken, refreshToken, accessTokenExpireTime);
     }
 
-    public String generateRefreshToken(String email, String role) {
+    public String generateRefreshToken(Long id) {
 
         // 토큰 유효기간 설정
         long refreshPeriod = 1000L * 60L * 60L * 24L* 14L;
 
         // 새로운 클레임 객체 생성 후 이메일, 권한 설정
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
+        Claims claims = Jwts.claims().setSubject(Long.toString(id));
 
         // 현재 시간 get
         Date now = new Date();
@@ -56,10 +55,9 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
                 .compact();
     }
 
-    public String generateAccessToken(String email, String role) {
+    public String generateAccessToken(Long id) {
         long tokenPeriod = 1000L * 60L * 30L;
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("role", role);
+        Claims claims = Jwts.claims().setSubject(Long.toString(id));
 
         Date now = new Date();
 
@@ -88,11 +86,7 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
     }
 
     // 추가 메소드 작성
-    public String getUserEmail(String token) {
+    public String getUserId(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public String getUserRole(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
     }
 }

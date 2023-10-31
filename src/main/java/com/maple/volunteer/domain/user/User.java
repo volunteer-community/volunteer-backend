@@ -21,12 +21,13 @@ public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 유저 ID
-
     private String email;   // 유저 이메일
     private String profileImg;  // 유저 프로필 이미지
     private String name;    // 유저 이름
     private String phoneNumber; // 유저 핸드폰 번호
     private String nickname; // 유저 닉네임
+    private boolean isDeleted; //탈퇴 유무
+
 
     @Enumerated(EnumType.STRING)
     private Role role;  // 유저 역할
@@ -45,6 +46,7 @@ public class User extends BaseTime {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.nickname = nickname;
+        this.isDeleted = false;
     }
 
 

@@ -2,8 +2,14 @@ package com.maple.volunteer.service.user;
 
 import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.domain.user.User;
+import com.maple.volunteer.dto.admin.AllUserListDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
+import com.maple.volunteer.dto.common.PaginationDto;
+import com.maple.volunteer.dto.community.CommunityResponseDto;
+import com.maple.volunteer.dto.user.NewUserDto;
 import com.maple.volunteer.dto.user.SignupDto;
+import com.maple.volunteer.dto.user.UserDto;
+import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.dto.user.TokenDto;
 import com.maple.volunteer.exception.NotFoundException;
@@ -14,8 +20,16 @@ import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -28,16 +42,17 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
 
-
-    public CommonResponseDto<Object> login(String email, String role) {
+    // 로그인
+    public CommonResponseDto<Object> login(String email) {
+        // email로 User(false) get
+        User user = userRepository.findActiveUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        Long userId = user.getId();
 
         // accessToken, refreshToken 발행
-        GeneratedToken token = jwtUtil.generateToken(email, role);
+        GeneratedToken token = jwtUtil.generateToken(userId);
 
         // 기존 refreshToken 변경
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
         Login login = user.getLogin();
         loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
@@ -53,10 +68,10 @@ public class UserService {
     // 로그아웃
     public CommonResponseDto<Object> logout(String accessToken) {
 
-        // 토큰 통해 email, get -> 유저 조회
-        String email = jwtUtil.getUserEmail(accessToken);
+        // 토큰 통해 userId get -> 유저 조회
+        Long userId = Long.parseLong(jwtUtil.getUserId(accessToken));
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // refreshToken -> null 변경
@@ -66,7 +81,7 @@ public class UserService {
         return commonService.successResponse(SuccessCode.USER_LOGOUT_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
-    // accessToken 갱신
+    // 토큰 갱신
     public CommonResponseDto<Object> renewToken(String refreshToken) {
 
         // 토큰 통해 유저 get
@@ -74,11 +89,10 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.TOKEN_NOT_FOUND));
 
         User user = login.getUser();
-        String email = user.getEmail();
-        String role = user.getRole().getKey();
+        Long userid = user.getId();
 
         // accessToken, refreshToken 재발급
-        GeneratedToken token = jwtUtil.generateToken(email, role);
+        GeneratedToken token = jwtUtil.generateToken(userid);
 
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(token.getAccessToken())
@@ -89,37 +103,87 @@ public class UserService {
         return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
-        public CommonResponseDto<Object> signup(SignupDto signupDto) {
-            if(!findByPhoneNumber(signupDto.getPhoneNumber())){
-                if(!findByNickName(signupDto.getName())){
-                    User user = User.builder()
-                            .phoneNumber(signupDto.getPhoneNumber())
-                            .name(signupDto.getName())
-                            .role(signupDto.getRole())
-                            .email(signupDto.getEmail())
-                            .nickname(signupDto.getNickname())
-                            .build();
-                    userRepository.save(user);
+    // 회원가입
+    public CommonResponseDto<Object> signup(SignupDto signupDto) {
+        if(!findByPhoneNumber(signupDto.getPhoneNumber())){
+            if(!findByNickName(signupDto.getName())){
+                User user = User.builder()
+                        .phoneNumber(signupDto.getPhoneNumber())
+                        .name(signupDto.getName())
+                        .role(signupDto.getRole())
+                        .email(signupDto.getEmail())
+                        .nickname(signupDto.getNickname())
+                        .build();
+                userRepository.save(user);
 
 
-                    return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
-                else{
-                    //이미 가입한 닉네임
-                    return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
-                }
-            }else {
-                //이미 가입한 핸드폰 번호
-                return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
+                return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
+            else{
+                //이미 가입한 닉네임
+                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
             }
+        }else {
+            //이미 가입한 핸드폰 번호
+            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
+        }
+    }
+
+    private boolean findByNickName(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user != null;
+    }
+
+    private boolean findByPhoneNumber(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        return user != null;
+    }
+
+    public CommonResponseDto<Object> addinfo(String email, String picture) {
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail(email);
+        newUserDto.setPicture(picture);
+        return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
+    }
+
+    // 유저 조회 (true, false 모두)
+    public CommonResponseDto<Object> allUserInquiry (int page, int size, String sortBy ) {
+
+        // 페이지, 요소 개수, 정렬
+        PageRequest pageable = PageRequest.of(page -1, size, Sort.by(sortBy).descending());
+
+        // 페이지 값 받아오기
+        Page<User> data = userRepository.findAll(pageable);
+        if (data.isEmpty()) throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
+
+        // userDtoList 생성
+        List<User> userList = data.getContent();
+        List<UserDto> userDtoList = new ArrayList<>();
+
+        for (User user: userList) {
+            UserDto userDto = UserDto.builder()
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .nickname(user.getNickname())
+                    .phoneNumber(user.getPhoneNumber())
+                    .profileImg(user.getProfileImg())
+                    .build();
+            userDtoList.add(userDto);
         }
 
-        private boolean findByNickName(String nickname) {
-            User user = userRepository.findByNickname(nickname);
-            return user != null;
-        }
+        // pagination 설정
+        PaginationDto paginationDto = PaginationDto.builder()
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
 
-        private boolean findByPhoneNumber(String phoneNumber) {
-            User user = userRepository.findByPhoneNumber(phoneNumber);
-            return user != null;
-        }
+        // AllUserListDto 반환
+        AllUserListDto allUserListDto = AllUserListDto.builder()
+                .userList(userDtoList)
+                .paginationDto(paginationDto)
+                .build();
+
+        return commonService.successResponse(SuccessCode.ALL_USER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allUserListDto);
+    }
 }

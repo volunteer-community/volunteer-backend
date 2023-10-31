@@ -1,14 +1,18 @@
 package com.maple.volunteer.service.category;
 
 import com.maple.volunteer.domain.category.Category;
+import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.category.CategoryListResponseDto;
 import com.maple.volunteer.dto.category.CategoryRequestDto;
 import com.maple.volunteer.dto.category.CategoryResponseDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.category.CategoryRepository;
+import com.maple.volunteer.repository.user.UserRepository;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
+import com.maple.volunteer.type.Role;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +26,9 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
     private final CommonService commonService;
+    private final JwtUtil jwtUtil;
 
     // 카테고리 저장
     @Transactional
