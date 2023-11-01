@@ -12,27 +12,23 @@ public class PosterRequestDto {
 
     private String posterTitle;
     private String posterContent;
-    //토큰값으로 넣을 예정
-    private String posterAuthor;
-
 
 
     @Builder
-    public PosterRequestDto(String posterTitle, String posterContent, String posterAuthor) {
+    public PosterRequestDto(String posterTitle, String posterContent) {
         this.posterTitle = posterTitle;
         this.posterContent = posterContent;
-        this.posterAuthor = posterAuthor;
     }
 
-    public Poster toEntity(CommunityUser communityUser){
-        return Poster.builder()
-                .title(posterTitle)
-                .content(posterContent)
-                .author(posterAuthor)
-                .heartCount(0)
-                .isDelete(false)
-                // 자동으로 매핑이 들어갈거임
-                .communityUser(communityUser)
-                .build();
-    }
+//    public Poster toEntity(CommunityUser communityUser){
+//        return Poster.builder()
+//                .title(posterTitle)
+//                .content(posterContent)
+//                .author()
+//                .heartCount(0)
+//                .isDelete(false)
+//                // 자동으로 매핑이 들어갈거임
+//                .communityUser(communityUser)
+//                .build();
+//    }
 }

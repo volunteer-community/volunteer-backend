@@ -116,13 +116,14 @@ public class UserService {
                 // email로 User(false) get
                 User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
                         .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
                 Long userId = user.getId();
                 String userRole = user.getRole().getKey();
 
                 GeneratedToken token = jwtUtil.generateToken(userId, userRole);
 
                 Login login = Login.builder()
-                        .user(user)
+                        .user(user2)
                         .provider(signupDto.getProvider())
                         .refreshToken(token.getRefreshToken())
                         .build();
@@ -147,13 +148,13 @@ public class UserService {
     }
 
     private boolean findByNickName(String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        return user != null;
+        Optional<User> userOptional = userRepository.findNickname(nickname);
+        return userOptional.isEmpty();
     }
 
     private boolean findByPhoneNumber(String phoneNumber) {
-        User user = userRepository.findByPhoneNumber(phoneNumber);
-        return user != null;
+        Optional<User> userOptional = userRepository.findPhone(phoneNumber);
+        return userOptional.isEmpty();
     }
 
     public CommonResponseDto<Object> addinfo(String email, String picture) {
@@ -225,5 +226,28 @@ public class UserService {
             phoneCheckDto.setExist(true);
             return commonService.successResponse(SuccessCode.PHONE_NUMBER_NOT_AVAILABLE.getDescription(), HttpStatus.OK,phoneCheckDto);
         }
+    }
+
+    public CommonResponseDto<Object> viewUserInfo(String accessToken) {
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()){
+            User user = userOptional.get();
+            ViewUserDto viewUserDto = new ViewUserDto();
+            viewUserDto.setNickname(user.getNickname());
+            viewUserDto.setName(user.getName());
+            viewUserDto.setPhone(user.getPhoneNumber());
+            viewUserDto.setPicture(user.getProfileImg());
+            viewUserDto.setEmail(user.getEmail());
+            return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, viewUserDto);
+        }else{
+            return commonService.errorResponse(ErrorCode.INVALID_USER_REQUEST.getDescription(), HttpStatus.BAD_REQUEST, null);
+        }
+    }
+
+    public CommonResponseDto<Object> modUserInfo(String accessToken, ViewUserDto viewUserDto) {
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        userRepository.updateUserInfo(viewUserDto.getPhone(), viewUserDto.getNickname(), userId);
+        return commonService.successResponse(SuccessCode.MODIFY_USERINFO_SUCCESS.getDescription(), HttpStatus.OK,null);
     }
 }
