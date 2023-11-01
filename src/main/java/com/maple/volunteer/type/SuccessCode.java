@@ -56,7 +56,8 @@ public enum SuccessCode {
     NICKNAME_AVAILABLE("사용 가능한 닉네임입니다."),
     NICKNAME_NOT_AVAILABLE("사용 불가능한 닉네임입니다."),
     PHONE_NUMBER_AVAILABLE("사용 가능한 핸드폰번호입니다."),
-    PHONE_NUMBER_NOT_AVAILABLE("사용 불가능한 핸드폰번호입니다.")
+    PHONE_NUMBER_NOT_AVAILABLE("사용 불가능한 핸드폰번호입니다."),
+    VIEW_USERINFO_SUCCESS("사용자 정보 조회에 성공했습니다.")
     ;
   
     private final String description;
