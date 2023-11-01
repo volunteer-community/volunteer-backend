@@ -8,6 +8,8 @@ import com.maple.volunteer.domain.posterimg.PosterImg;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 import javax.persistence.*;
@@ -32,7 +34,7 @@ public class Poster extends BaseTime {
 
     //댓글 개수 추가해야함
 
-
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
