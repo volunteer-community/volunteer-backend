@@ -86,10 +86,10 @@ public class UserController {
 
     // 유저 정보 수정 페이지 들어가기
     @PostMapping("/viewUserInfo")
-    public ResponseEntity<ResultDto<CheckDto>> viewUserInfo(@RequestBody CheckDto phoneCheckDto){
-        CommonResponseDto<Object> commonResponseDto = userService.phoneCheck(phoneCheckDto);
-        ResultDto<CheckDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((CheckDto) commonResponseDto.getData());
+    public ResponseEntity<ResultDto<ViewUserDto>> viewUserInfo(@RequestHeader("Authorization") String accessToken){
+        CommonResponseDto<Object> commonResponseDto = userService.viewUserInfo(accessToken);
+        ResultDto<ViewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((ViewUserDto) commonResponseDto.getData());
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 }
