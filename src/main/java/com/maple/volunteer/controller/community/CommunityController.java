@@ -3,6 +3,7 @@ package com.maple.volunteer.controller.community;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityDetailAndImgResponseDto;
+import com.maple.volunteer.dto.community.CommunityDetailResponseDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.community.CommunityRequestDto;
 import com.maple.volunteer.service.community.CommunityService;

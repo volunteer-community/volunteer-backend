@@ -15,6 +15,7 @@ import com.maple.volunteer.repository.comment.CommentRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
 import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
+import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
@@ -46,6 +47,7 @@ public class CommunityService {
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final HeartRepository heartRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
@@ -226,7 +228,7 @@ public class CommunityService {
                 // 값이 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-        // 커뮤니티 ID에 해당하는 이미지 가져오기
+         // 커뮤니티 ID에 해당하는 이미지 가져오기
         List<CommunityImgResponseDto> communityImgResponseDtoList = communityImgRepository.findCommunityImgListByCommunityId(communityId);
 
         // 하나의 Dto로 커뮤니티 정보와 이미지 반환
@@ -312,10 +314,12 @@ public class CommunityService {
         // isDelete 값을 true로 변경
         community.communityDelete();
 
-        // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
+        // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         commentRepository.CommentDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
+        heartRepository.communityDeleteUpdateStatus(communityId, true);
+
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -429,6 +433,7 @@ public class CommunityService {
         // 유저 ID에 해당하는 게시글 및 댓글 삭제
         posterRepository.PosterDeleteByUserId(userId, true);
         commentRepository.CommentDeleteByUserId(userId, true);
+        heartRepository.communityWithdrawUpdateStatus(userId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
