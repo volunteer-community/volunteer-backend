@@ -5,7 +5,6 @@ import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.poster.PosterDetailListResponseDto;
 import com.maple.volunteer.dto.poster.PosterListResponseDto;
 import com.maple.volunteer.dto.poster.PosterRequestDto;
-import com.maple.volunteer.dto.poster.PosterUpdateDto;
 import com.maple.volunteer.service.poster.PosterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +24,11 @@ public class PosterController {
     //페이징 추가해야함
     @GetMapping("/poster/community/{communityId}")
     public ResponseEntity<ResultDto<PosterListResponseDto>> allPosterInquiry(@PathVariable Long communityId,
+                                                                             @RequestHeader("Authorization") String accessToken,
                                                                              @RequestParam(value = "page", defaultValue = "1",required = false) int page,
                                                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                              @RequestParam(value = "sortBy", defaultValue = "createdAt", required = false) String sortBy) {
-        CommonResponseDto<Object>  allPosterInquiry = posterService.allPosterInquiry(communityId,page,size,sortBy);
+        CommonResponseDto<Object> allPosterInquiry = posterService.allPosterInquiry(communityId,accessToken, page,size,sortBy);
         ResultDto<PosterListResponseDto> result = ResultDto.in(allPosterInquiry.getStatus(), allPosterInquiry.getMessage());
         result.setData((PosterListResponseDto) allPosterInquiry.getData());
 
@@ -38,8 +38,9 @@ public class PosterController {
     //posterId 상세보기
     @GetMapping("/poster/{posterId}/community/{communityId}")
     public ResponseEntity<ResultDto<PosterDetailListResponseDto>> posterDetailInquiry(@PathVariable Long posterId,
-                                                                                                  @PathVariable Long communityId){
-        CommonResponseDto<Object> posterDetailInquiry = posterService.posterDetailInquiry(posterId,communityId);
+                                                                                      @PathVariable Long communityId,
+                                                                                      @RequestHeader("Authorization") String accessToken){
+        CommonResponseDto<Object> posterDetailInquiry = posterService.posterDetailInquiry(posterId,communityId,accessToken);
         ResultDto<PosterDetailListResponseDto> result = ResultDto.in(posterDetailInquiry.getStatus(), posterDetailInquiry.getMessage());
         result.setData((PosterDetailListResponseDto) posterDetailInquiry.getData());
 
@@ -47,36 +48,38 @@ public class PosterController {
     }
 
 
-
-
     // 게시글 생성
     // 작성자 토큰에서 받아오는거로 변경 해야함
     @PostMapping("/poster/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> posterCreate(@PathVariable Long communityId,
+                                                        @RequestHeader("Authorization") String accessToken,
                                                         @RequestPart(value = "file") MultipartFile multipartFile,
                                                         @RequestPart(value = "data") PosterRequestDto posterRequestDto) {
 
-        CommonResponseDto<Object> posterCreate = posterService.posterCreate(communityId, multipartFile, posterRequestDto);
+        CommonResponseDto<Object> posterCreate = posterService.posterCreate(communityId,accessToken, multipartFile, posterRequestDto);
         ResultDto<Void> result = ResultDto.in(posterCreate.getStatus(), posterCreate.getMessage());
 
         return ResponseEntity.status(posterCreate.getHttpStatus()).body(result);
     }
 
-    @PutMapping("/poster/{posterId}")
-    public ResponseEntity<ResultDto<Void>> posterUpdate(@PathVariable Long posterId,
+    // 게시글 수정
+    @PutMapping("/poster/{posterId}/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> posterUpdate(@PathVariable Long posterId, @PathVariable Long communityId,
+                                                        @RequestHeader("Authorization") String accessToken,
                                                         @RequestPart(value = "file") MultipartFile multipartFile,
-                                                        @RequestPart(value = "data") PosterUpdateDto posterUpdateDto) {
-        CommonResponseDto<Object> posterUpdate = posterService.posterUpdate(posterId,multipartFile,posterUpdateDto);
+                                                        @RequestPart(value = "data") PosterRequestDto posterRequestDto) {
+        CommonResponseDto<Object> posterUpdate = posterService.posterUpdate(posterId, communityId, accessToken, multipartFile, posterRequestDto);
         ResultDto<Void> result = ResultDto.in(posterUpdate.getStatus(), posterUpdate.getMessage());
 
         return ResponseEntity.status(posterUpdate.getHttpStatus()).body(result);
     }
 
     // 게시글 posterId에 해당 되는 글만 삭제
-    @DeleteMapping("/poster/{posterId}")
-    public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@PathVariable Long posterId) {
+    @DeleteMapping("/poster/{posterId}/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@PathVariable Long posterId, @PathVariable Long communityId,
+                                                                   @RequestHeader("Authorization") String accessToken) {
 
-        CommonResponseDto<Object> posterDelete = posterService.posterDeleteByPosterId(posterId);
+        CommonResponseDto<Object> posterDelete = posterService.posterDeleteByPosterId(posterId, communityId, accessToken);
         ResultDto<Void> result = ResultDto.in(posterDelete.getStatus(), posterDelete.getMessage());
 
         return ResponseEntity.status(posterDelete.getHttpStatus())

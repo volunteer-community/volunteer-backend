@@ -39,6 +39,7 @@ public enum SuccessCode {
 
     //댓글
     COMMENT_CREATE_SUCCESS("댓글 등록에 성공 했습니다."),
+    ALL_COMMENT_INQUIRY_SUCCESS("해당 게시글에 작성된 댓글 조회에 성공했습니다"),
     COMMENT_UPDATE_SUCCESS("댓글 수정에 성공 했습니다."),
     COMMENT_DELETE_SUCCESS("댓글 삭제에 성공 했습니다."),
 

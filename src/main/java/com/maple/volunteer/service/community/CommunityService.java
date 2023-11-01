@@ -252,7 +252,7 @@ public class CommunityService {
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor().equals(nickName)) {
-            throw new BadRequestException(ErrorCode.COMMUNITY_AUTHOR_NOT_EQUAL);
+            throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
         if (community.getParticipant() > communityRequestDto.getCommunityMaxParticipant()) {  // 참여 인원보다 작을 때
@@ -306,7 +306,7 @@ public class CommunityService {
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor().equals(nickName)) {
-            throw new BadRequestException(ErrorCode.COMMUNITY_AUTHOR_NOT_EQUAL);
+            throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
         // isDelete 값을 true로 변경
