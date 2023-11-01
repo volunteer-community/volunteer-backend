@@ -1,7 +1,7 @@
 # base-image
 FROM openjdk:11
 # 변수 설정 (빌드 파일 경로)
-ARG JAR_FILE=build/libs/Distribution_Test-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=build/libs/Volunteer-0.0.1-SNAPSHOT.jar
 # 환경 변수 설정
 ENV AWS_ACCESS_KEY=${AWS_ACCESS_KEY} \
 AWS_SECRET_KEY=${AWS_SECRET_KEY} \
