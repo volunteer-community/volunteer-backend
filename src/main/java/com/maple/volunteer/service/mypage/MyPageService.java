@@ -103,7 +103,7 @@ public class MyPageService {
                 .paginationDto(paginationDto)
                 .build();
 
-        return commonService.successResponse(SuccessCode.MY_COMMUNITY_CREATED_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, myCommunitySignListResponseDto);
+        return commonService.successResponse(SuccessCode.MY_COMMUNITY_SIGN_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, myCommunitySignListResponseDto);
     }
 
 

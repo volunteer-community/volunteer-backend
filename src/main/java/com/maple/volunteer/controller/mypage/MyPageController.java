@@ -30,7 +30,7 @@ public class MyPageController {
     }
 
     // 내가 가입한 커뮤니티 API
-    @GetMapping("/mypage/community/sign")
+    @GetMapping("/mypage/sign/community")
     public ResponseEntity<ResultDto<CommunityListResponseDto>> myCommunitySignList(@RequestHeader("Authorization") String accessToken,
                                                                @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
