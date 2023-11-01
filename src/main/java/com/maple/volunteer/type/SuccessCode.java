@@ -39,6 +39,7 @@ public enum SuccessCode {
 
     //댓글
     COMMENT_CREATE_SUCCESS("댓글 등록에 성공 했습니다."),
+    ALL_COMMENT_INQUIRY_SUCCESS("해당 게시글에 작성된 댓글 조회에 성공했습니다"),
     COMMENT_UPDATE_SUCCESS("댓글 수정에 성공 했습니다."),
     COMMENT_DELETE_SUCCESS("댓글 삭제에 성공 했습니다."),
 
@@ -52,7 +53,12 @@ public enum SuccessCode {
     USER_RENEW_SUCCESS("로그인 갱신에 성공 했습니다."),
     SIGNUP_SUCCESS("회원가입이 완료되었습니다."),
     NEW_USER_SUCCESS("처음 로그인하는 회원입니다."),
-    ALL_USER_INQUIRY_SUCCESS("전체 회원 조회에 성공 했습니다.");
+    ALL_USER_INQUIRY_SUCCESS("전체 회원 조회에 성공 했습니다."),
+    NICKNAME_AVAILABLE("사용 가능한 닉네임입니다."),
+    NICKNAME_NOT_AVAILABLE("사용 불가능한 닉네임입니다."),
+    PHONE_NUMBER_AVAILABLE("사용 가능한 핸드폰번호입니다."),
+    PHONE_NUMBER_NOT_AVAILABLE("사용 불가능한 핸드폰번호입니다.")
+    ;
   
     private final String description;
 }

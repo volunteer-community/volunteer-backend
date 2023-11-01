@@ -11,6 +11,7 @@ import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
 import com.maple.volunteer.repository.user.UserRepository;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
@@ -29,21 +30,29 @@ public class HeartService {
     private final CommunityUserRepository communityUserRepository;
 
     private final PosterRepository posterRepository;
-
     private final CommonService commonService;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
 
     @Transactional
-    public CommonResponseDto<Object> toggleHeart(HeartRequestDto heartRequestDto) {
-        Long communityUserId = heartRequestDto.getCommunityUserId();
-        Long posterId = heartRequestDto.getPosterId();
+    public CommonResponseDto<Object> toggleHeart(String accessToken, Long posterId ,Long communityId) {
 
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         //유저 존재 여부 확인
-        CommunityUser communityUser = communityUserRepository.findById(communityUserId)
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                                  // 유저가 없다면 오류 반환
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
+        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(userId,communityId)
+                .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
+        Long communityUserId = communityUser.getId();
         //게시글 존재 여부 확인
-        Poster poster = posterRepository.findById(posterId)
+       /* Poster poster = posterRepository.findByIdAndIsDelete(posterId)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));*/
+
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         // 기존 좋아요 존재
@@ -87,5 +96,6 @@ public class HeartService {
 
         return commonService.successResponse(SuccessCode.HEART_TOGGLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
+
 
 }

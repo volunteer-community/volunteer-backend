@@ -20,10 +20,12 @@ public class HeartController {
 
 
     //좋아요 토글 방식
-    @PostMapping("/like")
-    public ResponseEntity<ResultDto<Void>> toggleHeart(@RequestBody HeartRequestDto heartRequestDto) {
+    @PostMapping("/like/poster/{posterId}/community/{communityId}")
+    public ResponseEntity<ResultDto<Void>> toggleHeart(@RequestHeader("Authorization") String accessToken,
+                                                       @PathVariable Long posterId,
+                                                       @PathVariable Long communityId) {
 
-        CommonResponseDto<Object> addHeart = heartService.toggleHeart(heartRequestDto);
+        CommonResponseDto<Object> addHeart = heartService.toggleHeart(accessToken,posterId,communityId);
         ResultDto<Void> result = ResultDto.in(addHeart.getStatus(), addHeart.getMessage());
 
         return ResponseEntity.status(addHeart.getHttpStatus()).body(result);
