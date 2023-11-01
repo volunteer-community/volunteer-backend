@@ -32,6 +32,27 @@ public interface HeartRepository extends JpaRepository<Heart, Long> {
             + " WHERE cu.id = :communityUserId")
     long countByUserId(@Param("communityUserId") Long communityUserId);
 
+    // 커뮤니티 ID에 해당하는 좋아요 상태 변경
+    @Query("UPDATE Heart h "
+            + " SET h.status = :status "
+            + " WHERE h.communityUser " +
+            "   IN " +
+            "   (SELECT cu " +
+            "       FROM CommunityUser cu " +
+            "       WHERE cu.community.id = :communityId)")
+    @Modifying(clearAutomatically = true)
+    void communityDeleteUpdateStatus(@Param("communityId") Long communityId, @Param("status") boolean status);
+
+    // 유저 ID에 해당하는 좋아요 상태 변경
+    @Query("UPDATE Heart h "
+            + " SET h.status = :status "
+            + " WHERE h.communityUser " +
+            "   IN " +
+            "   (SELECT cu " +
+            "       FROM CommunityUser cu " +
+            "       WHERE cu.user.id = :userId)")
+    @Modifying(clearAutomatically = true)
+    void communityWithdrawUpdateStatus(@Param("userId") Long userId, @Param("status") boolean status);
 
 
 }
