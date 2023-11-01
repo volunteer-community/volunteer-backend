@@ -90,8 +90,6 @@ public class PosterService {
 
 
 
-
-
     // 게시글 생성
     @Transactional
     public CommonResponseDto<Object> posterCreate(Long communityId,

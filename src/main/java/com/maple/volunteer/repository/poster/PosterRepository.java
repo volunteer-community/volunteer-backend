@@ -83,29 +83,32 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
     // 좋아요 개수 증가
-    @Query("UPDATE Poster p "
-            + " SET p.heartCount = p.heartCount +1"
-            + " WHERE p.id = :posterId")
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = p.heartCount +1" +
+            "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountIncrease(@Param("posterId") Long posterId);
 
 
     // 좋아요 개수 감소
-    @Query("UPDATE Poster p "
-            + " SET p.heartCount = CASE WHEN p.heartCount > 0"
-            + " THEN (p.heartCount -1)"
-            + " ELSE 0 END"
-            + " WHERE p.id = :posterId")
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = CASE WHEN p.heartCount > 0 " +
+            "THEN (p.heartCount -1) " +
+            "ELSE 0 END " +
+            "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
 
 
     // 게시글 posterId에 해당 되는 글만 삭제
-    @Query("UPDATE Poster p "
-            + " SET p.isDelete = true "
-            + " WHERE p.id = :posterId")
+    @Query("UPDATE Poster p " +
+            "SET p.isDelete = true " +
+            "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void posterDeleteByPosterId(@Param("posterId") Long posterId);
 
-
+    @Query("SELECT p " +
+            "FROM Poster p " +
+            "WHERE p.id = :posterId AND p.isDelete = false ")
+    Optional<Poster> findByIdAndIsDelete(@Param("posterId") Long posterId);
 }
