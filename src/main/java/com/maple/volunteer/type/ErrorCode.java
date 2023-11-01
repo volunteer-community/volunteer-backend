@@ -40,7 +40,10 @@ public enum ErrorCode {
     EXISTED_NICKNAME("이미 가입된 닉네임입니다."),
 
     // 댓글
-    COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다.");
+    COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다."),
+
+    //유저
+    INVALID_USER_REQUEST("유효하지 않은 사용자 요청입니다.");
 
 
     private final String description;
