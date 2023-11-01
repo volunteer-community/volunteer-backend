@@ -37,14 +37,14 @@ public class UserService {
 
 
     // 로그인
-    public CommonResponseDto<Object> login(String email) {
+    public CommonResponseDto<Object> login(String email, String role) {
         // email로 User(false) get
         User user = userRepository.findActiveUserByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         Long userId = user.getId();
 
         // accessToken, refreshToken 발행
-        GeneratedToken token = jwtUtil.generateToken(userId);
+        GeneratedToken token = jwtUtil.generateToken(userId, role);
 
         // 기존 refreshToken 변경
         Login login = user.getLogin();
@@ -84,9 +84,10 @@ public class UserService {
 
         User user = login.getUser();
         Long userid = user.getId();
+        String userRole = user.getRole().getKey();
 
         // accessToken, refreshToken 재발급
-        GeneratedToken token = jwtUtil.generateToken(userid);
+        GeneratedToken token = jwtUtil.generateToken(userid, userRole);
 
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(token.getAccessToken())
@@ -115,9 +116,11 @@ public class UserService {
                 // email로 User(false) get
                 User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
                         .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-                Long userId = user2.getId();
 
-                GeneratedToken token = jwtUtil.generateToken(userId);
+                Long userId = user.getId();
+                String userRole = user.getRole().getKey();
+
+                GeneratedToken token = jwtUtil.generateToken(userId, userRole);
 
                 Login login = Login.builder()
                         .user(user2)

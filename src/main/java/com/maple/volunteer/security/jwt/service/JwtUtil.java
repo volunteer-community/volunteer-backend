@@ -18,8 +18,7 @@ import java.util.Date;
 public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
 
     private final JwtProperties jwtProperties;
-    private final UserRepository userRepository;
-    
+
     private String secretKey;
 
     @PostConstruct
@@ -27,22 +26,23 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
     }
 
-    public GeneratedToken generateToken(Long id) {
+    public GeneratedToken generateToken(Long id, String role) {
         // accessToken, refreshToken 생성
-        String accessToken = generateAccessToken(id);
-        String refreshToken = generateRefreshToken(id);
+        String accessToken = generateAccessToken(id, role);
+        String refreshToken = generateRefreshToken(id, role);
         LocalDateTime accessTokenExpireTime = LocalDateTime.now().plus(30, ChronoUnit.MINUTES);
 
         return new GeneratedToken(accessToken, refreshToken, accessTokenExpireTime);
     }
 
-    public String generateRefreshToken(Long id) {
+    public String generateRefreshToken(Long id, String role) {
 
         // 토큰 유효기간 설정
         long refreshPeriod = 1000L * 60L * 60L * 24L* 14L;
 
         // 새로운 클레임 객체 생성 후 이메일, 권한 설정
         Claims claims = Jwts.claims().setSubject(Long.toString(id));
+        claims.put("role", role);
 
         // 현재 시간 get
         Date now = new Date();
@@ -55,9 +55,10 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
                 .compact();
     }
 
-    public String generateAccessToken(Long id) {
+    public String generateAccessToken(Long id, String role) {
         long tokenPeriod = 1000L * 60L * 30L;
         Claims claims = Jwts.claims().setSubject(Long.toString(id));
+        claims.put("role", role);
 
         Date now = new Date();
 
@@ -88,5 +89,9 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
     // 추가 메소드 작성
     public String getUserId(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getUserRole(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
     }
 }

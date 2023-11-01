@@ -36,9 +36,10 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email){
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+                                                         @RequestParam("role") String role){
 
-        CommonResponseDto<Object> login = userService.login(email);
+        CommonResponseDto<Object> login = userService.login(email, role);
         ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
         result.setData((TokenDto) login.getData());
 

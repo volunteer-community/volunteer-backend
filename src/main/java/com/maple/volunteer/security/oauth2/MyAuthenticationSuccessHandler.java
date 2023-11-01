@@ -1,6 +1,5 @@
 package com.maple.volunteer.security.oauth2;
 
-import com.maple.volunteer.security.jwt.service.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -17,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     // 인증 성공 후 처리
-    private final JwtUtil jwtUtil;
 
     public void onAuthenticationSuccess(HttpServletRequest request
             , HttpServletResponse response, Authentication authentication) throws IOException {
@@ -38,10 +36,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             // user 정보를 쿼리스트링에 담는 url 생성
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/login")
                     .queryParam("email", email)
-                    .queryParam("provider", provider)
                     .queryParam("role", role)
-                    .queryParam("name", name)
-                    .queryParam("picture", picture)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
