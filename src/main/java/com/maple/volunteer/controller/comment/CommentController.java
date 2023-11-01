@@ -5,14 +5,10 @@ import com.maple.volunteer.dto.comment.CommentRequestDto;
 import com.maple.volunteer.dto.comment.CommentUpdateDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.dto.poster.PosterListResponseDto;
-import com.maple.volunteer.dto.poster.PosterRequestDto;
-import com.maple.volunteer.dto.poster.PosterUpdateDto;
 import com.maple.volunteer.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
