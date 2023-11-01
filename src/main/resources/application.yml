@@ -19,3 +19,5 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+    database-platform: org.hibernate.dialect.MariaDB103Dialect
+
