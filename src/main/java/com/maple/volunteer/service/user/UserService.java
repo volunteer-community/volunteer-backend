@@ -5,13 +5,8 @@ import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.admin.AllUserListDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
-import com.maple.volunteer.dto.community.CommunityResponseDto;
-import com.maple.volunteer.dto.user.NewUserDto;
-import com.maple.volunteer.dto.user.SignupDto;
-import com.maple.volunteer.dto.user.UserDto;
-import com.maple.volunteer.exception.BadRequestException;
+import com.maple.volunteer.dto.user.*;
 import com.maple.volunteer.repository.login.LoginRepository;
-import com.maple.volunteer.dto.user.TokenDto;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
@@ -26,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,6 +94,7 @@ public class UserService {
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
                 .build();
 
+
         return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
@@ -112,12 +107,33 @@ public class UserService {
                         .name(signupDto.getName())
                         .role(signupDto.getRole())
                         .email(signupDto.getEmail())
+                        .profileImg(signupDto.getPicture())
                         .nickname(signupDto.getNickname())
                         .build();
                 userRepository.save(user);
 
+                // email로 User(false) get
+                User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                Long userId = user.getId();
 
-                return commonService.successResponse(SuccessCode.SIGNUP_SUCCESS.getDescription(),HttpStatus.OK,null);}
+                GeneratedToken token = jwtUtil.generateToken(userId);
+
+                Login login = Login.builder()
+                        .user(user)
+                        .provider(signupDto.getProvider())
+                        .refreshToken(token.getRefreshToken())
+                        .build();
+
+                loginRepository.save(login);
+
+                TokenDto tokenDto = TokenDto.builder()
+                        .accessToken(token.getAccessToken())
+                        .refreshToken(token.getRefreshToken())
+                        .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                        .build();
+
+                return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);}
             else{
                 //이미 가입한 닉네임
                 return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
@@ -185,5 +201,27 @@ public class UserService {
                 .build();
 
         return commonService.successResponse(SuccessCode.ALL_USER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allUserListDto);
+    }
+
+    public CommonResponseDto<Object> nicknameCheck(CheckDto checkDto) {
+        Optional<User> userOptional = userRepository.findNickname(checkDto.getCheck());
+        if(userOptional.isEmpty()){
+            checkDto.setExist(false);
+            return commonService.successResponse(SuccessCode.NICKNAME_AVAILABLE.getDescription(), HttpStatus.OK, checkDto);
+        }else {
+            checkDto.setExist(true);
+            return commonService.successResponse(SuccessCode.NICKNAME_NOT_AVAILABLE.getDescription(), HttpStatus.OK, checkDto);
+        }
+    }
+
+    public CommonResponseDto<Object> phoneCheck(CheckDto phoneCheckDto) {
+        Optional<User> userOptional = userRepository.findPhone(phoneCheckDto.getCheck());
+        if (userOptional.isEmpty()){
+            phoneCheckDto.setExist(false);
+            return commonService.successResponse(SuccessCode.PHONE_NUMBER_AVAILABLE.getDescription(), HttpStatus.OK,phoneCheckDto);
+        }else {
+            phoneCheckDto.setExist(true);
+            return commonService.successResponse(SuccessCode.PHONE_NUMBER_NOT_AVAILABLE.getDescription(), HttpStatus.OK,phoneCheckDto);
+        }
     }
 }
