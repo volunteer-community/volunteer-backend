@@ -5,10 +5,7 @@ spring:
       - aws
       - jwt
       - oauth
-
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
+    active: prod
 
   servlet:
     multipart:
@@ -17,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
