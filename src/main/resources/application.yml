@@ -3,6 +3,8 @@ spring:
     include:
       - db
       - aws
+      - jwt
+      - oauth
     active: prod
 
   servlet:
@@ -12,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
