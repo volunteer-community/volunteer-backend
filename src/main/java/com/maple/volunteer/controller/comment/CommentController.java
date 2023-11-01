@@ -20,10 +20,10 @@ public class CommentController {
     //TODO user-> author 처리
 
     // 댓글 생성
-    @PostMapping("/comment/poster/{posterId}/communityId/{communityId}")
+    @PostMapping("/comment/poster/{posterId}/community")
     public ResponseEntity<ResultDto<Void>> commentCreate(@RequestHeader("Authorization") String accessToken,
                                                          @PathVariable Long posterId,
-                                                         @PathVariable Long communityId,
+                                                         @RequestParam(value = "communityId") Long communityId,
                                                          @RequestBody CommentRequestDto commentRequestDto) {
 
         CommonResponseDto<Object> commentCreate = commentService.commentCreate(accessToken, communityId, posterId, commentRequestDto);
@@ -34,9 +34,9 @@ public class CommentController {
     }
 
     // 댓글 조회
-    @GetMapping("/comment/poster/{posterId}/communityId/{communityId}")
+    @GetMapping("/comment/poster/{posterId}/community")
     public ResponseEntity<ResultDto<CommentListResponseDto>> allCommentInquiry(@RequestHeader("Authorization") String accessToken,
-                                                                               @PathVariable Long communityId,
+                                                                               @RequestParam(value = "communityId") Long communityId,
                                                                                @PathVariable Long posterId,
                                                                                @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
@@ -50,10 +50,10 @@ public class CommentController {
     }
 
     //댓글 수정
-    @PutMapping("/comment/{commentId}/communityId/{communityId}")
+    @PutMapping("/comment/{commentId}/community")
     public ResponseEntity<ResultDto<Void>> commentUpdate(@RequestHeader("Authorization") String accessToken,
                                                          @PathVariable Long commentId,
-                                                         @PathVariable Long communityId,
+                                                         @RequestParam(value = "communityId") Long communityId,
                                                          @RequestBody CommentUpdateDto commentUpdateDto) {
         CommonResponseDto<Object> commentUpdate = commentService.commentUpdate(accessToken, commentId, communityId, commentUpdateDto);
         ResultDto<Void> result = ResultDto.in(commentUpdate.getStatus(), commentUpdate.getMessage());
@@ -63,10 +63,10 @@ public class CommentController {
     }
 
     // commentId에 해당되는 댓글 삭제
-    @DeleteMapping("/comment/{commentId}/communityId/{communityId}")
+    @DeleteMapping("/comment/{commentId}/community")
     public ResponseEntity<ResultDto<Void>> commentDeleteByCommentId(@RequestHeader("Authorization") String accessToken,
                                                                     @PathVariable Long commentId,
-                                                                    @PathVariable Long communityId) {
+                                                                    @RequestParam(value = "communityId") Long communityId) {
 
         CommonResponseDto<Object> commentDelete = commentService.commentDeleteByCommentId(accessToken, communityId, commentId);
         ResultDto<Void> result = ResultDto.in(commentDelete.getStatus(), commentDelete.getMessage());
