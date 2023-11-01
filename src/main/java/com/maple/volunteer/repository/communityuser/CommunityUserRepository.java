@@ -24,8 +24,20 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "WHERE c.id = :communityId AND u.id = :userId ")
     Optional<CommunityUser> findByUserIdAndCommunityId(@Param("communityId") Long communityId, @Param("userId") Long userId);
 
+    @Query("SELECT cu " +
+            "FROM CommunityUser cu " +
+            "LEFT JOIN cu.community c " +
+            "LEFT JOIN cu.user u " +
+            "WHERE c.id = :communityId AND u.id = :userId AND cu.isWithdraw = false ")
+    Optional<CommunityUser> findByUserIdAndCommunityIdAndIsWithdraw(@Param("communityId") Long communityId, @Param("userId") Long userId);
 
-    Optional<CommunityUser> findByCommunityId(Long communityId);
+
+    @Query("SELECT cu " +
+            "FROM CommunityUser cu " +
+            "LEFT JOIN cu.community c " +
+            "WHERE c.id = :communityId")
+    Optional<CommunityUser> findByCommunityId(@Param("communityId") Long communityId);
+
 
 
     // 커뮤니티 ID에 해당하는 모든 커뮤니티 유저 삭제

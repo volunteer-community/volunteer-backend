@@ -12,23 +12,13 @@ import lombok.NoArgsConstructor;
 public class CommentRequestDto {
     private String commentContent;
 
-    //TODO : user->author
-    private String commentAuthor;
 
     @Builder
-    public CommentRequestDto(String commentContent, String commentAuthor) {
+    public CommentRequestDto(String commentContent) {
         this.commentContent = commentContent;
-        this.commentAuthor = commentAuthor;
+
     }
 
-    public Comment toEntity(CommunityUser communityUser, Poster poster) {
-        return Comment.builder()
-                      .content(commentContent)
-                      .author(commentContent)
-                      .isDelete(false)
-                      .communityUser(communityUser)
-                      .poster(poster)
-                      .build();
-    }
+
 
 }

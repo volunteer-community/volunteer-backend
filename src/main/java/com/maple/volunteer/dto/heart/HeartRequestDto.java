@@ -22,13 +22,5 @@ public class HeartRequestDto {
     }
 
 
-    //좋아요 처음 생성
-    public Heart toAddHeartEntity(CommunityUser communityUser, Poster poster){
-        return Heart.builder()
-                .communityUser(communityUser)
-                .poster(poster)
-                .status(true)
-                .build();
-    }
 
 }
