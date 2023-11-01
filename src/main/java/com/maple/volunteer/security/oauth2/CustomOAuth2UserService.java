@@ -55,15 +55,16 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
 
             // 권한 부여 후 userAttribute(email)을 통해 반환
             return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority(Role.USER.getKey())),
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                     userAttribute, "email");
         }
+
 
         userAttribute.put("exist", true);
 
         // 권한과 userAttribute(email)을 통해 DefaultOAuth2User 객체 반환
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(Role.USER.getKey())),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 userAttribute, "email");
     }
 }
