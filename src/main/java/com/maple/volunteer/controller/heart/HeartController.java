@@ -2,7 +2,9 @@ package com.maple.volunteer.controller.heart;
 
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
+import com.maple.volunteer.dto.example.ExampleDto;
 import com.maple.volunteer.dto.heart.HeartRequestDto;
+import com.maple.volunteer.dto.heart.HeartResponseDto;
 import com.maple.volunteer.service.heart.HeartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +22,14 @@ public class HeartController {
 
 
     //좋아요 토글 방식
-    @PostMapping("/like/poster/{posterId}/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> toggleHeart(@RequestHeader("Authorization") String accessToken,
-                                                       @PathVariable Long posterId,
-                                                       @PathVariable Long communityId) {
+    @PostMapping("/like/poster/{posterId}/community")
+    public ResponseEntity<ResultDto<HeartResponseDto>> toggleHeart(@RequestHeader("Authorization") String accessToken,
+                                                                   @PathVariable Long posterId,
+                                                                   @RequestParam("communityId") Long communityId) {
 
         CommonResponseDto<Object> addHeart = heartService.toggleHeart(accessToken,posterId,communityId);
-        ResultDto<Void> result = ResultDto.in(addHeart.getStatus(), addHeart.getMessage());
-
+        ResultDto<HeartResponseDto> result = ResultDto.in(addHeart.getStatus(), addHeart.getMessage());
+        result.setData((HeartResponseDto)addHeart.getData());
         return ResponseEntity.status(addHeart.getHttpStatus()).body(result);
     }
 

@@ -45,7 +45,10 @@ public enum SuccessCode {
 
     // 좋아요
     HEART_TOGGLE_SUCCESS("좋아요 처리에 성공 했습니다."),
+    HEART_TOGGLE_CANCEL_SUCCESS("좋아요 취소에 성공 했습니다."),
 
+    // 마이 페이지
+    MY_PAGE_INFO_SUCCESS("마이페이지 인포 조회에 성공했습니다."),
 
     // 유저
     USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),
