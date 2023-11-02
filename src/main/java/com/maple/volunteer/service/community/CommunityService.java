@@ -54,8 +54,19 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
+
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        System.out.println(userId);
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 카테고리 가져오기
         Category category = categoryRepository.findByCategoryType(categoryType)
@@ -78,10 +89,30 @@ public class CommunityService {
                 .build();
 
         // 커뮤니티 저장
-        communityRepository.save(community);
+        Long communityId = communityRepository.save(community).getId();
 
         // S3에 이미지 저장
         createCommunityImage(multipartFileList, community);
+
+
+        // 생성한 인원은 바로 가입 처리
+        // 커뮤니티 가져오기
+        Community communityGet = communityRepository.findById(communityId)
+                // 커뮤니티가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        // 커뮤니티 유저 생성
+        CommunityUser communityUser = CommunityUser.builder()
+                .user(user)
+                .community(communityGet)
+                .isWithdraw(false)
+                .build();
+
+        // 커뮤니티 유저 저장
+        communityUserRepository.save(communityUser);
+
+        // 참가 인원 증가
+        communityRepository.participantIncrease(communityId);
 
 
         return commonService.successResponse(SuccessCode.COMMUNITY_CREATE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
@@ -364,7 +395,7 @@ public class CommunityService {
 
             return commonService.successResponse(SuccessCode.COMMUNITY_RE_SIGNUP_SUCCESS.getDescription(), HttpStatus.OK, null);
 
-        // 재가입 회원이 아닐 경우
+            // 재가입 회원이 아닐 경우
         } else {
 
             // 커뮤니티 가져오기

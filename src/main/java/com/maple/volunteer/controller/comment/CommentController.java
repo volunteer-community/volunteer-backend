@@ -26,7 +26,7 @@ public class CommentController {
                                                          @RequestParam(value = "communityId") Long communityId,
                                                          @RequestBody CommentRequestDto commentRequestDto) {
 
-        CommonResponseDto<Object> commentCreate = commentService.commentCreate(accessToken, communityId, posterId, commentRequestDto);
+        CommonResponseDto<Object> commentCreate = commentService.commentCreate(accessToken, posterId, communityId, commentRequestDto);
         ResultDto<Void> result = ResultDto.in(commentCreate.getStatus(), commentCreate.getMessage());
 
         return ResponseEntity.status(commentCreate.getHttpStatus())
@@ -41,7 +41,7 @@ public class CommentController {
                                                                                @RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                                @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                                @RequestParam(value = "sortBy", defaultValue = "createdAt", required = false) String sortBy) {
-        CommonResponseDto<Object> allCommentInquiry = commentService.allCommentInquiry(accessToken, communityId, posterId, page, size, sortBy);
+        CommonResponseDto<Object> allCommentInquiry = commentService.allCommentInquiry(accessToken, posterId, communityId, page, size, sortBy);
         ResultDto<CommentListResponseDto> result = ResultDto.in(allCommentInquiry.getStatus(), allCommentInquiry.getMessage());
         result.setData((CommentListResponseDto) allCommentInquiry.getData());
 
@@ -68,7 +68,7 @@ public class CommentController {
                                                                     @PathVariable Long commentId,
                                                                     @RequestParam(value = "communityId") Long communityId) {
 
-        CommonResponseDto<Object> commentDelete = commentService.commentDeleteByCommentId(accessToken, communityId, commentId);
+        CommonResponseDto<Object> commentDelete = commentService.commentDeleteByCommentId(accessToken, commentId, communityId);
         ResultDto<Void> result = ResultDto.in(commentDelete.getStatus(), commentDelete.getMessage());
 
         return ResponseEntity.status(commentDelete.getHttpStatus())
