@@ -42,19 +42,25 @@ public class CommentService {
     private final UserRepository userRepository;
 
     // 댓글 생성
+    @Transactional
     public CommonResponseDto<Object> commentCreate(String accessToken, Long posterId, Long communityId, CommentRequestDto commentRequestDto) {
 
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        User user = userRepository.findById(userId)
-                                  // 유저가 없다면 오류 반환
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        String nickName = user.getNickname();
+        System.out.println(userId);
+
+//        User user = userRepository.findById(userId)
+//                                  // 유저가 없다면 오류 반환
+//                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+//        String nickName = user.getNickname();
 
         //TODO: userID & communityID & iswithDraw(false)
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
+        String nickName = communityUser.getUser().getNickname();
 
         Poster poster = posterRepository.findById(posterId)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
