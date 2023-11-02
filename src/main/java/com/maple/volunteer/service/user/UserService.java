@@ -103,57 +103,10 @@ public class UserService {
         return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
-//    // 회원가입
-//    public CommonResponseDto<Object> signup(SignupDto signupDto) {
-//        if(findByPhoneNumber(signupDto.getPhoneNumber())){
-//            if(findByNickName(signupDto.getName())){
-//                User user = User.builder()
-//                        .phoneNumber(signupDto.getPhoneNumber())
-//                        .name(signupDto.getName())
-//                        .role(signupDto.getRole())
-//                        .email(signupDto.getEmail())
-//                        .profileImg(signupDto.getPicture())
-//                        .nickname(signupDto.getNickname())
-//                        .build();
-//                userRepository.save(user);
-//
-//                // email로 User(false) get
-//                User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
-//                        .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-//
-//                Long userId = user.getId();
-//                String userRole = user.getRole().getKey();
-//
-//                GeneratedToken token = jwtUtil.generateToken(userId, userRole);
-//
-//                Login login = Login.builder()
-//                        .user(user2)
-//                        .provider(signupDto.getProvider())
-//                        .refreshToken(token.getRefreshToken())
-//                        .build();
-//
-//                loginRepository.save(login);
-//
-//                TokenDto tokenDto = TokenDto.builder()
-//                        .accessToken(token.getAccessToken())
-//                        .refreshToken(token.getRefreshToken())
-//                        .accessTokenExpireTime(token.getAccessTokenExpireTime())
-//                        .build();
-//
-//                return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);}
-//            else{
-//                //이미 가입한 닉네임
-//                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
-//            }
-//        }else {
-//            //이미 가입한 핸드폰 번호
-//            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
-//        }
-//    }
-
     // 회원가입
-    @Transactional
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
+        if(findByPhoneNumber(signupDto.getPhoneNumber())){
+            if(findByNickName(signupDto.getName())){
                 User user = User.builder()
                         .phoneNumber(signupDto.getPhoneNumber())
                         .name(signupDto.getName())
@@ -188,6 +141,15 @@ public class UserService {
                         .build();
 
                 return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+            }
+            else{
+                //이미 가입한 닉네임
+                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
+            }
+        }else {
+            //이미 가입한 핸드폰 번호
+            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
+        }
     }
 
     private boolean findByNickName(String nickname) {

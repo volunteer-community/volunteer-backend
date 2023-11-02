@@ -44,7 +44,7 @@ public class HeartService {
                                   // 유저가 없다면 오류 반환
                                   .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(userId,communityId)
+        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Long communityUserId = communityUser.getId();

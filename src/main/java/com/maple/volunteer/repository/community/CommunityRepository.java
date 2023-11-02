@@ -6,6 +6,7 @@ import com.maple.volunteer.dto.community.CommunityResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -121,4 +122,11 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "LEFT JOIN c.communityImgList ci " +
             "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListByAuthor(@Param("author") String author, Pageable pageable);
+
+    // 커뮤니티 삭제
+    @Query("UPDATE Community c " +
+            "SET c.isDelete = :status " +
+            "WHERE c.id = :communityId")
+    @Modifying(clearAutomatically = true)
+    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 }
