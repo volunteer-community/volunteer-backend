@@ -22,11 +22,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 조회
     @Query("SELECT NEW com.maple.volunteer.dto.comment.CommentResponseDto(" +
-            "cm.id AS commentId, "+
-            "cm.content AS commentContent,"+
-            "cm.author AS commentAuthor) "+
-            "FROM Comment cm "+
+            "cm.id AS commentId, " +
+            "cm.content AS commentContent, " +
+            "cm.author AS commentAuthor, " +
+            "u.profileImg AS profileImg) " +
+            "FROM Comment cm " +
             "LEFT JOIN cm.poster p " +
+            "LEFT JOIN cm.communityUser cu " +
+            "LEFT JOIN cu.user u " +
             "WHERE p.id = :posterId AND cm.isDelete = false")
     Page<CommentResponseDto> findAllCommentList(@Param("posterId") Long posterId, PageRequest pageable);
 
