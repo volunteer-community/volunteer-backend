@@ -37,16 +37,18 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 게시글 상세조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterDetailResponseDto(" +
-            "p.id AS posterId, "+
-            "p.title AS posterTitle, "+
-            "p.author AS posterAuthor, "+
-            "p.content AS posterContent, "+
-            "p.heartCount AS heartCount, "+
-            "pi.imagePath AS posterImgPath) "+
+            "p.id AS posterId, " +
+            "p.title AS posterTitle, " +
+            "p.author AS posterAuthor, " +
+            "p.content AS posterContent, " +
+            "p.heartCount AS heartCount, " +
+            "pi.imagePath AS posterImgPath, " +
+            "u.profileImg AS profileImg) " +
             "FROM Poster p " +
-            "LEFT JOIN p.posterImgList pi "+
+            "LEFT JOIN p.posterImgList pi " +
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.community c " +
+            "LEFT JOIN cu.user u " +
             "WHERE c.id = :communityId AND p.id = :posterId")
     Optional<PosterDetailResponseDto> findPosterDetailByCommunityIdAndPosterId(@Param("communityId") Long communityId, @Param("posterId") Long posterId);
 

@@ -14,15 +14,17 @@ public class PosterDetailResponseDto {
     private String posterContent;
     private int heartCount;
     private String posterImgPath;
+    private String profileImg;
 
     @Builder
-    public PosterDetailResponseDto(Long posterId, String posterTitle, String posterAuthor, String posterContent,int heartCount,String posterImgPath){
+    public PosterDetailResponseDto(Long posterId, String posterTitle, String posterAuthor, String posterContent,int heartCount,String posterImgPath, String profileImg){
         this.posterId = posterId;
         this.posterTitle = posterTitle;
         this.posterAuthor = posterAuthor;
         this.posterContent = posterContent;
         this.heartCount = heartCount;
         this.posterImgPath = posterImgPath;
+        this.profileImg = profileImg;
     }
 
 }
