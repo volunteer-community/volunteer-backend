@@ -36,9 +36,10 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email){
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+                                                         @RequestParam("role") String role){
 
-        CommonResponseDto<Object> login = userService.login(email);
+        CommonResponseDto<Object> login = userService.login(email, role);
         ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
         result.setData((TokenDto) login.getData());
 
@@ -84,12 +85,22 @@ public class UserController {
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 
-    // 유저 정보 수정 페이지 들어가기
+    // 유저 정보 수정 페이지에 정보 넘기기
     @PostMapping("/viewUserInfo")
-    public ResponseEntity<ResultDto<CheckDto>> viewUserInfo(@RequestBody CheckDto phoneCheckDto){
-        CommonResponseDto<Object> commonResponseDto = userService.phoneCheck(phoneCheckDto);
-        ResultDto<CheckDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((CheckDto) commonResponseDto.getData());
+    public ResponseEntity<ResultDto<ViewUserDto>> viewUserInfo(@RequestHeader("Authorization") String accessToken){
+        CommonResponseDto<Object> commonResponseDto = userService.viewUserInfo(accessToken);
+        ResultDto<ViewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((ViewUserDto) commonResponseDto.getData());
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
+
+    // 유저 정보 수정하기
+    @GetMapping("/modUserInfo")
+    public ResponseEntity<ResultDto<Void>> modUserInfo(@RequestHeader("Authorization") String accessToken,
+                                                       @RequestBody ViewUserDto viewUserDto){
+        CommonResponseDto<Object> commonResponseDto = userService.modUserInfo(accessToken, viewUserDto);
+        ResultDto<Void> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 }

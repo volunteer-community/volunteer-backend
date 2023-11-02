@@ -310,8 +310,9 @@ public class CommunityService {
         }
 
         // isDelete 값을 true로 변경
-        //community.communityDelete();
-        communityRepository.deleteCommunityId(communityId);
+
+        communityRepository.deleteCommunityId(communityId, true);
+
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
         posterRepository.PosterDeleteByCommunityId(communityId, true);
@@ -365,7 +366,7 @@ public class CommunityService {
 
             return commonService.successResponse(SuccessCode.COMMUNITY_RE_SIGNUP_SUCCESS.getDescription(), HttpStatus.OK, null);
 
-        // 재가입 회원이 아닐 경우
+            // 재가입 회원이 아닐 경우
         } else {
 
             // 커뮤니티 가져오기

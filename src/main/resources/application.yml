@@ -6,10 +6,6 @@ spring:
       - jwt
       - oauth
 
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
   servlet:
     multipart:
       max-file-size: 10MB
@@ -17,8 +13,9 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+

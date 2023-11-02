@@ -124,10 +124,12 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListByAuthor(@Param("author") String author, Pageable pageable);
 
+
+    // 커뮤니티 삭제
     @Query("UPDATE Community c " +
-            "SET c.isDelete = true " +
+            "SET c.isDelete = :status " +
             "WHERE c.id = :communityId")
     @Modifying(clearAutomatically = true)
-    void deleteCommunityId( Long communityId);
-
+    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 }
+

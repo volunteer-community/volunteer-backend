@@ -36,9 +36,9 @@ public class PosterController {
     }
 
     //posterId 상세보기
-    @GetMapping("/poster/{posterId}/community/{communityId}")
+    @GetMapping("/poster/{posterId}/community")
     public ResponseEntity<ResultDto<PosterDetailListResponseDto>> posterDetailInquiry(@PathVariable Long posterId,
-                                                                                      @PathVariable Long communityId,
+                                                                                      @RequestParam(value = "communityId") Long communityId,
                                                                                       @RequestHeader("Authorization") String accessToken){
         CommonResponseDto<Object> posterDetailInquiry = posterService.posterDetailInquiry(posterId,communityId,accessToken);
         ResultDto<PosterDetailListResponseDto> result = ResultDto.in(posterDetailInquiry.getStatus(), posterDetailInquiry.getMessage());
@@ -63,8 +63,9 @@ public class PosterController {
     }
 
     // 게시글 수정
-    @PutMapping("/poster/{posterId}/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> posterUpdate(@PathVariable Long posterId, @PathVariable Long communityId,
+    @PutMapping("/poster/{posterId}/community")
+    public ResponseEntity<ResultDto<Void>> posterUpdate(@PathVariable Long posterId,
+                                                        @RequestParam(value = "communityId") Long communityId,
                                                         @RequestHeader("Authorization") String accessToken,
                                                         @RequestPart(value = "file") MultipartFile multipartFile,
                                                         @RequestPart(value = "data") PosterRequestDto posterRequestDto) {
@@ -75,15 +76,16 @@ public class PosterController {
     }
 
     // 게시글 posterId에 해당 되는 글만 삭제
-    @DeleteMapping("/poster/{posterId}/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@PathVariable Long posterId, @PathVariable Long communityId,
+    @DeleteMapping("/poster/{posterId}/community")
+    public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@PathVariable Long posterId,
+                                                                   @RequestParam(value = "communityId") Long communityId,
                                                                    @RequestHeader("Authorization") String accessToken) {
 
         CommonResponseDto<Object> posterDelete = posterService.posterDeleteByPosterId(posterId, communityId, accessToken);
         ResultDto<Void> result = ResultDto.in(posterDelete.getStatus(), posterDelete.getMessage());
 
         return ResponseEntity.status(posterDelete.getHttpStatus())
-                             .body(result);
+                .body(result);
     }
 
 }

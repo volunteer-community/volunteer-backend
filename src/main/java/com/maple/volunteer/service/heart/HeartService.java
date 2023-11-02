@@ -49,6 +49,9 @@ public class HeartService {
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
+                
+
+
         Long communityUserId = communityUser.getId();
         //게시글 존재 여부 확인
        /* Poster poster = posterRepository.findByIdAndIsDelete(posterId)
