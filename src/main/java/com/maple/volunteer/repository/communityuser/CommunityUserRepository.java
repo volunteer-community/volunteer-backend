@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 import java.util.Optional;
@@ -74,4 +75,13 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "FROM CommunityUser cu " +
             "WHERE cu.user.id = :userId AND cu.isWithdraw = false ")
     Integer myCommunitySignNumber(@Param("userId") Long userId);
+
+    // 마이페이지 커뮤니티 유저 리스트
+    @Query("SELECT cu " +
+            "FROM CommunityUser cu " +
+            "LEFT JOIN cu.user u " +
+            "WHERE u.id = :userId AND cu.isWithdraw = false ")
+    List<CommunityUser> findCommunityUserByUserId(@Param("userId") Long userId);
+
+
 }

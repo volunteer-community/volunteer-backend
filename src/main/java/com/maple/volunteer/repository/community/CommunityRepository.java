@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.Optional;
 
@@ -123,6 +124,7 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListByAuthor(@Param("author") String author, Pageable pageable);
 
+
     // 커뮤니티 삭제
     @Query("UPDATE Community c " +
             "SET c.isDelete = :status " +
@@ -130,3 +132,4 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
     @Modifying(clearAutomatically = true)
     void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 }
+

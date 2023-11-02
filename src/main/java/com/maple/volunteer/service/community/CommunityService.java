@@ -310,7 +310,9 @@ public class CommunityService {
         }
 
         // isDelete 값을 true로 변경
+
         communityRepository.deleteCommunityId(communityId, true);
+
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
         posterRepository.PosterDeleteByCommunityId(communityId, true);
