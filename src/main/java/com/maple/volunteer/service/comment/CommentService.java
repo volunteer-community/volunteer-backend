@@ -34,11 +34,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
+    private final JwtUtil jwtUtil;
     private final CommentRepository commentRepository;
     private final CommonService commonService;
     private final CommunityUserRepository communityUserRepository;
     private final PosterRepository posterRepository;
-    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
     // 댓글 생성
