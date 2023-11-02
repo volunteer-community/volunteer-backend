@@ -70,7 +70,7 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
     Page<CommunityResponseDto> myCommunitySignList(@Param("userId") Long userId, Pageable pageable);
 
     // 내가 가입한 커뮤니티 개수
-    @Query("SELECT count(cu) " +
+    @Query("SELECT COUNT(cu) " +
             "FROM CommunityUser cu " +
             "WHERE cu.user.id = :userId AND cu.isWithdraw = false ")
     Integer myCommunitySignNumber(@Param("userId") Long userId);

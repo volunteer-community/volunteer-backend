@@ -106,7 +106,7 @@ public class UserService {
     // 회원가입
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
         if(findByPhoneNumber(signupDto.getPhoneNumber())){
-            if(findByNickName(signupDto.getName())){
+            if(findByNickName(signupDto.getNickname())){
                 User user = User.builder()
                         .phoneNumber(signupDto.getPhoneNumber())
                         .name(signupDto.getName())
