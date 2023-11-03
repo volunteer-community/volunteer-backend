@@ -120,6 +120,8 @@ public class UserService {
                             .email(signupDto.getEmail())
                             .profileImg(signupDto.getPicture())
                             .nickname(signupDto.getNickname())
+                            .provider(null)
+                            .isDeleted(false)
                             .build();
                     userRepository.save(user);
 
@@ -136,7 +138,6 @@ public class UserService {
 
                     Login login = Login.builder()
                             .user(loginUser)
-                            .provider(signupDto.getProvider())
                             .refreshToken(token.getRefreshToken())
                             .build();
 
