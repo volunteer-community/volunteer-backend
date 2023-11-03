@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 
@@ -23,7 +24,13 @@ public class User extends BaseTime {
     private Long id;    // 유저 ID
     private String email;   // 유저 이메일
     private String profileImg;  // 유저 프로필 이미지
+
+    @Column(length = 20)
+    @Size(max = 20)
     private String name;    // 유저 이름
+
+    @Column(length = 11)
+    @Size(min = 10, max = 11)
     private String phoneNumber; // 유저 핸드폰 번호
     private String nickname; // 유저 닉네임
     private boolean isDeleted; //탈퇴 유무

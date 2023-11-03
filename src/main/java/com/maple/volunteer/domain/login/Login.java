@@ -20,7 +20,6 @@ public class Login {
     private String refreshToken;    // 리프레쉬 토큰
     private String provider;    // 소셜 로그인 제공자
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
