@@ -1,6 +1,5 @@
 package com.maple.volunteer.security.oauth2;
 
-import com.maple.volunteer.type.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,14 @@ public class OAuth2Attribute {
     private String provider;
 
     static OAuth2Attribute of(String provider, String attributeKey, Map<String, Object> attributes) {
-        return ofGoogle(provider, attributeKey, attributes);
+        switch (provider) {
+            case "google":
+                return ofGoogle(provider, attributeKey, attributes);
+            case "naver":
+                return ofNaver(provider, "id", attributes);
+            default:
+                throw new RuntimeException();
+        }
     }
 
     private static OAuth2Attribute ofGoogle(String provider, String attributeKey, Map<String, Object> attributes) {
@@ -31,6 +37,19 @@ public class OAuth2Attribute {
                 .name((String)attributes.get("name"))
                 .picture((String)attributes.get("picture"))
                 .attributes(attributes)
+                .attributeKey(attributeKey)
+                .build();
+    }
+
+    private static OAuth2Attribute ofNaver(String provider, String attributeKey, Map<String, Object> attributes) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        return OAuth2Attribute.builder()
+                .email((String) response.get("email"))
+                .provider(provider)
+                .name((String) attributes.get("name"))
+                .picture((String) attributes.get("profile_image"))
+                .attributes(response)
                 .attributeKey(attributeKey)
                 .build();
     }
