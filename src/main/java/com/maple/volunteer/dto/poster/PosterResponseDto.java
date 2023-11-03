@@ -22,12 +22,12 @@ public class PosterResponseDto {
     // 댓글 개수
 
     @Builder
-    public PosterResponseDto(Long posterId, String posterTitle, String posterAuthor, String posterContent,
+    public PosterResponseDto(Long posterId, String posterTitle,  String posterContent, String posterAuthor,
                               Integer heartCount,String posterImgPath,String profileImg,LocalDateTime posterCreatedAt, LocalDateTime posterUpdatedAt){
         this.posterId = posterId;
         this.posterTitle = posterTitle;
-        this.posterAuthor = posterAuthor;
         this.posterContent = posterContent;
+        this.posterAuthor = posterAuthor;
         this.heartCount = heartCount;
         this.posterImgPath = posterImgPath;
         this.profileImg = profileImg;
