@@ -20,7 +20,6 @@ import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
