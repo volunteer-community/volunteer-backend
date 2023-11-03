@@ -1,6 +1,8 @@
 package com.maple.volunteer.domain.common;
 
 import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,5 +20,6 @@ public abstract class BaseTime {
     private LocalDateTime createdAt; // 생성 시간
 
     @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime updatedAt; // 수정 시간
 }
