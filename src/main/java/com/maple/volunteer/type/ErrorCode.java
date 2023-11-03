@@ -43,7 +43,10 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다."),
 
     //유저
-    INVALID_USER_REQUEST("유효하지 않은 사용자 요청입니다.");
+    INVALID_USER_REQUEST("유효하지 않은 사용자 요청입니다."),
+    MULTIPLE_USER_FOUND("유저 정보가 유일하지 않습니다."),
+    EXIST_USER_EMAIL("이미 가입한 이메일입니다.")
+    ;
 
 
     private final String description;
