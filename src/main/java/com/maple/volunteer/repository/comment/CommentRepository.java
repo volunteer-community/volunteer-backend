@@ -14,26 +14,32 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 존재 여부 확인
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
-            + "FROM Comment cm "
-            + "LEFT JOIN cm.poster p "
-            + "WHERE p.id = :posterId AND cm.isDelete = false")
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
+            "FROM Comment cm " +
+            "LEFT JOIN cm.poster p " +
+            "WHERE p.id = :posterId AND cm.isDelete = false")
     Optional<Boolean> existsByPosterId(@Param("posterId") Long posterId);
 
     // 댓글 조회
     @Query("SELECT NEW com.maple.volunteer.dto.comment.CommentResponseDto(" +
-            "cm.id AS commentId, "+
-            "cm.content AS commentContent,"+
-            "cm.author AS commentAuthor) "+
-            "FROM Comment cm "+
+            "cm.id AS commentId, " +
+            "cm.content AS commentContent, " +
+            "cm.author AS commentAuthor, " +
+            "cm.createdAt AS commentCreatedAt, " +
+            "cm.updatedAt AS commentUpdatedAt, " +
+            "u.profileImg AS profileImg) " +
+            "FROM Comment cm " +
             "LEFT JOIN cm.poster p " +
+            "LEFT JOIN cm.communityUser cu " +
+            "LEFT JOIN cu.user u " +
             "WHERE p.id = :posterId AND cm.isDelete = false")
     Page<CommentResponseDto> findAllCommentList(@Param("posterId") Long posterId, PageRequest pageable);
 
     // 댓글 수정
-    @Query("UPDATE Comment cm "
-            + " SET cm.content = :content "
-            + " WHERE cm.id = :commentId")
+    @Query("UPDATE Comment cm " +
+            "SET cm.content = :content, " +
+            "cm.updatedAt = CURRENT_TIMESTAMP " +
+            " WHERE cm.id = :commentId")
     @Modifying(clearAutomatically = true)
     void updateCommentContent(@Param("commentId") Long commentId, @Param("content") String content);
 
@@ -48,7 +54,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Modifying(clearAutomatically = true)
     void commentDeleteByCommentId(@Param("commentId") Long commentId);
 
-    
+
     // 커뮤니티 ID에 해당하는 댓글 삭제
     @Query("UPDATE Comment c " +
             "SET c.isDelete = :status " +
