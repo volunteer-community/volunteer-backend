@@ -271,8 +271,16 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
@@ -326,8 +334,16 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityDelete(String accessToken, Long communityId) {
 
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findById(communityId)
@@ -346,6 +362,7 @@ public class CommunityService {
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         commentRepository.CommentDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
+
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -482,19 +499,5 @@ public class CommunityService {
 
             imgNum++;
         }
-    }
-
-    // 유저 닉네임 가져오기
-    private String findUserNickname(String accessToken) {
-        // UserId 가져오기
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        // 유저 닉네임 가져오기
-        return user.getNickname();
     }
 }

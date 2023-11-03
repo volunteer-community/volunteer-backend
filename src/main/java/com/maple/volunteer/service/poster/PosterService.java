@@ -114,7 +114,6 @@ public class PosterService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         String nickName = user.getNickname();
-        String profileImg = user.getProfileImg();
 
         Poster poster = Poster.builder()
                 .title(posterRequestDto.getPosterTitle())
@@ -150,7 +149,6 @@ public class PosterService {
         if (!poster.getAuthor().equals(nickName)){
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
-        String profileImg = user.getProfileImg();
 
         poster.posterUpdate(posterRequestDto.getPosterTitle(), posterRequestDto.getPosterContent(), poster.getAuthor());
 
@@ -168,6 +166,29 @@ public class PosterService {
         return commonService.successResponse(SuccessCode.POSTER_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
+    // 게시글 posterId에 해당 되는 글만 삭제
+    @Transactional
+    public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
+
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
+        Poster poster = posterRepository.findById(posterId)
+                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+
+        String nickName = user.getNickname();
+        if(!poster.getAuthor().equals(nickName)){
+            throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
+        }
+
+        posterRepository.posterDeleteByPosterId(posterId);
+
+        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK, null);
+    }
 
     private void addPosterImg(MultipartFile multipartFile, Poster poster){
 
@@ -194,28 +215,5 @@ public class PosterService {
             s3UploadService.deletePosterImg(posterImgUrl);
         }
 
-    }
-
-    // 게시글 posterId에 해당 되는 글만 삭제
-    @Transactional
-    public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
-
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
-
-        Poster poster = posterRepository.findById(posterId)
-                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
-
-        String nickName = user.getNickname();
-        if(!poster.getAuthor().equals(nickName)){
-            throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
-        }
-
-        posterRepository.posterDeleteByPosterId(posterId);
-        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
     }
 }

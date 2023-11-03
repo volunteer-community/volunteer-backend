@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentResponseDto {
     //private Long posterId;
+    private Long userId;
     private Long commentId;
     private String commentContent;
     private String commentAuthor;
@@ -20,7 +21,8 @@ public class CommentResponseDto {
 
 
     @Builder
-    public CommentResponseDto(Long commentId, String commentContent, String commentAuthor, LocalDateTime commentCreatedAt, LocalDateTime commentUpdatedAt ,String profileImg ) {
+    public CommentResponseDto(Long userId,Long commentId, String commentContent, String commentAuthor, LocalDateTime commentCreatedAt, LocalDateTime commentUpdatedAt ,String profileImg ) {
+        this.userId = userId;
         this.commentId = commentId;
         this.commentContent = commentContent;
         this.commentAuthor = commentAuthor;

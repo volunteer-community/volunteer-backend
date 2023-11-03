@@ -155,6 +155,7 @@ public class CommentService {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
         commentRepository.commentDeleteByCommentId(commentId);
+
         return commonService.successResponse(SuccessCode.COMMENT_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 

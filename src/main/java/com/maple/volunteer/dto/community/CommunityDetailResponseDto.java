@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommunityDetailResponseDto {
 
+    private Long userId;
     private Long categoryId;
     private String categoryType;
     private Long communityId;
@@ -24,7 +25,8 @@ public class CommunityDetailResponseDto {
     private LocalDateTime communityUpdatedAt;
 
     @Builder
-    public CommunityDetailResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, LocalDateTime communityCreatedAt, LocalDateTime communityUpdatedAt) {
+    public CommunityDetailResponseDto(Long userId, Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, LocalDateTime communityCreatedAt, LocalDateTime communityUpdatedAt) {
+        this.userId = userId;
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.communityId = communityId;

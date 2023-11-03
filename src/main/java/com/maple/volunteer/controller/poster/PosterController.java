@@ -78,8 +78,8 @@ public class PosterController {
     // 게시글 posterId에 해당 되는 글만 삭제
     @DeleteMapping("/poster/{posterId}/community")
     public ResponseEntity<ResultDto<Void>> posterDeleteByCommentId(@RequestHeader("Authorization") String accessToken,
-                                                                   @PathVariable Long posterId,
-                                                                   @RequestParam(value = "communityId") Long communityId) {
+                                                                                @PathVariable Long posterId,
+                                                                                @RequestParam(value = "communityId") Long communityId) {
 
         CommonResponseDto<Object> posterDelete = posterService.posterDeleteByPosterId(accessToken, posterId, communityId);
         ResultDto<Void> result = ResultDto.in(posterDelete.getStatus(), posterDelete.getMessage());
