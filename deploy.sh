@@ -59,3 +59,4 @@ else
   echo "5. green container down"
   cd $DOCKER_DIR && docker-compose stop green
 fi
+
