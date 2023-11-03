@@ -94,6 +94,9 @@ public class UserService {
         // accessToken, refreshToken 재발급
         GeneratedToken token = jwtUtil.generateToken(userid, userRole);
 
+        login.updateRefreshToken(token.getRefreshToken());
+
+
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
