@@ -27,8 +27,8 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation, " +
-            "c.createdAt AS createdAt, " +
-            "c.updatedAt AS updatedAt) " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "WHERE c.id = :communityId ")
@@ -47,7 +47,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
@@ -66,7 +68,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.communityImgList ci " +
             "LEFT JOIN c.category cg " +
@@ -86,7 +90,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
@@ -105,7 +111,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
@@ -125,7 +133,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +

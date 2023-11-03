@@ -61,7 +61,9 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM CommunityUser cu " +
             "LEFT JOIN cu.user u " +
             "LEFT JOIN cu.community c " +

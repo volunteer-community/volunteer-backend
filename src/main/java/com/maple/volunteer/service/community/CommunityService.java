@@ -58,8 +58,6 @@ public class CommunityService {
         // UserId 가져오기
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
-        System.out.println(userId);
-
         // 유저 가져오기
         User user = userRepository.findById(userId)
                 // 유저가 없다면 오류 반환
@@ -309,6 +307,7 @@ public class CommunityService {
                 communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
                 community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
+
         if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
             community.communityRecruitmentEnd();
         }
@@ -436,8 +435,6 @@ public class CommunityService {
 
         // UserId 가져오기
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-
-        System.out.println(userId);
 
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(communityId, userId)

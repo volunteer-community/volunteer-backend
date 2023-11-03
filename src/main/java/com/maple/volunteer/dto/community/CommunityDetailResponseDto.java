@@ -20,11 +20,11 @@ public class CommunityDetailResponseDto {
     private String communityStatus;
     private String communityContent;
     private String communityLocation;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime communityCreatedAt;
+    private LocalDateTime communityUpdatedAt;
 
     @Builder
-    public CommunityDetailResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CommunityDetailResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, LocalDateTime communityCreatedAt, LocalDateTime communityUpdatedAt) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.communityId = communityId;
@@ -35,7 +35,7 @@ public class CommunityDetailResponseDto {
         this.communityStatus = communityStatus;
         this.communityContent = communityContent;
         this.communityLocation = communityLocation;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.communityCreatedAt = communityCreatedAt;
+        this.communityUpdatedAt = communityUpdatedAt;
     }
 }
