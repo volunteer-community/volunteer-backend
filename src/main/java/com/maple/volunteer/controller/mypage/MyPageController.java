@@ -50,7 +50,7 @@ public class MyPageController {
     }
 
 
-    // 마이페이 Info
+    // 마이페이지 나의활동
     @GetMapping("/mypage/myinfo")
     public ResponseEntity<ResultDto<MyPageResponseDto>> getMyInfo(@RequestHeader("Authorization") String accessToken){
 
