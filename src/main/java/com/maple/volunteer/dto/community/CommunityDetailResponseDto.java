@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 public class CommunityDetailResponseDto {
@@ -18,9 +20,11 @@ public class CommunityDetailResponseDto {
     private String communityStatus;
     private String communityContent;
     private String communityLocation;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Builder
-    public CommunityDetailResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation) {
+    public CommunityDetailResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.communityId = communityId;
@@ -31,5 +35,7 @@ public class CommunityDetailResponseDto {
         this.communityStatus = communityStatus;
         this.communityContent = communityContent;
         this.communityLocation = communityLocation;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

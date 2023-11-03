@@ -25,7 +25,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.author AS communityAuhtor," +
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
-            "c.location AS communityLocation) " +
+            "c.location AS communityLocation, " +
+            "c.createdAt AS createdAt, " +
+            "c.updatedAt AS updatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
             "WHERE c.id = :communityId ")
