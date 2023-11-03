@@ -26,7 +26,6 @@ public class HeartController {
     public ResponseEntity<ResultDto<HeartResponseDto>> toggleHeart(@RequestHeader("Authorization") String accessToken,
                                                                    @PathVariable Long posterId,
                                                                    @RequestParam("communityId") Long communityId) {
-
         CommonResponseDto<Object> addHeart = heartService.toggleHeart(accessToken,posterId,communityId);
         ResultDto<HeartResponseDto> result = ResultDto.in(addHeart.getStatus(), addHeart.getMessage());
         result.setData((HeartResponseDto)addHeart.getData());
