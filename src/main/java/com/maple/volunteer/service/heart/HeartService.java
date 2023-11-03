@@ -5,7 +5,9 @@ import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
+import com.maple.volunteer.dto.example.ExampleDto;
 import com.maple.volunteer.dto.heart.HeartRequestDto;
+import com.maple.volunteer.dto.heart.HeartResponseDto;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
@@ -36,7 +38,7 @@ public class HeartService {
 
 
     @Transactional
-    public CommonResponseDto<Object> toggleHeart(String accessToken, Long posterId ,Long communityId) {
+    public CommonResponseDto<Object> toggleHeart(String accessToken, Long posterId, Long communityId) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         //유저 존재 여부 확인
@@ -45,7 +47,8 @@ public class HeartService {
                                   .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(()-> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                                                             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
 
         Long communityUserId = communityUser.getId();
         //게시글 존재 여부 확인
@@ -72,6 +75,10 @@ public class HeartService {
             posterRepository.updateHeartCountIncrease(posterId);
             heartRepository.save(newHeart);
 
+            HeartResponseDto heartResponseDto = HeartResponseDto.builder()
+                                                                .heartStatus(true)
+                                                                .build();
+            return commonService.successResponse(SuccessCode.HEART_TOGGLE_SUCCESS.getDescription(), HttpStatus.CREATED,heartResponseDto);
         } else {
             //기존에 데이터가 있다면 2. 좋아요 상태를 변경
             Long heartId = existingHeart.getId();
@@ -81,20 +88,25 @@ public class HeartService {
 
                 //poster.heartDecrease();
                 posterRepository.updateHeartCountDecrease(posterId);
-                heartRepository.updateStatus(heartId,false);
-
+                heartRepository.updateStatus(heartId, false);
+                HeartResponseDto heartResponseDto = HeartResponseDto.builder()
+                                                                    .heartStatus(false)
+                                                                    .build();
+                return commonService.successResponse(SuccessCode.HEART_TOGGLE_CANCEL_SUCCESS.getDescription(), HttpStatus.CREATED,heartResponseDto);
 
             } else {
                 //status:false -> true ( 좋아요 다시 생성 )
 
                 //poster.heartIncrease();
                 posterRepository.updateHeartCountIncrease(posterId);
-                heartRepository.updateStatus(heartId,true);
+                heartRepository.updateStatus(heartId, true);
+                HeartResponseDto heartResponseDto = HeartResponseDto.builder()
+                                                                    .heartStatus(true)
+                                                                    .build();
+                return commonService.successResponse(SuccessCode.HEART_TOGGLE_SUCCESS.getDescription(), HttpStatus.CREATED,heartResponseDto);
             }
         }
 
-
-        return commonService.successResponse(SuccessCode.HEART_TOGGLE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
 
 

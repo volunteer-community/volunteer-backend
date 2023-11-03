@@ -36,28 +36,25 @@ import java.util.Optional;
 @Service
 public class PosterService {
 
+    private final JwtUtil jwtUtil;
     private final CommonService commonService;
-
+    private final S3UploadService s3UploadService;
+    private final UserRepository userRepository;
     private final PosterRepository posterRepository;
     private final CommunityUserRepository communityUserRepository;
-    private final UserRepository userRepository;
     private final PosterImgRepository posterImgRepository;
-    private final S3UploadService s3UploadService;
-    private final JwtUtil jwtUtil;
 
 
     //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
     //TODO: userID & communityID & iswithDraw(false)
     //전체조회
-    public CommonResponseDto<Object> allPosterInquiry(Long communityId, String accessToken, int page, int size, String sortBy) {
+    public CommonResponseDto<Object> allPosterInquiry(String accessToken, Long communityId, int page, int size, String sortBy) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
+        userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
@@ -89,14 +86,9 @@ public class PosterService {
     }
 
     //상세조회
-    public CommonResponseDto<Object> posterDetailInquiry(Long posterId, Long communityId, String accessToken) {
+    public CommonResponseDto<Object> posterDetailInquiry(String accessToken, Long posterId, Long communityId) {
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         PosterDetailResponseDto posterDetailResponseDto = posterRepository.findPosterDetailByCommunityIdAndPosterId(communityId, posterId)
@@ -110,10 +102,9 @@ public class PosterService {
     }
 
 
-
     // 게시글 생성
     @Transactional
-    public CommonResponseDto<Object> posterCreate(Long communityId, String accessToken,
+    public CommonResponseDto<Object> posterCreate(String accessToken, Long communityId,
                                                   MultipartFile multipartFile, PosterRequestDto posterRequestDto) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
@@ -121,6 +112,7 @@ public class PosterService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
         String nickName = user.getNickname();
         String profileImg = user.getProfileImg();
 
@@ -143,13 +135,13 @@ public class PosterService {
 
     // 게시글 수정
     @Transactional
-    public CommonResponseDto<Object> posterUpdate(Long posterId, Long communityId,
-                                                  String accessToken, MultipartFile multipartFile, PosterRequestDto posterRequestDto) {
+    public CommonResponseDto<Object> posterUpdate(String accessToken, Long posterId, Long communityId,
+                                                   MultipartFile multipartFile, PosterRequestDto posterRequestDto) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
         Poster poster = posterRepository.findById(posterId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
@@ -206,13 +198,13 @@ public class PosterService {
 
     // 게시글 posterId에 해당 되는 글만 삭제
     @Transactional
-    public CommonResponseDto<Object> posterDeleteByPosterId(Long posterId, Long communityId, String accessToken) {
+    public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         // 유저 가져오기
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Poster poster = posterRepository.findById(posterId)
@@ -225,19 +217,5 @@ public class PosterService {
 
         posterRepository.posterDeleteByPosterId(posterId);
         return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
-    }
-
-    // 유저 닉네임 가져오기
-    private String findUserNickname(String accessToken) {
-        // UserId 가져오기
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        // 유저 닉네임 가져오기
-        return user.getNickname();
     }
 }

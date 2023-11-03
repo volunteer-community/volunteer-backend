@@ -1,13 +1,19 @@
 package com.maple.volunteer.controller.mypage;
 
+import com.maple.volunteer.dto.comment.CommentListResponseDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.community.CommunityResponseDto;
+import com.maple.volunteer.dto.mypage.MyPageResponseDto;
+import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.mypage.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class MyPageController {
 
     private final MyPageService myPageService;
+    private final JwtUtil jwtUtil;
 
     // 내가 만든 커뮤니티 API
     @GetMapping("/mypage/community")
@@ -42,4 +49,15 @@ public class MyPageController {
         return ResponseEntity.status(myCommunitySignList.getHttpStatus()).body(result);
     }
 
+
+    // 마이페이지 나의활동
+    @GetMapping("/mypage/myinfo")
+    public ResponseEntity<ResultDto<MyPageResponseDto>> getMyInfo(@RequestHeader("Authorization") String accessToken){
+
+        CommonResponseDto<Object> allMyInfo = myPageService.getMyInfo(accessToken);
+        ResultDto<MyPageResponseDto> result = ResultDto.in(allMyInfo.getStatus(), allMyInfo.getMessage());
+        result.setData((MyPageResponseDto) allMyInfo.getData());
+
+        return ResponseEntity.status(allMyInfo.getHttpStatus()).body(result);
+    }
 }

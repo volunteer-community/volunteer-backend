@@ -13,6 +13,7 @@ import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
+import com.maple.volunteer.type.Role;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,9 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -41,8 +40,10 @@ public class UserService {
     @Transactional
     public CommonResponseDto<Object> login(String email, String role) {
         // email로 User(false) get
-        User user = userRepository.findActiveUserByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        List<User> userList = userRepository.findActiveUserByEmail2(email);
+        if(userList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
+        else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
+        User user = userList.get(0);
         Long userId = user.getId();
 
         // accessToken, refreshToken 발행
@@ -105,42 +106,50 @@ public class UserService {
 
     // 회원가입
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
+        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+        if(userList.size()==1)return commonService.errorResponse(ErrorCode.EXIST_USER_EMAIL.getDescription(), HttpStatus.BAD_REQUEST,null);
+        else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
+        //email의 active유저값이 없을때
         if(findByPhoneNumber(signupDto.getPhoneNumber())){
             if(findByNickName(signupDto.getNickname())){
-                User user = User.builder()
-                        .phoneNumber(signupDto.getPhoneNumber())
-                        .name(signupDto.getName())
-                        .role(signupDto.getRole())
-                        .email(signupDto.getEmail())
-                        .profileImg(signupDto.getPicture())
-                        .nickname(signupDto.getNickname())
-                        .build();
-                userRepository.save(user);
-
                 // email로 User(false) get
-                User user2 = userRepository.findActiveUserByEmail(signupDto.getEmail())
-                        .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                    User user = User.builder()
+                            .phoneNumber(signupDto.getPhoneNumber())
+                            .name(signupDto.getName())
+                            .role(signupDto.getRole())
+                            .email(signupDto.getEmail())
+                            .profileImg(signupDto.getPicture())
+                            .nickname(signupDto.getNickname())
+                            .build();
+                    userRepository.save(user);
 
-                Long userId = user.getId();
-                String userRole = user.getRole().getKey();
+                    //회원가입한 사람을 로그인시키기
+                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+                if(loginedUserList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
+                else if(loginedUserList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
 
-                GeneratedToken token = jwtUtil.generateToken(userId, userRole);
+                    User loginUser = loginedUserList.get(0);
+                    Long userId = loginUser.getId();
+                    String userRole = loginUser.getRole().getKey();
 
-                Login login = Login.builder()
-                        .user(user2)
-                        .provider(signupDto.getProvider())
-                        .refreshToken(token.getRefreshToken())
-                        .build();
+                    GeneratedToken token = jwtUtil.generateToken(userId, userRole);
 
-                loginRepository.save(login);
+                    Login login = Login.builder()
+                            .user(loginUser)
+                            .provider(signupDto.getProvider())
+                            .refreshToken(token.getRefreshToken())
+                            .build();
 
-                TokenDto tokenDto = TokenDto.builder()
-                        .accessToken(token.getAccessToken())
-                        .refreshToken(token.getRefreshToken())
-                        .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                        .build();
+                    loginRepository.save(login);
 
-                return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);}
+                    TokenDto tokenDto = TokenDto.builder()
+                            .accessToken(token.getAccessToken())
+                            .refreshToken(token.getRefreshToken())
+                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                            .build();
+
+                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+            }
             else{
                 //이미 가입한 닉네임
                 return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
@@ -161,10 +170,13 @@ public class UserService {
         return userOptional.isEmpty();
     }
 
-    public CommonResponseDto<Object> addinfo(String email, String picture) {
+    public CommonResponseDto<Object> addinfo(String email, String picture, String role, String name, String provider) {
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail(email);
         newUserDto.setPicture(picture);
+        newUserDto.setRole(role);
+        newUserDto.setName(name);
+        newUserDto.setProvider(provider);
         return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
     }
 
