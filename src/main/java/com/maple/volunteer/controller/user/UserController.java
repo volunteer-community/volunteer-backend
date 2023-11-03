@@ -4,6 +4,7 @@ import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.user.*;
 import com.maple.volunteer.service.user.UserService;
+import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,11 @@ public class UserController {
     // 처음 로그인 한 회원 이메일과 프사 넘겨주기
     @GetMapping("/addInfo")
     public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email,
-                                                         @RequestParam("picture") String picture){
-        CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture);
+                                                         @RequestParam("picture") String picture,
+                                                         @RequestParam("role") String role,
+                                                         @RequestParam("name")String name,
+                                                         @RequestParam("provider")String provider){
+        CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture,role,name,provider);
         ResultDto<NewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
         result.setData((NewUserDto) commonResponseDto.getData());
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
