@@ -27,7 +27,9 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "p.author AS posterAuthor, " +
             "p.heartCount AS heartCount, " +
             "pi.imagePath AS posterImgPath, " +
-            "u.profileImg AS profileImg) " +
+            "u.profileImg AS profileImg, " +
+            "p.createdAt AS posterCreatedAt, " +
+            "p.updatedAt AS posterUpdatedAt) " +
             "FROM Poster p " +
             "LEFT JOIN p.posterImgList pi "+
             "LEFT JOIN p.communityUser cu " +
@@ -45,7 +47,9 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "p.content AS posterContent, " +
             "p.heartCount AS heartCount, " +
             "pi.imagePath AS posterImgPath, " +
-            "u.profileImg AS profileImg) " +
+            "u.profileImg AS profileImg, " +
+            "p.createdAt AS posterCreatedAt, " +
+            "p.updatedAt AS posterUpdatedAt) " +
             "FROM Poster p " +
             "LEFT JOIN p.posterImgList pi " +
             "LEFT JOIN p.communityUser cu " +

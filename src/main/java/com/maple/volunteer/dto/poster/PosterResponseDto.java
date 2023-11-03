@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 public class PosterResponseDto {
@@ -13,13 +15,15 @@ public class PosterResponseDto {
     private String posterAuthor;  // 게시글 작성자
     private Integer heartCount;  // 게시글 좋아요 수
     private String posterImgPath; // 게시글 이미지
-    private String profileImg;
+    private String profileImg; // 프로필 이미지
+    private LocalDateTime posterCreatedAt;
+    private LocalDateTime posterUpdatedAt;
 
     // 댓글 개수
 
     @Builder
     public PosterResponseDto(Long posterId, String posterTitle, String posterAuthor, String posterContent,
-                              Integer heartCount,String posterImgPath,String profileImg){
+                              Integer heartCount,String posterImgPath,String profileImg,LocalDateTime posterCreatedAt, LocalDateTime posterUpdatedAt){
         this.posterId = posterId;
         this.posterTitle = posterTitle;
         this.posterAuthor = posterAuthor;
@@ -27,7 +31,8 @@ public class PosterResponseDto {
         this.heartCount = heartCount;
         this.posterImgPath = posterImgPath;
         this.profileImg = profileImg;
-
+        this.posterCreatedAt = posterCreatedAt;
+        this.posterUpdatedAt = posterUpdatedAt;
     }
 
 }
