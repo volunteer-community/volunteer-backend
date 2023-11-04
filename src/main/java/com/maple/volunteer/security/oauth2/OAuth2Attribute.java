@@ -1,6 +1,5 @@
 package com.maple.volunteer.security.oauth2;
 
-import com.maple.volunteer.type.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,16 @@ public class OAuth2Attribute {
     private String provider;
 
     static OAuth2Attribute of(String provider, String attributeKey, Map<String, Object> attributes) {
-        return ofGoogle(provider, attributeKey, attributes);
+        switch (provider) {
+            case "google":
+                return ofGoogle(provider, attributeKey, attributes);
+            case "naver":
+                return ofNaver(provider, attributes);
+            case "kakao":
+                return ofKakao(provider, attributes);
+            default:
+                throw new RuntimeException();
+        }
     }
 
     private static OAuth2Attribute ofGoogle(String provider, String attributeKey, Map<String, Object> attributes) {
@@ -32,6 +40,33 @@ public class OAuth2Attribute {
                 .picture((String)attributes.get("picture"))
                 .attributes(attributes)
                 .attributeKey(attributeKey)
+                .build();
+    }
+
+    private static OAuth2Attribute ofNaver(String provider, Map<String, Object> attributes) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        return OAuth2Attribute.builder()
+                .email((String) response.get("email"))
+                .provider(provider)
+                .name((String) response.get("name"))
+                .picture((String) response.get("profile_image"))
+                .attributes(response)
+                .attributeKey("id")
+                .build();
+    }
+
+    private static OAuth2Attribute ofKakao(String provider, Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
+
+        return OAuth2Attribute.builder()
+                .email((String) kakaoAccount.get("email"))
+                .provider(provider)
+                .name((String) kakaoProfile.get("nickname"))
+                .picture((String) kakaoProfile.get("profile_image_url"))
+                .attributes(attributes)
+                .attributeKey("id")
                 .build();
     }
 
