@@ -16,18 +16,18 @@ public class UserController {
 
     private final UserService userService;
 
-    // 처음 로그인 한 회원 이메일과 프사 넘겨주기
-    @GetMapping("/addInfo")
-    public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email,
-                                                         @RequestParam("picture") String picture,
-                                                         @RequestParam("role") String role,
-                                                         @RequestParam("name")String name,
-                                                         @RequestParam("provider")String provider){
-        CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture,role,name,provider);
-        ResultDto<NewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((NewUserDto) commonResponseDto.getData());
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-    }
+    // 처음 로그인 한 회원 이메일과 프사 넘겨주기 안쓰겠죠..?
+//    @GetMapping("/addInfo")
+//    public ResponseEntity<ResultDto<NewUserDto>> addInfo(@RequestParam("email") String email,
+//                                                         @RequestParam("picture") String picture,
+//                                                         @RequestParam("role") String role,
+//                                                         @RequestParam("name")String name,
+//                                                         @RequestParam("provider")String provider){
+//        CommonResponseDto<Object> commonResponseDto = userService.addinfo(email,picture,role,name,provider);
+//        ResultDto<NewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+//        result.setData((NewUserDto) commonResponseDto.getData());
+//        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+//    }
 
     // 회원가입 시키기기
     @PostMapping("/signup")
