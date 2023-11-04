@@ -111,7 +111,7 @@ public class UserService {
 
     // 회원가입
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
-        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail(), signupDto.getProvider());
         if(userList.size()==1)return commonService.errorResponse(ErrorCode.EXIST_USER_EMAIL.getDescription(), HttpStatus.BAD_REQUEST,null);
         else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
         //email의 active유저값이 없을때
@@ -125,13 +125,13 @@ public class UserService {
                             .email(signupDto.getEmail())
                             .profileImg(signupDto.getPicture())
                             .nickname(signupDto.getNickname())
-                            .provider(null)
+                            .provider(signupDto.getProvider())
                             .isDeleted(false)
                             .build();
                     userRepository.save(user);
 
                     //회원가입한 사람을 로그인시키기
-                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail(),signupDto.getProvider());
                 if(loginedUserList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
                 else if(loginedUserList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
 
@@ -176,15 +176,15 @@ public class UserService {
         return userOptional.isEmpty();
     }
 
-    public CommonResponseDto<Object> addinfo(String email, String picture, String role, String name, String provider) {
-        NewUserDto newUserDto = new NewUserDto();
-        newUserDto.setEmail(email);
-        newUserDto.setPicture(picture);
-        newUserDto.setRole(role);
-        newUserDto.setName(name);
-        newUserDto.setProvider(provider);
-        return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
-    }
+//    public CommonResponseDto<Object> addinfo(String email, String picture, String role, String name, String provider) {
+//        NewUserDto newUserDto = new NewUserDto();
+//        newUserDto.setEmail(email);
+//        newUserDto.setPicture(picture);
+//        newUserDto.setRole(role);
+//        newUserDto.setName(name);
+//        newUserDto.setProvider(provider);
+//        return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
+//    }
 
     // 유저 조회 (true, false 모두)
     public CommonResponseDto<Object> allUserInquiry (int page, int size, String sortBy ) {
