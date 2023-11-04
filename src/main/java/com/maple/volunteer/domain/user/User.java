@@ -51,5 +51,7 @@ public class User extends BaseTime {
         this.isDeleted = isDeleted;
     }
 
-
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
 }

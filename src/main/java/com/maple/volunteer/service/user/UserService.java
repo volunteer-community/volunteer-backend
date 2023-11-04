@@ -38,10 +38,14 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public CommonResponseDto<Object> login(String email, String role, String provider) {
+    public CommonResponseDto<Object> login(String email, String role, String provider, String profileImg) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.getProfileImg().equals(profileImg)) {
+            user.updateProfileImg(profileImg);
+        }
 
         Long userId = user.getId();
 

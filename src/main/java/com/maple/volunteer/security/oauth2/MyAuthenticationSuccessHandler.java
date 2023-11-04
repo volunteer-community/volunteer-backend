@@ -39,6 +39,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .queryParam("email", email)
                     .queryParam("role", role)
                     .queryParam("provider", provider)
+                    .queryParam("profileImg", picture)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
