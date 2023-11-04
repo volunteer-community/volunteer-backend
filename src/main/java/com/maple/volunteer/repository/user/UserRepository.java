@@ -19,8 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email")
     Optional<User> findActiveUserByEmail(@Param("email") String email);
 
-    @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email")
-    List<User> findActiveUserByEmail2(@Param("email") String email);
+    @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email and u.provider = :provider")
+    List<User> findActiveUserByEmail2(@Param("email") String email, @Param("provider")String provider);
 
     Page<User> findAll(Pageable pageable);
 
