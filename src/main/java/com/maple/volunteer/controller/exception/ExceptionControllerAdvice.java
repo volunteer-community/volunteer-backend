@@ -5,6 +5,7 @@ import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.exception.*;
 import com.maple.volunteer.service.common.CommonService;
+import com.maple.volunteer.type.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,4 +45,5 @@ public class ExceptionControllerAdvice {
 
         return ResponseEntity.status(badRequestException.getHttpStatus()).body(result);
     }
+
 }
