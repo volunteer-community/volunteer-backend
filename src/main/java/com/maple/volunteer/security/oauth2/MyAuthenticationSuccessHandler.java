@@ -48,7 +48,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
             // 회원이 존재하지 않으면
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/addInfo")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/signup.html")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
