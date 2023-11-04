@@ -34,7 +34,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         // 이미 로그인 했던 회원
         if (isExist){
             // user 정보를 쿼리스트링에 담는 url 생성
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/login")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://13.209.253.193/maple/user/login")
                     .queryParam("email", email)
                     .queryParam("role", role)
                     .build()
@@ -45,7 +45,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
             // 회원이 존재하지 않으면
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/addInfo")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
