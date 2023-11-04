@@ -47,10 +47,10 @@ public class SecurityConfig {
                     .antMatchers("/maple/**").permitAll()
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정
-                .successHandler(myAuthenticationSuccessHandler)
-                .failureHandler(myAuthenticationFailureHandler)
                 .userInfoEndpoint().userService(customOAuth2UserService)
-                ;
+                .and()
+                .failureHandler(myAuthenticationFailureHandler)
+                .successHandler(myAuthenticationSuccessHandler);
 
 
         return httpSecurity
