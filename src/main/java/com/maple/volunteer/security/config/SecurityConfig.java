@@ -35,10 +35,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .headers().frameOptions().sameOrigin().disable()
+                .headers().frameOptions().disable()
+                .and()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .cors().and()
+                .cors().configurationSource(configurationSource())
+                .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
