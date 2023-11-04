@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -75,6 +76,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "   WHERE cu.user.id = :userId)")
     @Modifying(clearAutomatically = true)
     void CommentDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
+
+    // 게시글 ID로 댓글 가져오기
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "LEFT JOIN cm.poster p " +
+            "WHERE p.id = :posterId")
+    List<Comment> findAllCommentByPosterId(@Param("posterId") Long posterId);
 
     @Query("SELECT COUNT(cm) " +
             "FROM Comment cm " +
