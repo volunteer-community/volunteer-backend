@@ -38,6 +38,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/maple/user/login")
                     .queryParam("email", email)
                     .queryParam("role", role)
+                    .queryParam("provider", provider)
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();

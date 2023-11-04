@@ -48,7 +48,8 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
 
         // 사용자 email get 및 회원 여부 판별
         String email = (String) userAttribute.get("email");
-        Optional<User> findUser = userRepository.findActiveUserByEmail(email);
+        String provider = (String) userAttribute.get("provider");
+        Optional<User> findUser = userRepository.findActiveUserByEmailAndProvider(email, provider);
 
         if(findUser.isEmpty()){
             userAttribute.put("exist", false);
@@ -58,7 +59,6 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                     userAttribute, "email");
         }
-
 
         userAttribute.put("exist", true);
 

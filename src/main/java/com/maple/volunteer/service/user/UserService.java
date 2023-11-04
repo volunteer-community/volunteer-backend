@@ -38,12 +38,11 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public CommonResponseDto<Object> login(String email, String role) {
-        // email로 User(false) get
-        List<User> userList = userRepository.findActiveUserByEmail2(email);
-        if(userList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-        else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-        User user = userList.get(0);
+    public CommonResponseDto<Object> login(String email, String role, String provider) {
+        // email, provider로 User(false) get
+        User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         Long userId = user.getId();
 
         // accessToken, refreshToken 발행
@@ -93,6 +92,8 @@ public class UserService {
 
         // accessToken, refreshToken 재발급
         GeneratedToken token = jwtUtil.generateToken(userid, userRole);
+
+        login.updateRefreshToken(token.getRefreshToken());
 
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(token.getAccessToken())
