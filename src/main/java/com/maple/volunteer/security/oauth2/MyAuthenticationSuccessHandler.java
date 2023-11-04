@@ -44,18 +44,17 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             // 정보 받아서 Controller url 리다이렉트
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
-            response.sendRedirect("http://localhost:3000/signup");
-//            // 회원이 존재하지 않으면
-//            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup")
-//                    .queryParam("email", email)
-//                    .queryParam("provider", provider)
-//                    .queryParam("role", role)
-//                    .queryParam("name", name)
-//                    .queryParam("picture", picture)
-//                    .build()
-//                    .encode(StandardCharsets.UTF_8)
-//                    .toUriString();
-//            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            // 회원이 존재하지 않으면
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login")
+                    .queryParam("email", email)
+                    .queryParam("provider", provider)
+                    .queryParam("role", role)
+                    .queryParam("name", name)
+                    .queryParam("picture", picture)
+                    .build()
+                    .encode(StandardCharsets.UTF_8)
+                    .toUriString();
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
     }
 }
