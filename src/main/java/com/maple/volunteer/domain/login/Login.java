@@ -29,4 +29,9 @@ public class Login {
         this.refreshToken = refreshToken;
         this.user = user;
     }
+
+    // 리프레쉬 토큰 업데이트
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
