@@ -39,7 +39,7 @@ public class UserController {
     }
 
     // 로그인
-    @PostMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
                                                          @RequestParam("role") String role){
 
