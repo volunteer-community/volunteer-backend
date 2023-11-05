@@ -2,8 +2,6 @@ package com.maple.volunteer.controller.heart;
 
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.dto.example.ExampleDto;
-import com.maple.volunteer.dto.heart.HeartRequestDto;
 import com.maple.volunteer.dto.heart.HeartResponseDto;
 import com.maple.volunteer.service.heart.HeartService;
 import lombok.RequiredArgsConstructor;

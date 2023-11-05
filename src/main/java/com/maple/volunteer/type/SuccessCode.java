@@ -6,8 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SuccessCode {
-
-    EXAMPLE_SUCCESS("예시 성공 코드 입니다."),
   
     // 카테고리
     CATEGORY_INSERT_SUCCESS("카테고리 등록에 성공 했습니다."),
