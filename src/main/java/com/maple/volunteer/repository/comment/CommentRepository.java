@@ -87,4 +87,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE cu.id = :communityUserId AND cm.isDelete = false ")
     Integer countByCommunityUserId(@Param("communityUserId") Long communityUserId);
 
+    // commentId에 해당되는 댓글 삭제 여부 확인
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "WHERE cm.id = :commentId AND cm.isDelete = :status ")
+    Optional<Comment> findByIdAndIsDelete(@Param("commentId") Long commentId,@Param("status") Boolean status);
 }

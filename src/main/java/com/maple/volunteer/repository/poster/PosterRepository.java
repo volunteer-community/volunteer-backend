@@ -115,10 +115,11 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void posterDeleteByPosterId(@Param("posterId") Long posterId);
 
+    // 게시글 posterId에 해당 되는 삭제되어있는 지 여부 확인
     @Query("SELECT p " +
             "FROM Poster p " +
-            "WHERE p.id = :posterId AND p.isDelete = false ")
-    Optional<Poster> findByIdAndIsDelete(@Param("posterId") Long posterId);
+            "WHERE p.id = :posterId AND p.isDelete = :status ")
+    Optional<Poster> findByIdAndIsDelete(@Param("posterId") Long posterId ,@Param("status") Boolean status);
 
     @Query("SELECT p " +
             "FROM Poster p " +

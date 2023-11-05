@@ -444,12 +444,9 @@ public class CommunityService {
             community.communityRecruitmentIng();
         }
 
-        //탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
+        // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
-            //1. 유저Id에 해당되는 게시글 삭제/댓글 삭제
-
-
-            //2. 유저ID에 해당되는 게시글 리스트 가져오기
+            //1. 유저ID에 해당되는 게시글 리스트 가져오기
             List<Poster> posterList = posterRepository.findByPosterListUserId(userId);
 
             for (Poster eachPoster : posterList) {
@@ -474,10 +471,12 @@ public class CommunityService {
 
             }
 
-        //탈퇴하는 유저ID가 누른 타인의 게시글에서 좋아요 개수 -1 시키기 , 좋아요 false 시키기
+        // 탈퇴하는 유저ID가 누른 타인의 게시글에서 좋아요 개수 -1 시키기 , 좋아요 false 시키기
 
             List<Heart> heartListByPosterId = heartRepository.findHeartListUserId(userId);
+
             for(Heart eachHeartPosterId : heartListByPosterId){
+
                 Long heartId = eachHeartPosterId.getId();
                 Long posterId = eachHeartPosterId.getPoster().getId();
 
@@ -485,13 +484,10 @@ public class CommunityService {
                 posterRepository.updateHeartCountDecrease(posterId);
             }
 
-        posterRepository.PosterDeleteByUserId(userId, true);
-        commentRepository.CommentDeleteByUserId(userId, true);
+        //유저Id에 해당되는 게시글 삭제/댓글 삭제
 
-
-        // 유저 ID에 해당하는 게시글 및 댓글 삭제
-        //posterRepository.PosterDeleteByUserId(userId, true);
-        //commentRepository.CommentDeleteByUserId(userId, true);
+            posterRepository.PosterDeleteByUserId(userId, true);
+            commentRepository.CommentDeleteByUserId(userId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
