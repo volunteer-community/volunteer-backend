@@ -45,6 +45,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
     // 게시글이 삭제 되었을 때 게시글에 해당되는 댓글 전체 삭제
+    @Query("UPDATE Comment cm "
+            + " SET cm.isDelete = true "
+            + " WHERE cm.poster.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void commentDeleteByPosterId(@Param("posterId") Long posterId);
 
 
     // commentId에 해당되는 댓글만 삭제

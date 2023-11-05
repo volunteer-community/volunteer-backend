@@ -124,8 +124,8 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "FROM Poster p " +
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.user u " +
-            "WHERE u.id = :userId AND cu.isWithdraw = false ")
-    List<Poster> findByCommunityUserId(@Param("userId") Long userId);
+            "WHERE u.id = :userId ")
+    List<Poster> findByPosterListUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(p.heartCount) " +
             "FROM Poster p " +
@@ -139,5 +139,16 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "(SELECT cu.id FROM CommunityUser cu " +
             "WHERE cu.user.id = :userId AND cu.isWithdraw = false)")
     Integer numberOfLikedPoster(@Param("userId") Long userId);
+
+    @Query("SELECT (p.heartCount - 1)" +
+            "FROM Poster p " +
+            "WHERE p.id =:posterId ")
+    void heartDeleteByPosterId(@Param("posterId") Long posterId);
+
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = 0 " +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountZero(@Param("posterId") Long posterId);
 
 }
