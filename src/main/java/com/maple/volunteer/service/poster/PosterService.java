@@ -113,7 +113,6 @@ public class PosterService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         String nickName = user.getNickname();
-        String profileImg = user.getProfileImg();
 
         Poster poster = Poster.builder()
                 .title(posterRequestDto.getPosterTitle())
@@ -149,7 +148,6 @@ public class PosterService {
         if (!poster.getAuthor().equals(nickName)){
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
-        String profileImg = user.getProfileImg();
 
         poster.posterUpdate(posterRequestDto.getPosterTitle(), posterRequestDto.getPosterContent(), poster.getAuthor());
 
