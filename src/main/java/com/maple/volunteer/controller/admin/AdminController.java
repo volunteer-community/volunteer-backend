@@ -1,16 +1,15 @@
 package com.maple.volunteer.controller.admin;
 
+import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.admin.AllUserListDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
+import com.maple.volunteer.dto.user.UserDto;
 import com.maple.volunteer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +19,8 @@ public class AdminController {
     private final UserService userService;
 
     // 전체 회원 조회 (탈퇴 포함)
-    @GetMapping("/user")
-    public ResponseEntity<ResultDto<AllUserListDto>> allCommunityInquiry(@RequestParam(value = "page", defaultValue = "1", required = false) int page,
+    @GetMapping("/allUser")
+    public ResponseEntity<ResultDto<AllUserListDto>> allUserInquiry(@RequestParam(value = "page", defaultValue = "1", required = false) int page,
                                                                       @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                       @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
 
@@ -30,5 +29,16 @@ public class AdminController {
         result.setData((AllUserListDto) allUserInquiry.getData());
 
         return ResponseEntity.status(allUserInquiry.getHttpStatus()).body(result);
+    }
+
+    // 닉네임으로 회원 조회 (탈퇴 포함)
+    @GetMapping("/user")
+    public ResponseEntity<ResultDto<UserDto>> userInquiry(@RequestParam("nickname") String nickname) {
+
+        CommonResponseDto<Object> userInquiry = userService.userInquiryByNickname(nickname);
+        ResultDto<UserDto> result = ResultDto.in(userInquiry.getStatus(), userInquiry.getMessage());
+        result.setData((UserDto) userInquiry.getData());
+
+        return ResponseEntity.status(userInquiry.getHttpStatus()).body(result);
     }
 }

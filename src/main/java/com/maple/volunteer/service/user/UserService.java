@@ -60,6 +60,7 @@ public class UserService {
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
 
         return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
@@ -152,6 +153,7 @@ public class UserService {
                             .accessToken(token.getAccessToken())
                             .refreshToken(token.getRefreshToken())
                             .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                             .build();
 
                     return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
@@ -226,6 +228,25 @@ public class UserService {
                 .build();
 
         return commonService.successResponse(SuccessCode.ALL_USER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allUserListDto);
+    }
+
+    // 닉네임으로 회원 조회 (true, false 모두)
+    public CommonResponseDto<Object> userInquiryByNickname (String nickname) {
+
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        UserDto userDto = UserDto.builder()
+                .name(user.getName())
+                .provider(user.getProvider())
+                .phoneNumber(user.getPhoneNumber())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .profileImg(user.getProfileImg())
+                .isDeleted(user.isDeleted())
+                .build();
+
+        return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, userDto);
     }
 
     public CommonResponseDto<Object> nicknameCheck(CheckDto checkDto) {
