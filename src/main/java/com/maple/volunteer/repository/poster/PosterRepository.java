@@ -137,17 +137,18 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void posterDeleteByPosterId(@Param("posterId") Long posterId);
 
+    // 게시글 posterId에 해당 되는 삭제되어있는 지 여부 확인
     @Query("SELECT p " +
             "FROM Poster p " +
-            "WHERE p.id = :posterId AND p.isDelete = false ")
-    Optional<Poster> findByIdAndIsDelete(@Param("posterId") Long posterId);
+            "WHERE p.id = :posterId AND p.isDelete = :status ")
+    Optional<Poster> findByIdAndIsDelete(@Param("posterId") Long posterId ,@Param("status") Boolean status);
 
     @Query("SELECT p " +
             "FROM Poster p " +
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.user u " +
-            "WHERE u.id = :userId AND cu.isWithdraw = false ")
-    List<Poster> findByCommunityUserId(@Param("userId") Long userId);
+            "WHERE u.id = :userId ")
+    List<Poster> findByPosterListUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(p.heartCount) " +
             "FROM Poster p " +
@@ -161,5 +162,16 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "(SELECT cu.id FROM CommunityUser cu " +
             "WHERE cu.user.id = :userId AND cu.isWithdraw = false)")
     Integer numberOfLikedPoster(@Param("userId") Long userId);
+
+    @Query("SELECT (p.heartCount - 1)" +
+            "FROM Poster p " +
+            "WHERE p.id =:posterId ")
+    void heartDeleteByPosterId(@Param("posterId") Long posterId);
+
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = 0 " +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountZero(@Param("posterId") Long posterId);
 
 }

@@ -57,7 +57,7 @@ public class HeartService {
        /* Poster poster = posterRepository.findByIdAndIsDelete(posterId)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));*/
 
-        Poster poster = posterRepository.findByIdAndIsDelete(posterId)
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
                                         .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         // 기존 좋아요 존재

@@ -45,8 +45,7 @@ public class PosterService {
     private final PosterImgRepository posterImgRepository;
 
 
-    //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
-    //TODO: userID & communityID & iswithDraw(false)
+
     //전체조회
     public CommonResponseDto<Object> allPosterInquiry(String accessToken, Long communityId, int page, int size, String sortBy) {
 
@@ -143,7 +142,7 @@ public class PosterService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
-        Poster poster = posterRepository.findById(posterId)
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
@@ -207,8 +206,8 @@ public class PosterService {
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
-        Poster poster = posterRepository.findById(posterId)
-                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
+                                           .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
         if(!poster.getAuthor().equals(nickName)){
