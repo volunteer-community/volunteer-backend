@@ -54,7 +54,7 @@ public class UserController {
 //    }
 
     // 회원가입 시키기 테스트
-    @PostMapping("/signup")
+    @PostMapping("/signup/add")
     public ResponseEntity<ResultDto<TokenDto>> signUp(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
