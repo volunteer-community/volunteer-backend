@@ -21,7 +21,6 @@ public class PosterImg {
     private String imagePath; // 게시글 이미지 URL
     private Integer imageNum;   // 게시글 이미지 번호
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
     private Poster poster;

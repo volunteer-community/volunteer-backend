@@ -20,16 +20,17 @@ public class CommunityImg {
 
     private String imagePath; // 커뮤니티 이미지 URL
     private Integer imageNum; // 커뮤니티 이미지 번호
+    private Boolean isDelete;   // 커뮤니티 이미지 삭제 유무
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community community;
 
     @Builder
-    public CommunityImg(String imagePath, Integer imageNum, Community community) {
+    public CommunityImg(String imagePath, Integer imageNum, Community community,Boolean isDelete) {
         this.imagePath = imagePath;
         this.imageNum = imageNum;
         this.community = community;
+        this.isDelete = isDelete;
     }
 }

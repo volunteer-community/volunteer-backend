@@ -50,15 +50,15 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
 
             // 쿠키를 HttpServletResponse에 추가
-            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, accessTokenExpiration);
-            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, refreshTokenExpiration);
+            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, false, false, accessTokenExpiration, "None");
+            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, false, false, refreshTokenExpiration, "None");
 
             // redirect url
-            response.sendRedirect("http://localhost:8080/loginsuccess.html");
+            response.sendRedirect("http://localhost:3000");
 
         } else {
             // 회원이 존재하지 않으면
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/signup.html")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
@@ -72,18 +72,22 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
     }
 
     // 쿠키 생성 후 response에 추가
-    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, LocalDateTime expirationDateTime) {
+    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, boolean httpOnly, LocalDateTime expirationDateTime, String sameSite) {
         ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
         ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
         Instant instant = zonedDateTime.toInstant();
         long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
 
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(secure); // Set this to true if using HTTPS
-        cookie.setPath("/"); // Set the path according to your requirement
-        cookie.setMaxAge((int) maxAge); // Set the expiration date in seconds from now
 
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie(name, value);
+//        cookie.setHttpOnly(false);
+//        cookie.setDomain("localhost");
+//        cookie.setPath("/"); // Set the path according to your requirement
+//        cookie.setMaxAge((int) maxAge); // Set the expiration date in seconds from now
+//
+//        response.addCookie(cookie);
+
+        String cookieValue = String.format("%s=%s; Secure=%b; HttpOnly=%b; Max-Age=%d; Path=/; SameSite=%s", name, value, secure, httpOnly, maxAge, sameSite);
+        response.addHeader("Set-Cookie", cookieValue);
     }
 }

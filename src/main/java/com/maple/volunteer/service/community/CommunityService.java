@@ -59,8 +59,17 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
+
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 카테고리 가져오기
         Category category = categoryRepository.findByCategoryType(categoryType)
@@ -83,10 +92,30 @@ public class CommunityService {
                                        .build();
 
         // 커뮤니티 저장
-        communityRepository.save(community);
+        Long communityId = communityRepository.save(community).getId();
 
         // S3에 이미지 저장
         createCommunityImage(multipartFileList, community);
+
+
+        // 생성한 인원은 바로 가입 처리
+        // 커뮤니티 가져오기
+        Community communityGet = communityRepository.findById(communityId)
+                // 커뮤니티가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
+        // 커뮤니티 유저 생성
+        CommunityUser communityUser = CommunityUser.builder()
+                .user(user)
+                .community(communityGet)
+                .isWithdraw(false)
+                .build();
+
+        // 커뮤니티 유저 저장
+        communityUserRepository.save(communityUser);
+
+        // 참가 인원 증가
+        communityRepository.participantIncrease(communityId);
 
 
         return commonService.successResponse(SuccessCode.COMMUNITY_CREATE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
@@ -251,13 +280,25 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
+        // 카테고리 가져오기
+        Category category = categoryRepository.findByCategoryId(communityRequestDto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_ID_NOT_FOUND));
+
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
-        Community community = communityRepository.findById(communityId)
-                                                 // 커뮤니티가 없으면 오류 반환
-                                                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+        Community community = communityRepository.findCommunityByFalse(communityId)
+                // 커뮤니티가 없으면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
@@ -284,12 +325,11 @@ public class CommunityService {
         communityImgRepository.deleteByCommunityId(communityId);
 
         // 받아온 데이터 업데이트
-        community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
+        community.communityUpdate(category, communityRequestDto.getCommunityTitle(), community.getParticipant(),
                 communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
                 community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
-        if (community.getParticipant()
-                     .equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
+        if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
             community.communityRecruitmentEnd();
         }
 
@@ -308,13 +348,21 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityDelete(String accessToken, Long communityId) {
 
+        // UserId 가져오기
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+
+        // 유저 가져오기
+        User user = userRepository.findById(userId)
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         // 유저 닉네임 가져오기
-        String nickName = findUserNickname(accessToken);
+        String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
-        Community community = communityRepository.findById(communityId)
-                                                 // 커뮤니티가 없다면 오류 반환
-                                                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+        Community community = communityRepository.findCommunityByFalse(communityId)
+                // 커뮤니티가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
@@ -322,11 +370,27 @@ public class CommunityService {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
+
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
         commentRepository.CommentDeleteByCommunityId(communityId, true);
         heartRepository.updateStatusByCommunityId(communityId, false);
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
+
+
+        // 이미지 url 값만 가져오기
+        List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
+
+        // url 값 삭제
+        for (CommunityImg communityImgPath : communityImgPathList) {
+            String imgPath = communityImgPath.getImagePath();
+
+            // s3 이미지 삭제
+            s3UploadService.deleteCommunityImg(imgPath);
+
+            // DB isDelete = true 로 변경
+            communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(),true);
+        }
 
         // isDelete 값을 true로 변경
         communityRepository.deleteCommunityId(communityId, true);
@@ -431,6 +495,18 @@ public class CommunityService {
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
 
+        // 해당 레코드의 isWithdraw를 true로 변환
+        communityUser.communityWithdraw();
+
+        // 참가 인원 감소
+        community.communityParticipantDecrease();
+
+        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
+        if (community.getParticipant() < community.getMaxParticipant()) {
+            community.communityRecruitmentIng();
+        }
+
+
         // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
         //1. 유저ID에 해당되는 게시글 리스트 가져오기
@@ -476,16 +552,6 @@ public class CommunityService {
         posterRepository.PosterDeleteByUserId(userId, true);
         commentRepository.CommentDeleteByUserId(userId, true);
 
-        // 해당 레코드의 isWithdraw를 true로 변환
-        communityUser.communityWithdraw();
-
-        // 참가 인원 감소
-        community.communityParticipantDecrease();
-
-        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
-        if (community.getParticipant() < community.getMaxParticipant()) {
-            community.communityRecruitmentIng();
-        }
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -511,19 +577,5 @@ public class CommunityService {
 
             imgNum++;
         }
-    }
-
-    // 유저 닉네임 가져오기
-    private String findUserNickname(String accessToken) {
-        // UserId 가져오기
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-
-        // 유저 가져오기
-        User user = userRepository.findById(userId)
-                                  // 유저가 없다면 오류 반환
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-
-        // 유저 닉네임 가져오기
-        return user.getNickname();
     }
 }

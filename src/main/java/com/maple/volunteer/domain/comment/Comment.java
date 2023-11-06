@@ -20,16 +20,17 @@ public class Comment extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 댓글 ID
 
+    @Lob
     private String content; // 댓글 내용
     private String author; // 작성자
     private Boolean isDelete;   // 댓글 삭제 유무
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
     private Poster poster;

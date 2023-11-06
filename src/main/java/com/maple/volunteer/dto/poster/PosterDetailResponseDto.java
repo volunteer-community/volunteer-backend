@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class PosterDetailResponseDto {
-
+    private Long userId;
     private Long posterId;
     private String posterTitle;
     private String posterAuthor;
@@ -21,7 +21,8 @@ public class PosterDetailResponseDto {
     private LocalDateTime posterUpdatedAt;
 
     @Builder
-    public PosterDetailResponseDto(Long posterId, String posterTitle, String posterAuthor, String posterContent, int heartCount, String posterImgPath, String profileImg, LocalDateTime posterCreatedAt, LocalDateTime posterUpdatedAt) {
+    public PosterDetailResponseDto(Long userId, Long posterId, String posterTitle, String posterAuthor, String posterContent, int heartCount, String posterImgPath, String profileImg, LocalDateTime posterCreatedAt, LocalDateTime posterUpdatedAt) {
+        this.userId = userId;
         this.posterId = posterId;
         this.posterTitle = posterTitle;
         this.posterAuthor = posterAuthor;

@@ -23,6 +23,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 조회
     @Query("SELECT NEW com.maple.volunteer.dto.comment.CommentResponseDto(" +
+            "u.id AS userId, " +
             "cm.id AS commentId, " +
             "cm.content AS commentContent, " +
             "cm.author AS commentAuthor, " +

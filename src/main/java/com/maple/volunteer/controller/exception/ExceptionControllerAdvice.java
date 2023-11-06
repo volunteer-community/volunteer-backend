@@ -18,16 +18,6 @@ public class ExceptionControllerAdvice {
 
     private final CommonService commonService;
 
-
-    // 오류 반환 예시 코드 입니다.
-    @ExceptionHandler(ExampleException.class)
-    public ResponseEntity<ResultDto<Void>> exampleException(ExampleException ele) {
-        CommonResponseDto<Object> commonResponseDto = commonService.errorResponse(ele.getMessage(), HttpStatus.BAD_REQUEST, null);
-        ResultDto<Void> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-    }
-
     // NotFoundException
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResultDto<Void>> notFoundException(NotFoundException nfe) {
