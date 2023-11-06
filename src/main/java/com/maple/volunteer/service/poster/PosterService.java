@@ -165,7 +165,7 @@ public class PosterService {
         return commonService.successResponse(SuccessCode.POSTER_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
-  // 게시글 posterId에 해당 되는 글만 삭제
+    // 게시글 posterId에 해당 되는 글만 삭제
     @Transactional
     public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
 
@@ -183,6 +183,15 @@ public class PosterService {
         if(!poster.getAuthor().equals(nickName)){
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
+
+        // 이미지 삭제 (s3삭제)
+        PosterImg posterImg = posterImgRepository.findByPoster(poster);
+        String posterImgUrl = posterImg.getImagePath();
+        s3UploadService.deletePosterImg(posterImgUrl);
+
+        // DB isDelete = true 로 변경
+        Long posterImgId= posterImg.getId();
+        posterImgRepository.deleteByPosterImgId(posterImgId,true);
 
         posterRepository.posterDeleteByPosterId(posterId);
         return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
@@ -214,4 +223,5 @@ public class PosterService {
         }
 
     }
+
 }

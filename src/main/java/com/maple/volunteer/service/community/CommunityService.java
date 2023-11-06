@@ -7,6 +7,7 @@ import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
+import com.maple.volunteer.domain.posterimg.PosterImg;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
@@ -20,6 +21,7 @@ import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
+import com.maple.volunteer.repository.posterimg.PosterImgRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
@@ -51,6 +53,7 @@ public class CommunityService {
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PosterImgRepository posterImgRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
@@ -377,7 +380,18 @@ public class CommunityService {
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
 
+        // 게시글 이미지 삭제
 
+        // 이미지 삭제 (s3삭제)
+        PosterImg posterImg = posterImgRepository.findByPosterByCommunityId(communityId);
+        String posterImgUrl = posterImg.getImagePath();
+        s3UploadService.deletePosterImg(posterImgUrl);
+
+        // DB isDelete = true 로 변경
+        Long posterImgId= posterImg.getId();
+        posterImgRepository.deleteByPosterImgId(posterImgId,true);
+
+        // 커뮤니티 이미지 삭제
         // 이미지 url 값만 가져오기
         List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
 
@@ -391,6 +405,7 @@ public class CommunityService {
             // DB isDelete = true 로 변경
             communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(),true);
         }
+
 
         // isDelete 값을 true로 변경
         communityRepository.deleteCommunityId(communityId, true);
@@ -506,7 +521,6 @@ public class CommunityService {
             community.communityRecruitmentIng();
         }
 
-
         // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
         //1. 유저ID에 해당되는 게시글 리스트 가져오기
@@ -520,6 +534,15 @@ public class CommunityService {
 
             //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
             commentRepository.commentDeleteByPosterId(posterId);
+
+            // 이미지 삭제 (s3삭제)
+            PosterImg posterImg = posterImgRepository.findByPosterId(posterId);
+            String posterImgUrl = posterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
+
+            // DB isDelete = true 로 변경
+            Long posterImgId= posterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId,true);
 
             //유저 ID에 해당하는 좋아요 리스트 가져오기
             List<Heart> heartList = heartRepository.findHeartListPosterId(posterId);
@@ -551,8 +574,7 @@ public class CommunityService {
 
         posterRepository.PosterDeleteByUserId(userId, true);
         commentRepository.CommentDeleteByUserId(userId, true);
-
-
+      
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 

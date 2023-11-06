@@ -20,6 +20,7 @@ public class PosterImg {
 
     private String imagePath; // 게시글 이미지 URL
     private Integer imageNum;   // 게시글 이미지 번호
+    private boolean isDelete;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
