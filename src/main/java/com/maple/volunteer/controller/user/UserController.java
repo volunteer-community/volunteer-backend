@@ -161,7 +161,6 @@ public class UserController {
 
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .httpOnly(false)
-                .secure(secure) // Set this to true if using HTTPS
                 .path("/") // Set the path according to your requirement
                 .maxAge(maxAge) // Set the expiration date in seconds from now
                 .build();

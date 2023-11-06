@@ -80,7 +80,6 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(false);
-        cookie.setSecure(secure); // Set this to true if using HTTPS
         cookie.setPath("/"); // Set the path according to your requirement
         cookie.setMaxAge((int) maxAge); // Set the expiration date in seconds from now
 
