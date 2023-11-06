@@ -43,11 +43,11 @@ public class UserController {
     public ResponseEntity<ResultDto<TokenDto>> signUp(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-//        result.setData((TokenDto) commonResponseDto.getData());
+        result.setData((TokenDto) commonResponseDto.getData());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getAccessToken(), true, ((TokenDto) commonResponseDto.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", ((TokenDto) commonResponseDto.getData()).getRefreshToken(), true, ((TokenDto) commonResponseDto.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", result.getData().getAccessToken(), true, result.getData().getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", result.getData().getRefreshToken(), true, result.getData().getRefreshTokenExpireTime()));
         return ResponseEntity.status(commonResponseDto.getHttpStatus())
                 .headers(headers)
                 .body(result);
@@ -93,11 +93,11 @@ public class UserController {
 
         CommonResponseDto<Object> renewToken = userService.renewToken(refreshToken);
         ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
-//        result.setData((TokenDto) renewToken.getData());
+        result.setData((TokenDto) renewToken.getData());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getAccessToken(), true, ((TokenDto) renewToken.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", result.getData().getAccessToken(), true, result.getData().getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", result.getData().getRefreshToken(), true, result.getData().getRefreshTokenExpireTime()));
 
         return ResponseEntity.status(renewToken.getHttpStatus())
                 .headers(headers)

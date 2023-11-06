@@ -132,6 +132,7 @@ public class UserService {
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
 
 
