@@ -47,7 +47,7 @@ public class UserController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getAccessToken(), true, ((TokenDto) commonResponseDto.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getRefreshToken(), true, ((TokenDto) commonResponseDto.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", ((TokenDto) commonResponseDto.getData()).getRefreshToken(), true, ((TokenDto) commonResponseDto.getData()).getRefreshTokenExpireTime()));
         return ResponseEntity.status(commonResponseDto.getHttpStatus())
                 .headers(headers)
                 .body(result);
@@ -97,7 +97,8 @@ public class UserController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getAccessToken(), true, ((TokenDto) renewToken.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
+
         return ResponseEntity.status(renewToken.getHttpStatus())
                 .headers(headers)
                 .body(result);
