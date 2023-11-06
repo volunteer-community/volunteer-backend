@@ -7,6 +7,7 @@ import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
+import com.maple.volunteer.domain.posterimg.PosterImg;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
@@ -330,6 +331,17 @@ public class CommunityService {
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
 
+        // 게시글 이미지 삭제
+
+            // 이미지 삭제 (s3삭제)
+            PosterImg posterImg = posterImgRepository.findByPosterByCommunityId(communityId);
+            String posterImgUrl = posterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
+
+            // DB isDelete = true 로 변경
+            Long posterImgId= posterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId,true);
+
         // isDelete 값을 true로 변경
         communityRepository.deleteCommunityId(communityId, true);
 
@@ -433,50 +445,6 @@ public class CommunityService {
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
 
-        // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
-
-        //1. 유저ID에 해당되는 게시글 리스트 가져오기
-        List<Poster> posterList = posterRepository.findByPosterListUserId(userId);
-
-        for (Poster eachPoster : posterList) {
-            Long posterId = eachPoster.getId();
-
-            //게시글 Id에 해당되는 heartCount = 0 으로 변경
-            posterRepository.updateHeartCountZero(posterId);
-
-            //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
-            commentRepository.commentDeleteByPosterId(posterId);
-
-            //유저 ID에 해당하는 좋아요 리스트 가져오기
-            List<Heart> heartList = heartRepository.findHeartListPosterId(posterId);
-
-            for (Heart eachHeart : heartList) {
-                Long heartId = eachHeart.getId();
-
-                //가져온 좋아요를 false로 바꿔주기(좋아요 삭제)
-                heartRepository.updateStatus(heartId, false);
-
-            }
-
-        }
-
-        // 탈퇴하는 유저ID가 누른 타인의 게시글에서 좋아요 개수 -1 시키기 , 좋아요 false 시키기
-
-        List<Heart> heartListByPosterId = heartRepository.findHeartListUserId(userId);
-
-        for(Heart eachHeartPosterId : heartListByPosterId){
-
-            Long heartId = eachHeartPosterId.getId();
-            Long posterId = eachHeartPosterId.getPoster().getId();
-
-            heartRepository.updateStatus(heartId,false);
-            posterRepository.updateHeartCountDecrease(posterId);
-        }
-
-        //유저Id에 해당되는 게시글 삭제/댓글 삭제
-
-        posterRepository.PosterDeleteByUserId(userId, true);
-        commentRepository.CommentDeleteByUserId(userId, true);
 
         // 해당 레코드의 isWithdraw를 true로 변환
         communityUser.communityWithdraw();

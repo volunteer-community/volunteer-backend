@@ -214,6 +214,15 @@ public class PosterService {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
+        // 이미지 삭제 (s3삭제)
+        PosterImg posterImg = posterImgRepository.findByPoster(poster);
+        String posterImgUrl = posterImg.getImagePath();
+        s3UploadService.deletePosterImg(posterImgUrl);
+
+        // DB isDelete = true 로 변경
+        Long posterImgId= posterImg.getId();
+        posterImgRepository.deleteByPosterImgId(posterImgId,true);
+
         posterRepository.posterDeleteByPosterId(posterId);
         return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
     }
