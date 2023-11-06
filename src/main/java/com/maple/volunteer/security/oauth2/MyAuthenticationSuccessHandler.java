@@ -41,23 +41,8 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
-        // 이미 로그인 했던 회원
-        if (isExist){
-            TokenDto login = userService.login(email, role, provider, picture);
-            String accessToken = login.getAccessToken();
-            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
-            String refreshToken = login.getRefreshToken();
-            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
-
-            // 쿠키를 HttpServletResponse에 추가
-            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, false, false, accessTokenExpiration, "None");
-            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, false, false, refreshTokenExpiration, "None");
-
-            // redirect url
-            response.sendRedirect("http://localhost:3000");
-
-        } else {
-            // 회원이 존재하지 않으면
+        // 회원이 존재하지 않으면
+        if (!isExist) {
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
@@ -69,6 +54,22 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
+
+//        } else {
+//            // 이미 로그인 했던 회원
+//            TokenDto login = userService.login(email, role, provider, picture);
+//            String accessToken = login.getAccessToken();
+//            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
+//            String refreshToken = login.getRefreshToken();
+//            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
+//
+//            // 쿠키를 HttpServletResponse에 추가
+//            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, false, false, accessTokenExpiration, "None");
+//            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, false, false, refreshTokenExpiration, "None");
+//
+//            // redirect url
+//            response.sendRedirect("http://localhost:3000");
+//        }
     }
 
     // 쿠키 생성 후 response에 추가

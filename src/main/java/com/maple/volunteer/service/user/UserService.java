@@ -38,10 +38,13 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public TokenDto login(String email, String role, String provider, String profileImg) {
+    public CommonResponseDto<Object> login(String email, String provider) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        String profileImg = user.getProfileImg();
+        String role = user.getRole().getKey();
 
         if (!user.getProfileImg().equals(profileImg)) {
             user.updateProfileImg(profileImg);
@@ -56,12 +59,14 @@ public class UserService {
         Login login = user.getLogin();
         loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
-        return TokenDto.builder()
+        TokenDto tokenDto = TokenDto.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
                 .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
+
+        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
     // 로그인 테스트
@@ -214,64 +219,6 @@ public class UserService {
                             .build();
 
                     return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
-            }
-            else{
-                //이미 가입한 닉네임
-                return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST, null);
-            }
-        }else {
-            //이미 가입한 핸드폰 번호
-            return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(), HttpStatus.BAD_REQUEST, null);
-        }
-    }
-
-    // 회원가입 테스트
-    public CommonResponseDto<Object> signupTest(SignupDto signupDto) {
-        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail(), signupDto.getProvider());
-        if(userList.size()==1)return commonService.errorResponse(ErrorCode.EXIST_USER_EMAIL.getDescription(), HttpStatus.BAD_REQUEST,null);
-        else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-        //email의 active유저값이 없을때
-        if(findByPhoneNumber(signupDto.getPhoneNumber())){
-            if(findByNickName(signupDto.getNickname())){
-                // email로 User(false) get
-                User user = User.builder()
-                        .phoneNumber(signupDto.getPhoneNumber())
-                        .name(signupDto.getName())
-                        .role(signupDto.getRole())
-                        .email(signupDto.getEmail())
-                        .profileImg(signupDto.getPicture())
-                        .nickname(signupDto.getNickname())
-                        .provider(signupDto.getProvider())
-                        .isDeleted(false)
-                        .build();
-                userRepository.save(user);
-
-                //회원가입한 사람을 로그인시키기
-                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail(),signupDto.getProvider());
-                if(loginedUserList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-                else if(loginedUserList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-
-                User loginUser = loginedUserList.get(0);
-                Long userId = loginUser.getId();
-                String userRole = loginUser.getRole().getKey();
-
-                GeneratedToken token = jwtUtil.generateToken(userId, userRole);
-
-                Login login = Login.builder()
-                        .user(loginUser)
-                        .refreshToken(token.getRefreshToken())
-                        .build();
-
-                loginRepository.save(login);
-
-                TokenDto tokenDto = TokenDto.builder()
-                        .accessToken(token.getAccessToken())
-                        .refreshToken(token.getRefreshToken())
-                        .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                        .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
-                        .build();
-
-                return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
             }
             else{
                 //이미 가입한 닉네임
