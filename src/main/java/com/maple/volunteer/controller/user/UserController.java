@@ -53,19 +53,29 @@ public class UserController {
                 .body(result);
     }
 
-    // 로그인
-//    @PostMapping("/login")
-//    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
-//                                                         @RequestParam("role") String role,
-//                                                         @RequestParam("provider") String provider,
-//                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
-//
-//        CommonResponseDto<Object> login = userService.login(email, role, provider, profileImg);
-//        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
-//        result.setData((TokenDto) login.getData());
-//
-//        return ResponseEntity.status(login.getHttpStatus()).body(result);
-//    }
+    // 회원가입 시키기 테스트
+    @PostMapping("/signup/test")
+    public ResponseEntity<ResultDto<TokenDto>> signUpTest(@RequestBody SignupDto signupDto) {
+        CommonResponseDto<Object> commonResponseDto = userService.signupTest(signupDto);
+        ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((TokenDto) commonResponseDto.getData());
+
+        return ResponseEntity.status(commonResponseDto.getHttpStatus())
+                .body(result);
+    }
+//     로그인 테스트
+    @PostMapping("/login/test")
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+                                                         @RequestParam("role") String role,
+                                                         @RequestParam("provider") String provider,
+                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
+
+        CommonResponseDto<Object> login = userService.loginTest(email, role, provider, profileImg);
+        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
+        result.setData((TokenDto) login.getData());
+
+        return ResponseEntity.status(login.getHttpStatus()).body(result);
+    }
   
     // 로그아웃
     @PostMapping("/logout")
@@ -90,6 +100,18 @@ public class UserController {
         headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
         return ResponseEntity.status(renewToken.getHttpStatus())
                 .headers(headers)
+                .body(result);
+    }
+
+    // 토큰 갱신 테스트
+    @PostMapping("/newToken/test")
+    public ResponseEntity<ResultDto<TokenDto>> renewTokenTest(@RequestHeader("Authorization") String refreshToken){
+
+        CommonResponseDto<Object> renewToken = userService.renewTokenTest(refreshToken);
+        ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
+        result.setData((TokenDto) renewToken.getData());
+
+        return ResponseEntity.status(renewToken.getHttpStatus())
                 .body(result);
     }
 
