@@ -128,14 +128,14 @@ public class UserService {
 
         login.updateRefreshToken(token.getRefreshToken());
 
-//        TokenDto tokenDto = TokenDto.builder()
-//                .accessToken(token.getAccessToken())
-//                .refreshToken(token.getRefreshToken())
-//                .accessTokenExpireTime(token.getAccessTokenExpireTime())
-//                .build();
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .build();
 
 
-        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, null);
+        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
     // 토큰 갱신 테스트
@@ -205,14 +205,14 @@ public class UserService {
 
                     loginRepository.save(login);
 
-//                    TokenDto tokenDto = TokenDto.builder()
-//                            .accessToken(token.getAccessToken())
-//                            .refreshToken(token.getRefreshToken())
-//                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
-//                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
-//                            .build();
+                    TokenDto tokenDto = TokenDto.builder()
+                            .accessToken(token.getAccessToken())
+                            .refreshToken(token.getRefreshToken())
+                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
+                            .build();
 
-                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, null);
+                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
             }
             else{
                 //이미 가입한 닉네임
