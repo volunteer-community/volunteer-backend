@@ -79,20 +79,16 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void PosterDeleteByCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 
-
-
-
-//     // 유저 ID에 해당하는 모든 게시글 삭제
-//    @Query("UPDATE Poster p " +
-//            "SET p.isDelete = :status, p.heartCount = 0 " +
-//            "WHERE p.communityUser " +
-//            "IN " +
-//            "(SELECT cu " +
-//            "   FROM CommunityUser cu " +
-//            "   WHERE cu.user.id =:userId)")
-//    @Modifying(clearAutomatically = true)
-//    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
-//
+     // 유저 ID에 해당하는 모든 게시글 삭제
+    @Query("UPDATE Poster p " +
+            "SET p.isDelete = :status, p.heartCount = 0 " +
+            "WHERE p.communityUser " +
+            "IN " +
+            "(SELECT cu " +
+            "   FROM CommunityUser cu " +
+            "   WHERE cu.user.id =:userId)")
+    @Modifying(clearAutomatically = true)
+    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
     @Query("SELECT p " +
             "FROM Poster p " +
@@ -127,8 +123,6 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountZero(@Param("posterId") Long posterId);
-
-
 
     // 게시글 posterId에 해당 되는 글만 삭제
     @Query("UPDATE Poster p " +
@@ -167,11 +161,4 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "FROM Poster p " +
             "WHERE p.id =:posterId ")
     void heartDeleteByPosterId(@Param("posterId") Long posterId);
-
-    @Query("UPDATE Poster p " +
-            "SET p.heartCount = 0 " +
-            "WHERE p.id = :posterId")
-    @Modifying(clearAutomatically = true)
-    void updateHeartCountZero(@Param("posterId") Long posterId);
-
 }
