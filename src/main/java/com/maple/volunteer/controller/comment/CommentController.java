@@ -47,6 +47,7 @@ public class CommentController {
 
         return ResponseEntity.status(allCommentInquiry.getHttpStatus())
                              .body(result);
+
     }
 
     //댓글 수정

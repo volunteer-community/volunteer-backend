@@ -10,6 +10,7 @@ public class CommunityImgPathDto {
 
     private String communityImgPath;
 
+
     @Builder
     public CommunityImgPathDto(String communityImgPath) {
         this.communityImgPath = communityImgPath;

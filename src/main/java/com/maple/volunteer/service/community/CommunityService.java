@@ -376,7 +376,22 @@ public class CommunityService {
         heartRepository.updateStatusByCommunityId(communityId, false);
         posterRepository.PosterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
-      
+
+
+        // 이미지 url 값만 가져오기
+        List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
+
+        // url 값 삭제
+        for (CommunityImg communityImgPath : communityImgPathList) {
+            String imgPath = communityImgPath.getImagePath();
+
+            // s3 이미지 삭제
+            s3UploadService.deleteCommunityImg(imgPath);
+
+            // DB isDelete = true 로 변경
+            communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(),true);
+        }
+
         // isDelete 값을 true로 변경
         communityRepository.deleteCommunityId(communityId, true);
 
@@ -480,6 +495,18 @@ public class CommunityService {
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
 
+        // 해당 레코드의 isWithdraw를 true로 변환
+        communityUser.communityWithdraw();
+
+        // 참가 인원 감소
+        community.communityParticipantDecrease();
+
+        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
+        if (community.getParticipant() < community.getMaxParticipant()) {
+            community.communityRecruitmentIng();
+        }
+
+
         // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
         //1. 유저ID에 해당되는 게시글 리스트 가져오기
@@ -525,16 +552,6 @@ public class CommunityService {
         posterRepository.PosterDeleteByUserId(userId, true);
         commentRepository.CommentDeleteByUserId(userId, true);
 
-        // 해당 레코드의 isWithdraw를 true로 변환
-        communityUser.communityWithdraw();
-
-        // 참가 인원 감소
-        community.communityParticipantDecrease();
-
-        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
-        if (community.getParticipant() < community.getMaxParticipant()) {
-            community.communityRecruitmentIng();
-        }
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }

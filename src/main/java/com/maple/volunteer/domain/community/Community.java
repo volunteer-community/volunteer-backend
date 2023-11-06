@@ -30,7 +30,6 @@ public class Community extends BaseTime {
     private String title;   // 커뮤니티 제목
 
     private Integer participant;    // 커뮤니티 참여 인원
-
     private Integer maxParticipant; // 커뮤니티 모집 인원
     private String author;  // 커뮤니티 작성자
 
