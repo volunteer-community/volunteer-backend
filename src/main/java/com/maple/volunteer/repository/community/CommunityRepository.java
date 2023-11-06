@@ -17,7 +17,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     // 커뮤니티 상세
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityDetailResponseDto(" +
-            "u.id AS userId, " +
             "cg.id AS categoryId, " +
             "cg.type AS categoryType, " +
             "c.id AS communityId, " +
@@ -32,8 +31,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "c.updatedAt AS communityUpdatedAt) " +
             "FROM Community c " +
             "LEFT JOIN c.category cg " +
-            "LEFT JOIN c.communityUserList cu " +
-            "LEFT JOIN cu.user u " +
             "WHERE c.id = :communityId ")
     Optional<CommunityDetailResponseDto> findCommunityDetailByCommunityId(@Param("communityId") Long communityId);
 
@@ -158,4 +155,10 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.id = :communityId ")
     @Modifying(clearAutomatically = true)
     void participantIncrease(@Param("communityId") Long communityId);
+
+    // 커뮤니티 id로 삭제 안된 것만 가져오기
+    @Query("SELECT c " +
+            "FROM Community c " +
+            "WHERE c.id = :communityId AND c.isDelete = false ")
+    Optional<Community> findCommunityByFalse(@Param("communityId") Long communityId);
 }

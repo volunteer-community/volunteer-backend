@@ -271,6 +271,10 @@ public class CommunityService {
     @Transactional
     public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
+        // 카테고리 가져오기
+        Category category = categoryRepository.findByCategoryId(communityRequestDto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_ID_NOT_FOUND));
+
         // UserId 가져오기
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
@@ -283,7 +287,7 @@ public class CommunityService {
         String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
-        Community community = communityRepository.findById(communityId)
+        Community community = communityRepository.findCommunityByFalse(communityId)
                 // 커뮤니티가 없으면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -311,7 +315,7 @@ public class CommunityService {
         communityImgRepository.deleteByCommunityId(communityId);
 
         // 받아온 데이터 업데이트
-        community.communityUpdate(communityRequestDto.getCommunityTitle(), community.getParticipant(),
+        community.communityUpdate(category, communityRequestDto.getCommunityTitle(), community.getParticipant(),
                 communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
                 community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
@@ -346,7 +350,7 @@ public class CommunityService {
         String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
-        Community community = communityRepository.findById(communityId)
+        Community community = communityRepository.findCommunityByFalse(communityId)
                 // 커뮤니티가 없다면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
