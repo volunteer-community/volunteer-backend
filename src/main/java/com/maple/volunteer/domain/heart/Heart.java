@@ -22,12 +22,10 @@ public class Heart {
 
     private Boolean status; // 좋아요 상태 true +1 / false -1 // true ->false 변환과정
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poster_id")
     private Poster poster;

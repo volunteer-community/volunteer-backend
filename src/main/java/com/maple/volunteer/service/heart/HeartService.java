@@ -5,8 +5,6 @@ import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
-import com.maple.volunteer.dto.example.ExampleDto;
-import com.maple.volunteer.dto.heart.HeartRequestDto;
 import com.maple.volunteer.dto.heart.HeartResponseDto;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
@@ -48,8 +46,6 @@ public class HeartService {
 
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
-
-                
 
 
         Long communityUserId = communityUser.getId();

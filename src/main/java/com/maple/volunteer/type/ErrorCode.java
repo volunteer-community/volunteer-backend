@@ -7,8 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    EXAMPLE_EXCEPTION("예시 에러 코드 입니다."),
-
     // 카테고리
     CATEGORY_ID_NOT_FOUND("해당 ID의 카테고리를 찾을 수 없습니다."),
     CATEGORY_TYPE_NOT_FOUND("해당 타입의 카테고리를 찾을 수 없습니다."),

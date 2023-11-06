@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -24,7 +25,11 @@ public class Poster extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 게시글 ID
 
+    @Column(length = 50)
+    @Size(min = 1, max = 50)
     private String title;   // 게시글 제목
+
+    @Lob
     private String content; // 게시글 내용
     private String author;  // 게시글 작성자
 
@@ -34,11 +39,9 @@ public class Poster extends BaseTime {
 
     //댓글 개수 추가해야함
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;
-
     @OneToMany(mappedBy = "poster")
     private List<Comment> commentList;
 

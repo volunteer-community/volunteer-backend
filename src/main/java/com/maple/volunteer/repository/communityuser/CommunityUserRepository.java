@@ -17,7 +17,6 @@ import java.util.Optional;
 
 public interface CommunityUserRepository extends JpaRepository<CommunityUser, Long> {
 
-
     @Query("SELECT cu " +
             "FROM CommunityUser cu " +
             "LEFT JOIN cu.community c " +
@@ -53,6 +52,7 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
     // 유저 ID로 커뮤니티 가져오기(내가 가입한)
     @Query("SELECT NEW com.maple.volunteer.dto.community.CommunityResponseDto(" +
             "cg.id AS categoryId, " +
+            "cg.type AS categoryType, " +
             "c.id AS communityId," +
             "c.title AS communityTitle, " +
             "c.participant AS communityParticipant, " +
@@ -61,7 +61,9 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "c.status AS communityStatus," +
             "c.content AS communityContent," +
             "c.location AS communityLocation," +
-            "ci.imagePath AS communityMainImgPath) " +
+            "ci.imagePath AS communityMainImgPath, " +
+            "c.createdAt AS communityCreatedAt, " +
+            "c.updatedAt AS communityUpdatedAt) " +
             "FROM CommunityUser cu " +
             "LEFT JOIN cu.user u " +
             "LEFT JOIN cu.community c " +
@@ -71,7 +73,7 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
     Page<CommunityResponseDto> myCommunitySignList(@Param("userId") Long userId, Pageable pageable);
 
     // 내가 가입한 커뮤니티 개수
-    @Query("SELECT count(cu) " +
+    @Query("SELECT COUNT(cu) " +
             "FROM CommunityUser cu " +
             "WHERE cu.user.id = :userId AND cu.isWithdraw = false ")
     Integer myCommunitySignNumber(@Param("userId") Long userId);

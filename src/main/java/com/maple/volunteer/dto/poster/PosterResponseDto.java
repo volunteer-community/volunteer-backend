@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class PosterResponseDto {
+    private Long userId;    // 유저 ID
     private Long posterId; // 게시글 ID
     private String posterTitle;   // 게시글 제목
     private String posterContent; // 게시글 내용
@@ -22,8 +23,9 @@ public class PosterResponseDto {
     // 댓글 개수
 
     @Builder
-    public PosterResponseDto(Long posterId, String posterTitle,  String posterContent, String posterAuthor,
+    public PosterResponseDto(Long userId, Long posterId, String posterTitle,  String posterContent, String posterAuthor,
                               Integer heartCount,String posterImgPath,String profileImg,LocalDateTime posterCreatedAt, LocalDateTime posterUpdatedAt){
+        this.userId = userId;
         this.posterId = posterId;
         this.posterTitle = posterTitle;
         this.posterContent = posterContent;

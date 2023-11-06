@@ -66,7 +66,7 @@ public class UserController {
 //
 //        return ResponseEntity.status(login.getHttpStatus()).body(result);
 //    }
-
+  
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<ResultDto<Void>> userLogout(@RequestHeader("Authorization") String accessToken){
