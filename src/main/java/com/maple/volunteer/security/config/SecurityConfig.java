@@ -35,11 +35,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .headers().frameOptions().sameOrigin()
+                .headers().frameOptions().disable()
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .cors().configurationSource(configurationSource()).and()
+                .cors().configurationSource(configurationSource())
+                .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -47,9 +48,10 @@ public class SecurityConfig {
                     .antMatchers("/maple/**").permitAll()
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정
-                .successHandler(myAuthenticationSuccessHandler)
+                .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
                 .failureHandler(myAuthenticationFailureHandler)
-                .userInfoEndpoint().userService(customOAuth2UserService);
+                .successHandler(myAuthenticationSuccessHandler);
 
 
         return httpSecurity
@@ -62,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of());
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowCredentials(true);  // 토큰 주고 받을 때
         configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PATCH", "PUT", "DELETE", "OPTIONS"));

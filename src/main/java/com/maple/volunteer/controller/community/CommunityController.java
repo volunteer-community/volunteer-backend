@@ -108,7 +108,7 @@ public class CommunityController {
     // 커뮤니티 삭제 API
     @DeleteMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communityDelete(@RequestHeader("Authorization") String accessToken,
-                                                           @PathVariable(value = "communityId") Long communityId) {
+                                                                        @PathVariable(value = "communityId") Long communityId) {
 
         CommonResponseDto<Object> communityDelete = communityService.communityDelete(accessToken, communityId);
         ResultDto<Void> result = ResultDto.in(communityDelete.getStatus(), communityDelete.getMessage());
@@ -126,7 +126,7 @@ public class CommunityController {
         return ResponseEntity.status(communitySignup.getHttpStatus()).body(result);
     }
 
-    // 커뮤니티 탈퇴 API
+    // 커뮤니티 나가기 API
     @DeleteMapping("/community/withdraw/{communityId}")
     public ResponseEntity<ResultDto<Void>> communityWithdraw(@RequestHeader("Authorization") String accessToken,
                                                              @PathVariable(value = "communityId") Long communityId) {

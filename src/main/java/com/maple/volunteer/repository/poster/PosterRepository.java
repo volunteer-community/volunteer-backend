@@ -21,6 +21,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 게시글 전체 조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterResponseDto(" +
+            "u.id AS userId, " +
             "p.id AS posterId, " +
             "p.title AS posterTitle, " +
             "p.content AS posterContent, " +
@@ -41,6 +42,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 게시글 상세조회
     @Query("SELECT NEW com.maple.volunteer.dto.poster.PosterDetailResponseDto(" +
+            "u.id AS userId, " +
             "p.id AS posterId, " +
             "p.title AS posterTitle, " +
             "p.author AS posterAuthor, " +

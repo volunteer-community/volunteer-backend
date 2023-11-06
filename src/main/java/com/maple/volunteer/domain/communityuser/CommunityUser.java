@@ -26,12 +26,10 @@ public class CommunityUser extends BaseTime {
 
     private Boolean isWithdraw; // 커뮤니티 탈퇴 유무
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community community;

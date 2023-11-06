@@ -165,34 +165,6 @@ public class PosterService {
         return commonService.successResponse(SuccessCode.POSTER_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
-
-    private void addPosterImg(MultipartFile multipartFile, Poster poster){
-
-        String posterImgUrl = s3UploadService.posterUpload(multipartFile);
-        int imgNum = 1;
-
-        PosterImg posterImg = PosterImg.builder()
-                .imagePath(posterImgUrl)
-                .imageNum(imgNum)
-                .poster(poster)
-                .build();
-
-        posterImgRepository.save(posterImg);
-    }
-
-    private void updatePosterImg(MultipartFile multipartFile, Poster poster){
-
-        //기존이미지 가져오기
-        if(multipartFile != null){
-            PosterImg posterImg = posterImgRepository.findByPoster(poster);
-
-            String posterImgUrl = posterImg.getImagePath();
-
-            s3UploadService.deletePosterImg(posterImgUrl);
-        }
-
-    }
-
     // 게시글 posterId에 해당 되는 글만 삭제
     @Transactional
     public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
@@ -224,4 +196,32 @@ public class PosterService {
         posterRepository.posterDeleteByPosterId(posterId);
         return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
     }
+
+    private void addPosterImg(MultipartFile multipartFile, Poster poster){
+
+        String posterImgUrl = s3UploadService.posterUpload(multipartFile);
+        int imgNum = 1;
+
+        PosterImg posterImg = PosterImg.builder()
+                .imagePath(posterImgUrl)
+                .imageNum(imgNum)
+                .poster(poster)
+                .build();
+
+        posterImgRepository.save(posterImg);
+    }
+
+    private void updatePosterImg(MultipartFile multipartFile, Poster poster){
+
+        //기존이미지 가져오기
+        if(multipartFile != null){
+            PosterImg posterImg = posterImgRepository.findByPoster(poster);
+
+            String posterImgUrl = posterImg.getImagePath();
+
+            s3UploadService.deletePosterImg(posterImgUrl);
+        }
+
+    }
+
 }

@@ -43,30 +43,40 @@ public class UserController {
     public ResponseEntity<ResultDto<TokenDto>> signUp(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-//        result.setData((TokenDto) commonResponseDto.getData());
+        result.setData((TokenDto) commonResponseDto.getData());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getAccessToken(), true, ((TokenDto) commonResponseDto.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getRefreshToken(), true, ((TokenDto) commonResponseDto.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", result.getData().getAccessToken(), true, result.getData().getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", result.getData().getRefreshToken(), true, result.getData().getRefreshTokenExpireTime()));
         return ResponseEntity.status(commonResponseDto.getHttpStatus())
                 .headers(headers)
                 .body(result);
     }
 
-    // 로그인
-//    @PostMapping("/login")
-//    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
-//                                                         @RequestParam("role") String role,
-//                                                         @RequestParam("provider") String provider,
-//                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
-//
-//        CommonResponseDto<Object> login = userService.login(email, role, provider, profileImg);
-//        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
-//        result.setData((TokenDto) login.getData());
-//
-//        return ResponseEntity.status(login.getHttpStatus()).body(result);
-//    }
+    // 회원가입 시키기 테스트
+    @PostMapping("/signup/test")
+    public ResponseEntity<ResultDto<TokenDto>> signUpTest(@RequestBody SignupDto signupDto) {
+        CommonResponseDto<Object> commonResponseDto = userService.signupTest(signupDto);
+        ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+        result.setData((TokenDto) commonResponseDto.getData());
 
+        return ResponseEntity.status(commonResponseDto.getHttpStatus())
+                .body(result);
+    }
+//     로그인 테스트
+    @PostMapping("/login/test")
+    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+                                                         @RequestParam("role") String role,
+                                                         @RequestParam("provider") String provider,
+                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
+
+        CommonResponseDto<Object> login = userService.loginTest(email, role, provider, profileImg);
+        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
+        result.setData((TokenDto) login.getData());
+
+        return ResponseEntity.status(login.getHttpStatus()).body(result);
+    }
+  
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<ResultDto<Void>> userLogout(@RequestHeader("Authorization") String accessToken){
@@ -83,13 +93,26 @@ public class UserController {
 
         CommonResponseDto<Object> renewToken = userService.renewToken(refreshToken);
         ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
-//        result.setData((TokenDto) renewToken.getData());
+        result.setData((TokenDto) renewToken.getData());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getAccessToken(), true, ((TokenDto) renewToken.getData()).getAccessTokenExpireTime()));
-        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", result.getData().getAccessToken(), true, result.getData().getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("refreshToken", result.getData().getRefreshToken(), true, result.getData().getRefreshTokenExpireTime()));
+
         return ResponseEntity.status(renewToken.getHttpStatus())
                 .headers(headers)
+                .body(result);
+    }
+
+    // 토큰 갱신 테스트
+    @PostMapping("/newToken/test")
+    public ResponseEntity<ResultDto<TokenDto>> renewTokenTest(@RequestHeader("Authorization") String refreshToken){
+
+        CommonResponseDto<Object> renewToken = userService.renewTokenTest(refreshToken);
+        ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
+        result.setData((TokenDto) renewToken.getData());
+
+        return ResponseEntity.status(renewToken.getHttpStatus())
                 .body(result);
     }
 
@@ -137,8 +160,9 @@ public class UserController {
         long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
 
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .httpOnly(true)
-                .secure(secure) // Set this to true if using HTTPS
+                .httpOnly(false)
+                .domain("localhost")
+                .sameSite("None")
                 .path("/") // Set the path according to your requirement
                 .maxAge(maxAge) // Set the expiration date in seconds from now
                 .build();

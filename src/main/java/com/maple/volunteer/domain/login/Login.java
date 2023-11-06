@@ -19,7 +19,6 @@ public class Login {
     private Long id;    // 로그인 ID
     private String refreshToken;    // 리프레쉬 토큰
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
