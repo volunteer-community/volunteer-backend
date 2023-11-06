@@ -20,6 +20,7 @@ import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
+import com.maple.volunteer.repository.posterimg.PosterImgRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
@@ -51,6 +52,7 @@ public class CommunityService {
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PosterImgRepository posterImgRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
@@ -486,7 +488,59 @@ public class CommunityService {
         if (community.getParticipant() < community.getMaxParticipant()) {
             community.communityRecruitmentIng();
         }
+        // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
+        //1. 유저ID에 해당되는 게시글 리스트 가져오기
+        List<Poster> posterList = posterRepository.findByPosterListUserId(userId);
+
+        for (Poster eachPoster : posterList) {
+            Long posterId = eachPoster.getId();
+
+            //게시글 Id에 해당되는 heartCount = 0 으로 변경
+            posterRepository.updateHeartCountZero(posterId);
+
+            //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
+            commentRepository.commentDeleteByPosterId(posterId);
+
+            // 이미지 삭제 (s3삭제)
+            PosterImg posterImg = posterImgRepository.findByPosterId(posterId);
+            String posterImgUrl = posterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
+
+            // DB isDelete = true 로 변경
+            Long posterImgId= posterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId,true);
+
+            //유저 ID에 해당하는 좋아요 리스트 가져오기
+            List<Heart> heartList = heartRepository.findHeartListPosterId(posterId);
+
+            for (Heart eachHeart : heartList) {
+                Long heartId = eachHeart.getId();
+
+                //가져온 좋아요를 false로 바꿔주기(좋아요 삭제)
+                heartRepository.updateStatus(heartId, false);
+
+            }
+
+        }
+
+        // 탈퇴하는 유저ID가 누른 타인의 게시글에서 좋아요 개수 -1 시키기 , 좋아요 false 시키기
+
+        List<Heart> heartListByPosterId = heartRepository.findHeartListUserId(userId);
+
+        for(Heart eachHeartPosterId : heartListByPosterId){
+
+            Long heartId = eachHeartPosterId.getId();
+            Long posterId = eachHeartPosterId.getPoster().getId();
+
+            heartRepository.updateStatus(heartId,false);
+            posterRepository.updateHeartCountDecrease(posterId);
+        }
+
+        //유저Id에 해당되는 게시글 삭제/댓글 삭제
+
+        posterRepository.PosterDeleteByUserId(userId, true);
+        commentRepository.CommentDeleteByUserId(userId, true);
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
