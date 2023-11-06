@@ -1,6 +1,7 @@
 package com.maple.volunteer.service.community;
 
 import com.maple.volunteer.domain.category.Category;
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
@@ -50,6 +51,7 @@ public class CommunityService {
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final HeartRepository heartRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
@@ -321,15 +323,14 @@ public class CommunityService {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
-        // isDelete 값을 true로 변경
-
-        communityRepository.deleteCommunityId(communityId, true);
-
-
-        // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저 모두 삭제
-        posterRepository.PosterDeleteByCommunityId(communityId, true);
+        // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
         commentRepository.CommentDeleteByCommunityId(communityId, true);
+        heartRepository.updateStatusByCommunityId(communityId, false);
+        posterRepository.PosterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
+
+        // isDelete 값을 true로 변경
+        communityRepository.deleteCommunityId(communityId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -424,14 +425,60 @@ public class CommunityService {
         // UserId 가져오기
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
-        System.out.println(userId);
-
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
+
+        // 유저 ID로 해당되는 게시글 가져오기
+        List<Poster> posterList = posterRepository.findByCommunityUserId(userId);
+
+        // 유저 ID에 해당되는 게시글 삭제, 좋아요 카운트 0, 좋아요 삭제
+        for (Poster poster : posterList) {
+            Long posterId = poster.getId();
+
+            // 게시글 ID로 좋아요 가져오기
+            List<Heart> heartListByPosterId = heartRepository.findAllHeartByPosterId(posterId);
+
+            // 좋아요 삭제
+            for (Heart heart : heartListByPosterId) {
+                Long heartId = heart.getId();
+
+                // 좋아요 ID로 좋아요 삭제
+                heartRepository.updateStatus(heartId, false);
+            }
+
+            // 게시글 ID로 댓글 가져오기
+            List<Comment> commentList = commentRepository.findAllCommentByPosterId(posterId);
+
+            // 댓글 삭제
+            for (Comment comment : commentList) {
+                Long commentId = comment.getId();
+
+                // 댓글 ID로 댓글 삭제
+                commentRepository.commentDeleteByCommentId(commentId);
+            }
+
+            // 게시글 ID로 게시글 좋아요 카운트 0
+            posterRepository.updateHeartCountZero(posterId);
+        }
+
+        // 내가 누른 좋아요 가져오기 (좋아요 true일 때)
+        List<Heart> heartListByUserId = heartRepository.findHeartByUserId(userId);
+
+        // 내가 누른 좋아요 삭제
+        for (Heart heart : heartListByUserId) {
+            Long heartId = heart.getId();
+            Long posterId = heart.getPoster().getId();
+
+            // 좋아요 삭제
+            heartRepository.updateStatus(heartId, false);
+
+            // 해당 게시글의 좋아요 -1
+            posterRepository.updateHeartCountDecrease(posterId);
+        }
 
         // 해당 레코드의 isWithdraw를 true로 변환
         communityUser.communityWithdraw();
@@ -443,6 +490,7 @@ public class CommunityService {
         if (community.getParticipant() < community.getMaxParticipant()) {
             community.communityRecruitmentIng();
         }
+
 
         // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
@@ -488,6 +536,7 @@ public class CommunityService {
 
             posterRepository.PosterDeleteByUserId(userId, true);
             commentRepository.CommentDeleteByUserId(userId, true);
+
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }

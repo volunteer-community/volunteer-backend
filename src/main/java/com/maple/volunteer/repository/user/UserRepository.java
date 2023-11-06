@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String userEmail);
 
-
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email")
     Optional<User> findActiveUserByEmail(@Param("email") String email);
 
@@ -36,4 +35,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email AND u.provider = :provider")
     Optional<User> findActiveUserByEmailAndProvider(@Param("email") String email, @Param("provider") String provider);
+
+    Optional<User> findByNickname(String nickname);
 }

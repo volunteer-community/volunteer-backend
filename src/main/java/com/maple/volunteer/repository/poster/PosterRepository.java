@@ -70,7 +70,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 커뮤니티 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
-            "SET p.isDelete = :status " +
+            "SET p.isDelete = :status, p.heartCount = 0 " +
             "WHERE p.communityUser " +
             "IN " +
             "(SELECT cu " +
@@ -79,16 +79,30 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void PosterDeleteByCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 
-    // 유저 ID에 해당하는 모든 게시글 삭제
-    @Query("UPDATE Poster p " +
-            "SET p.isDelete = :status " +
-            "WHERE p.communityUser " +
-            "IN " +
-            "(SELECT cu " +
-            "   FROM CommunityUser cu " +
-            "   WHERE cu.user.id =:userId)")
-    @Modifying(clearAutomatically = true)
-    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
+
+
+
+//     // 유저 ID에 해당하는 모든 게시글 삭제
+//    @Query("UPDATE Poster p " +
+//            "SET p.isDelete = :status, p.heartCount = 0 " +
+//            "WHERE p.communityUser " +
+//            "IN " +
+//            "(SELECT cu " +
+//            "   FROM CommunityUser cu " +
+//            "   WHERE cu.user.id =:userId)")
+//    @Modifying(clearAutomatically = true)
+//    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
+//
+
+    @Query("SELECT p " +
+            "FROM Poster p " +
+            "LEFT JOIN p.communityUser cu " +
+            "LEFT JOIN cu.community c " +
+            "LEFT JOIN cu.user u " +
+            "LEFT JOIN cu.heartList hl " +
+            "WHERE u.id = :userId AND c.id = :communityId AND hl.status = true ")
+
+    void heartDelete(@Param("userId") Long userId, @Param("communityId") Long communityId);
 
     // 좋아요 개수 증가
     @Query("UPDATE Poster p " +
@@ -106,6 +120,14 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
+
+    // 좋아요 개수 0
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = 0 " +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartCountZero(@Param("posterId") Long posterId);
+
 
 
     // 게시글 posterId에 해당 되는 글만 삭제

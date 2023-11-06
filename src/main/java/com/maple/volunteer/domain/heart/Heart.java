@@ -38,4 +38,9 @@ public class Heart {
         this.communityUser = communityUser;
         this.poster = poster;
     }
+
+    // 좋아요 상태 변경
+    public void updateHeartStatus() {
+        this.status = false;
+    }
 }
