@@ -1,7 +1,6 @@
 package com.maple.volunteer.service.mypage;
 
 import com.maple.volunteer.domain.communityuser.CommunityUser;
-import com.maple.volunteer.domain.poster.Poster;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;

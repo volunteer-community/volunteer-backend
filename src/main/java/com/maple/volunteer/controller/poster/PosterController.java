@@ -27,7 +27,7 @@ public class PosterController {
                                                                              @PathVariable Long communityId,
                                                                              @RequestParam(value = "page", defaultValue = "1",required = false) int page,
                                                                              @RequestParam(value = "size", defaultValue = "10", required = false) int size,
-                                                                             @RequestParam(value = "sortBy", defaultValue = "createdAt", required = false) String sortBy) {
+                                                                             @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
         CommonResponseDto<Object> allPosterInquiry = posterService.allPosterInquiry(accessToken, communityId, page, size, sortBy);
         ResultDto<PosterListResponseDto> result = ResultDto.in(allPosterInquiry.getStatus(), allPosterInquiry.getMessage());
         result.setData((PosterListResponseDto) allPosterInquiry.getData());

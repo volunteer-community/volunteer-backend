@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -46,6 +47,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
     // 게시글이 삭제 되었을 때 게시글에 해당되는 댓글 전체 삭제
+    @Query("UPDATE Comment cm "
+            + " SET cm.isDelete = true "
+            + " WHERE cm.poster.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void commentDeleteByPosterId(@Param("posterId") Long posterId);
 
 
     // commentId에 해당되는 댓글만 삭제
@@ -77,10 +83,22 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Modifying(clearAutomatically = true)
     void CommentDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
+    // 게시글 ID로 댓글 가져오기
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "LEFT JOIN cm.poster p " +
+            "WHERE p.id = :posterId")
+    List<Comment> findAllCommentByPosterId(@Param("posterId") Long posterId);
+
     @Query("SELECT COUNT(cm) " +
             "FROM Comment cm " +
             "LEFT JOIN cm.communityUser cu " +
             "WHERE cu.id = :communityUserId AND cm.isDelete = false ")
     Integer countByCommunityUserId(@Param("communityUserId") Long communityUserId);
 
+    // commentId에 해당되는 댓글 삭제 여부 확인
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "WHERE cm.id = :commentId AND cm.isDelete = :status ")
+    Optional<Comment> findByIdAndIsDelete(@Param("commentId") Long commentId,@Param("status") Boolean status);
 }

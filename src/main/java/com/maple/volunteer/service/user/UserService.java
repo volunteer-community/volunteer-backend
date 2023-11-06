@@ -38,12 +38,15 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public CommonResponseDto<Object> login(String email, String role) {
-        // email로 User(false) get
-        List<User> userList = userRepository.findActiveUserByEmail2(email);
-        if(userList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-        else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
-        User user = userList.get(0);
+    public TokenDto login(String email, String role, String provider, String profileImg) {
+        // email, provider로 User(false) get
+        User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.getProfileImg().equals(profileImg)) {
+            user.updateProfileImg(profileImg);
+        }
+
         Long userId = user.getId();
 
         // accessToken, refreshToken 발행
@@ -53,13 +56,12 @@ public class UserService {
         Login login = user.getLogin();
         loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
-        TokenDto tokenDto = TokenDto.builder()
+        return TokenDto.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
-
-        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
     // 로그아웃
@@ -96,20 +98,19 @@ public class UserService {
 
         login.updateRefreshToken(token.getRefreshToken());
 
+//        TokenDto tokenDto = TokenDto.builder()
+//                .accessToken(token.getAccessToken())
+//                .refreshToken(token.getRefreshToken())
+//                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+//                .build();
 
-        TokenDto tokenDto = TokenDto.builder()
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
-                .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                .build();
 
-
-        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
     // 회원가입
     public CommonResponseDto<Object> signup(SignupDto signupDto) {
-        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+        List<User> userList = userRepository.findActiveUserByEmail2(signupDto.getEmail(), signupDto.getProvider());
         if(userList.size()==1)return commonService.errorResponse(ErrorCode.EXIST_USER_EMAIL.getDescription(), HttpStatus.BAD_REQUEST,null);
         else if(userList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
         //email의 active유저값이 없을때
@@ -123,11 +124,13 @@ public class UserService {
                             .email(signupDto.getEmail())
                             .profileImg(signupDto.getPicture())
                             .nickname(signupDto.getNickname())
+                            .provider(signupDto.getProvider())
+                            .isDeleted(false)
                             .build();
                     userRepository.save(user);
 
                     //회원가입한 사람을 로그인시키기
-                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail());
+                List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail(),signupDto.getProvider());
                 if(loginedUserList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
                 else if(loginedUserList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
 
@@ -139,19 +142,19 @@ public class UserService {
 
                     Login login = Login.builder()
                             .user(loginUser)
-                            .provider(signupDto.getProvider())
                             .refreshToken(token.getRefreshToken())
                             .build();
 
                     loginRepository.save(login);
 
-                    TokenDto tokenDto = TokenDto.builder()
-                            .accessToken(token.getAccessToken())
-                            .refreshToken(token.getRefreshToken())
-                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                            .build();
+//                    TokenDto tokenDto = TokenDto.builder()
+//                            .accessToken(token.getAccessToken())
+//                            .refreshToken(token.getRefreshToken())
+//                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
+//                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
+//                            .build();
 
-                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, null);
             }
             else{
                 //이미 가입한 닉네임
@@ -173,15 +176,15 @@ public class UserService {
         return userOptional.isEmpty();
     }
 
-    public CommonResponseDto<Object> addinfo(String email, String picture, String role, String name, String provider) {
-        NewUserDto newUserDto = new NewUserDto();
-        newUserDto.setEmail(email);
-        newUserDto.setPicture(picture);
-        newUserDto.setRole(role);
-        newUserDto.setName(name);
-        newUserDto.setProvider(provider);
-        return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
-    }
+//    public CommonResponseDto<Object> addinfo(String email, String picture, String role, String name, String provider) {
+//        NewUserDto newUserDto = new NewUserDto();
+//        newUserDto.setEmail(email);
+//        newUserDto.setPicture(picture);
+//        newUserDto.setRole(role);
+//        newUserDto.setName(name);
+//        newUserDto.setProvider(provider);
+//        return commonService.successResponse(SuccessCode.NEW_USER_SUCCESS.getDescription(), HttpStatus.OK, newUserDto);
+//    }
 
     // 유저 조회 (true, false 모두)
     public CommonResponseDto<Object> allUserInquiry (int page, int size, String sortBy ) {
@@ -223,6 +226,25 @@ public class UserService {
                 .build();
 
         return commonService.successResponse(SuccessCode.ALL_USER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allUserListDto);
+    }
+
+    // 닉네임으로 회원 조회 (true, false 모두)
+    public CommonResponseDto<Object> userInquiryByNickname (String nickname) {
+
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        UserDto userDto = UserDto.builder()
+                .name(user.getName())
+                .provider(user.getProvider())
+                .phoneNumber(user.getPhoneNumber())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .profileImg(user.getProfileImg())
+                .isDeleted(user.isDeleted())
+                .build();
+
+        return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, userDto);
     }
 
     public CommonResponseDto<Object> nicknameCheck(CheckDto checkDto) {

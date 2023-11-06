@@ -119,7 +119,7 @@ public class CommentService {
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndIsDelete(commentId,false)
                                            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
 
         String nickName = user.getNickname();
@@ -146,7 +146,7 @@ public class CommentService {
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                                              .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdAndIsDelete(commentId,false)
                                            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
 
         String nickName = user.getNickname();

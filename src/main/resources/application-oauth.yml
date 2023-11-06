@@ -11,6 +11,7 @@ spring:
             scope:
               - email
               - profile
+              
           naver:
             client-id: ${NAVER_ID}
             client-secret: ${NAVER_SECRET}

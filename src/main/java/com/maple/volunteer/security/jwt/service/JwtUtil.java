@@ -31,8 +31,9 @@ public class JwtUtil { // AccessToken, RefreshToken 발급 및 검증
         String accessToken = generateAccessToken(id, role);
         String refreshToken = generateRefreshToken(id, role);
         LocalDateTime accessTokenExpireTime = LocalDateTime.now().plus(30, ChronoUnit.MINUTES);
+        LocalDateTime refreshTokenExpireTime = LocalDateTime.now().plus(2, ChronoUnit.WEEKS);
 
-        return new GeneratedToken(accessToken, refreshToken, accessTokenExpireTime);
+        return new GeneratedToken(accessToken, refreshToken, accessTokenExpireTime, refreshTokenExpireTime);
     }
 
     public String generateRefreshToken(Long id, String role) {

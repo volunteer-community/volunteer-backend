@@ -2,8 +2,6 @@ package com.maple.volunteer.security.oauth2;
 
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.repository.user.UserRepository;
-import com.maple.volunteer.service.user.UserService;
-import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -35,20 +33,21 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
         OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
 
         // 클라이언트 등록 ID, 이름 속성 가져오기
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String registrationProvider = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
         // OAuth2User를 통해 OAuth2Attribute 객체 생성
         OAuth2Attribute oAuth2Attribute
-                = OAuth2Attribute.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+                = OAuth2Attribute.of(registrationProvider, userNameAttributeName, oAuth2User.getAttributes());
 
         // OAuth2Attribute을 Map으로 get
         Map<String, Object> userAttribute = oAuth2Attribute.convertToMap();
 
         // 사용자 email get 및 회원 여부 판별
         String email = (String) userAttribute.get("email");
-        Optional<User> findUser = userRepository.findActiveUserByEmail(email);
+        String provider = (String) userAttribute.get("provider");
+        Optional<User> findUser = userRepository.findActiveUserByEmailAndProvider(email, provider);
 
         if(findUser.isEmpty()){
             userAttribute.put("exist", false);
@@ -58,7 +57,6 @@ public class CustomOAuth2UserService implements OAuth2UserService <OAuth2UserReq
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                     userAttribute, "email");
         }
-
 
         userAttribute.put("exist", true);
 

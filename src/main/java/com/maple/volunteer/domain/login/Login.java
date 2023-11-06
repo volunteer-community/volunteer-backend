@@ -18,16 +18,14 @@ public class Login {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 로그인 ID
     private String refreshToken;    // 리프레쉬 토큰
-    private String provider;    // 소셜 로그인 제공자
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public Login(String refreshToken, String provider, User user) {
+    public Login(String refreshToken, User user) {
         this.refreshToken = refreshToken;
-        this.provider = provider;
         this.user = user;
     }
 

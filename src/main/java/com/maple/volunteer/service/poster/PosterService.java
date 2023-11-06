@@ -45,8 +45,7 @@ public class PosterService {
     private final PosterImgRepository posterImgRepository;
 
 
-    //TODO 데이터가 비어있는지 확인하는 예외처리 필요함
-    //TODO: userID & communityID & iswithDraw(false)
+
     //전체조회
     public CommonResponseDto<Object> allPosterInquiry(String accessToken, Long communityId, int page, int size, String sortBy) {
 
@@ -142,7 +141,7 @@ public class PosterService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
-        Poster poster = posterRepository.findById(posterId)
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
@@ -166,7 +165,7 @@ public class PosterService {
         return commonService.successResponse(SuccessCode.POSTER_UPDATE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
-    // 게시글 posterId에 해당 되는 글만 삭제
+  // 게시글 posterId에 해당 되는 글만 삭제
     @Transactional
     public CommonResponseDto<Object> posterDeleteByPosterId(String accessToken, Long posterId, Long communityId) {
 
@@ -177,8 +176,8 @@ public class PosterService {
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
-        Poster poster = posterRepository.findById(posterId)
-                                           .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
+                                           .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
         if(!poster.getAuthor().equals(nickName)){
@@ -186,8 +185,7 @@ public class PosterService {
         }
 
         posterRepository.posterDeleteByPosterId(posterId);
-
-        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK, null);
+        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
     }
 
     private void addPosterImg(MultipartFile multipartFile, Poster poster){

@@ -1,5 +1,7 @@
 package com.maple.volunteer.security.oauth2;
 
+import com.maple.volunteer.dto.user.TokenDto;
+import com.maple.volunteer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -7,14 +9,21 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Component
 @RequiredArgsConstructor
 public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final UserService userService;
     // 인증 성공 후 처리
 
     public void onAuthenticationSuccess(HttpServletRequest request
@@ -31,18 +40,22 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                 .getAuthority();
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
+
         // 이미 로그인 했던 회원
         if (isExist){
-            // user 정보를 쿼리스트링에 담는 url 생성
-            String targetUrl = UriComponentsBuilder.fromUriString("http://13.209.253.193/maple/user/login")
-                    .queryParam("email", email)
-                    .queryParam("role", role)
-                    .build()
-                    .encode(StandardCharsets.UTF_8)
-                    .toUriString();
+            TokenDto login = userService.login(email, role, provider, picture);
+            String accessToken = login.getAccessToken();
+            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
+            String refreshToken = login.getRefreshToken();
+            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
 
-            // 정보 받아서 Controller url 리다이렉트
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            // 쿠키를 HttpServletResponse에 추가
+            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, accessTokenExpiration);
+            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, refreshTokenExpiration);
+
+            // redirect url
+            response.sendRedirect("http://localhost:3000");
+
         } else {
             // 회원이 존재하지 않으면
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup")
@@ -56,5 +69,21 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
+    }
+
+    // 쿠키 생성 후 response에 추가
+    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, LocalDateTime expirationDateTime) {
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
+        Instant instant = zonedDateTime.toInstant();
+        long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
+
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(secure); // Set this to true if using HTTPS
+        cookie.setPath("/"); // Set the path according to your requirement
+        cookie.setMaxAge((int) maxAge); // Set the expiration date in seconds from now
+
+        response.addCookie(cookie);
     }
 }
