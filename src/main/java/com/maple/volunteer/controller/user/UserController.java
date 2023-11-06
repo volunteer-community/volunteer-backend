@@ -161,7 +161,7 @@ public class UserController {
 
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .httpOnly(false)
-                .domain("localhost")
+                .domain(".localhost")
                 .path("/") // Set the path according to your requirement
                 .maxAge(maxAge) // Set the expiration date in seconds from now
                 .build();
