@@ -2,12 +2,21 @@ package com.maple.volunteer.controller.user;
 
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
-import com.maple.volunteer.dto.user.*;
+import com.maple.volunteer.dto.user.CheckDto;
+import com.maple.volunteer.dto.user.SignupDto;
+import com.maple.volunteer.dto.user.TokenDto;
+import com.maple.volunteer.dto.user.ViewUserDto;
 import com.maple.volunteer.service.user.UserService;
-import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,23 +43,29 @@ public class UserController {
     public ResponseEntity<ResultDto<TokenDto>> signUp(@RequestBody SignupDto signupDto) {
         CommonResponseDto<Object> commonResponseDto = userService.signup(signupDto);
         ResultDto<TokenDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((TokenDto) commonResponseDto.getData());
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+//        result.setData((TokenDto) commonResponseDto.getData());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getAccessToken(), true, ((TokenDto) commonResponseDto.getData()).getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) commonResponseDto.getData()).getRefreshToken(), true, ((TokenDto) commonResponseDto.getData()).getRefreshTokenExpireTime()));
+        return ResponseEntity.status(commonResponseDto.getHttpStatus())
+                .headers(headers)
+                .body(result);
     }
 
     // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
-                                                         @RequestParam("role") String role,
-                                                         @RequestParam("provider") String provider,
-                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
-
-        CommonResponseDto<Object> login = userService.login(email, role, provider, profileImg);
-        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
-        result.setData((TokenDto) login.getData());
-
-        return ResponseEntity.status(login.getHttpStatus()).body(result);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
+//                                                         @RequestParam("role") String role,
+//                                                         @RequestParam("provider") String provider,
+//                                                         @RequestParam("profileImg") String profileImg){ // provider 추가
+//
+//        CommonResponseDto<Object> login = userService.login(email, role, provider, profileImg);
+//        ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
+//        result.setData((TokenDto) login.getData());
+//
+//        return ResponseEntity.status(login.getHttpStatus()).body(result);
+//    }
 
     // 로그아웃
     @PostMapping("/logout")
@@ -68,9 +83,14 @@ public class UserController {
 
         CommonResponseDto<Object> renewToken = userService.renewToken(refreshToken);
         ResultDto<TokenDto> result = ResultDto.in(renewToken.getStatus(), renewToken.getMessage());
-        result.setData((TokenDto) renewToken.getData());
+//        result.setData((TokenDto) renewToken.getData());
 
-        return ResponseEntity.status(renewToken.getHttpStatus()).body(result);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getAccessToken(), true, ((TokenDto) renewToken.getData()).getAccessTokenExpireTime()));
+        headers.add(HttpHeaders.SET_COOKIE, createHttpOnlyCookieWithExpirationDate("accessToken", ((TokenDto) renewToken.getData()).getRefreshToken(), true, ((TokenDto) renewToken.getData()).getRefreshTokenExpireTime()));
+        return ResponseEntity.status(renewToken.getHttpStatus())
+                .headers(headers)
+                .body(result);
     }
 
     // 닉네임 중복 체크
@@ -108,5 +128,20 @@ public class UserController {
         ResultDto<Void> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
 
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
+
+    private String createHttpOnlyCookieWithExpirationDate(String name, String value, boolean secure, LocalDateTime expirationDateTime) {
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
+        Instant instant = zonedDateTime.toInstant();
+        long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
+
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(secure) // Set this to true if using HTTPS
+                .path("/") // Set the path according to your requirement
+                .maxAge(maxAge) // Set the expiration date in seconds from now
+                .build();
+        return cookie.toString();
     }
 }

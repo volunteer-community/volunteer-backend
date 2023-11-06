@@ -38,7 +38,7 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public CommonResponseDto<Object> login(String email, String role, String provider, String profileImg) {
+    public TokenDto login(String email, String role, String provider, String profileImg) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -56,14 +56,12 @@ public class UserService {
         Login login = user.getLogin();
         loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
 
-        TokenDto tokenDto = TokenDto.builder()
+        return TokenDto.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
                 .accessTokenExpireTime(token.getAccessTokenExpireTime())
                 .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
-
-        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
     // 로그아웃
@@ -100,14 +98,14 @@ public class UserService {
 
         login.updateRefreshToken(token.getRefreshToken());
 
-        TokenDto tokenDto = TokenDto.builder()
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
-                .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                .build();
+//        TokenDto tokenDto = TokenDto.builder()
+//                .accessToken(token.getAccessToken())
+//                .refreshToken(token.getRefreshToken())
+//                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+//                .build();
 
 
-        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+        return commonService.successResponse(SuccessCode.USER_RENEW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
     // 회원가입
@@ -149,14 +147,14 @@ public class UserService {
 
                     loginRepository.save(login);
 
-                    TokenDto tokenDto = TokenDto.builder()
-                            .accessToken(token.getAccessToken())
-                            .refreshToken(token.getRefreshToken())
-                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
-                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
-                            .build();
+//                    TokenDto tokenDto = TokenDto.builder()
+//                            .accessToken(token.getAccessToken())
+//                            .refreshToken(token.getRefreshToken())
+//                            .accessTokenExpireTime(token.getAccessTokenExpireTime())
+//                            .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
+//                            .build();
 
-                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+                    return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, null);
             }
             else{
                 //이미 가입한 닉네임
