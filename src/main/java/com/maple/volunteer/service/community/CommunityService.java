@@ -418,8 +418,7 @@ public class CommunityService {
             Long posterImgId = eachPosterImg.getId();
             posterImgRepository.deleteByPosterImgId(posterImgId, true);
         }
-
-
+      
         // 커뮤니티 이미지 삭제
         // 이미지 url 값만 가져오기
         List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
