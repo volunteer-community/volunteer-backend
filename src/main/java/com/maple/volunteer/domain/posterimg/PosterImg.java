@@ -27,9 +27,10 @@ public class PosterImg {
     private Poster poster;
 
     @Builder
-    public PosterImg(String imagePath, Integer imageNum, Poster poster) {
+    public PosterImg(String imagePath, Integer imageNum, Poster poster, boolean isDelete) {
         this.imagePath = imagePath;
         this.imageNum = imageNum;
         this.poster = poster;
+        this.isDelete = isDelete;
     }
 }
