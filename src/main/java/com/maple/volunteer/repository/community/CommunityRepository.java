@@ -145,10 +145,10 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     // 커뮤니티 삭제
     @Query("UPDATE Community c " +
-            "SET c.isDelete = :status " +
+            "SET c.isDelete = :status, c.status = :recruitmentIng, c.participant = 0 " +
             "WHERE c.id = :communityId")
     @Modifying(clearAutomatically = true)
-    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
+    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status, @Param("recruitmentIng") String recruitmentIng);
 
     // 참여 인원 증가
     @Query("UPDATE Community c " +

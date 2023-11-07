@@ -40,11 +40,15 @@ public class MyPageService {
     private final CommunityUserRepository communityUserRepository;
     private final CommunityRepository communityRepository;
     private final UserRepository userRepository;
-    private final CommonService commonService;
-    private final JwtUtil jwtUtil;
     private final HeartRepository heartRepository;
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
+    private final PosterImgRepository posterImgRepository;
+    private final CommunityImgRepository communityImgRepository;
+    private final CommonService commonService;
+    private final S3UploadService s3UploadService;
+    private final JwtUtil jwtUtil;
+    private final LoginRepository loginRepository;
 
 
     // 내가 만든 커뮤니티 리스트
