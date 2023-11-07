@@ -1,7 +1,6 @@
 package com.maple.volunteer.service.community;
 
 import com.maple.volunteer.domain.category.Category;
-import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
@@ -76,23 +75,23 @@ public class CommunityService {
 
         // 카테고리 가져오기
         Category category = categoryRepository.findByCategoryType(categoryType)
-                                              // 카테고리 값 없으면 오류 반환
-                                              .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
+                // 카테고리 값 없으면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
 
         // 토큰 값으로 Author 추가
         // Author 값을 따로 넣어주기 위해 따로
         Community community = Community.builder()
-                                       .title(communityRequestDto.getCommunityTitle())
-                                       .participant(0)
-                                       .maxParticipant(communityRequestDto.getCommunityMaxParticipant())
-                                       .author(nickName)
-                                       .content(communityRequestDto.getCommunityContent())
-                                       .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
-                                       .location(communityRequestDto.getCommunityLocation())
-                                       .isDelete(false)
-                                       .category(category)
-                                       .build();
+                .title(communityRequestDto.getCommunityTitle())
+                .participant(0)
+                .maxParticipant(communityRequestDto.getCommunityMaxParticipant())
+                .author(nickName)
+                .content(communityRequestDto.getCommunityContent())
+                .status(CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription())
+                .location(communityRequestDto.getCommunityLocation())
+                .isDelete(false)
+                .category(category)
+                .build();
 
         // 커뮤니티 저장
         Long communityId = communityRepository.save(community).getId();
@@ -129,7 +128,7 @@ public class CommunityService {
 
         // 페이지, 요소 개수, 정렬 설정
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
-                                                                  .descending());
+                .descending());
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findAllCommunityList(pageable);
@@ -143,17 +142,17 @@ public class CommunityService {
 
         // 페이지네이션 설정
         PaginationDto paginationDto = PaginationDto.builder()
-                                                   .totalPages(data.getTotalPages())
-                                                   .totalElements(data.getTotalElements())
-                                                   .pageNo(data.getNumber())
-                                                   .isLastPage(data.isLast())
-                                                   .build();
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
 
         // 페이지네이션을 포함한 커뮤니티 리스트 반환
         CommunityListResponseDto allCommunityListResponseDto = CommunityListResponseDto.builder()
-                                                                                       .communityList(allCommunityList)
-                                                                                       .paginationDto(paginationDto)
-                                                                                       .build();
+                .communityList(allCommunityList)
+                .paginationDto(paginationDto)
+                .build();
 
         return commonService.successResponse(SuccessCode.ALL_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, allCommunityListResponseDto);
     }
@@ -163,7 +162,7 @@ public class CommunityService {
 
         // 페이지, 요소 개수, 정렬 설정
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
-                                                                  .descending());
+                .descending());
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListByCategoryType(categoryId, pageable);
@@ -177,17 +176,17 @@ public class CommunityService {
 
         // 페이지네이션 설정
         PaginationDto paginationDto = PaginationDto.builder()
-                                                   .totalPages(data.getTotalPages())
-                                                   .totalElements(data.getTotalElements())
-                                                   .pageNo(data.getNumber())
-                                                   .isLastPage(data.isLast())
-                                                   .build();
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
 
         // 페이지네이션을 포함한 커뮤니티 리스트 반환
         CommunityListResponseDto categoryCommunityListResponseDto = CommunityListResponseDto.builder()
-                                                                                            .communityList(categoryCommunityList)
-                                                                                            .paginationDto(paginationDto)
-                                                                                            .build();
+                .communityList(categoryCommunityList)
+                .paginationDto(paginationDto)
+                .build();
 
         return commonService.successResponse(SuccessCode.CATEGORY_COMMUNITY_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, categoryCommunityListResponseDto);
     }
@@ -197,7 +196,7 @@ public class CommunityService {
 
         // 페이지, 요소 개수, 정렬 설정
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
-                                                                  .descending());
+                .descending());
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchTitle(keyword, pageable);
@@ -210,17 +209,17 @@ public class CommunityService {
 
         // 페이지네이션 설정
         PaginationDto paginationDto = PaginationDto.builder()
-                                                   .totalPages(data.getTotalPages())
-                                                   .totalElements(data.getTotalElements())
-                                                   .pageNo(data.getNumber())
-                                                   .isLastPage(data.isLast())
-                                                   .build();
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
 
         // 페이지네이션을 포함한 커뮤니티 리스트 반환
         CommunityListResponseDto searchTitleCommunityListResponseDto = CommunityListResponseDto.builder()
-                                                                                               .communityList(searchTitleCommunityList)
-                                                                                               .paginationDto(paginationDto)
-                                                                                               .build();
+                .communityList(searchTitleCommunityList)
+                .paginationDto(paginationDto)
+                .build();
 
         return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_TITLE_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchTitleCommunityListResponseDto);
     }
@@ -230,7 +229,7 @@ public class CommunityService {
 
         // 페이지, 요소 개수, 정렬 설정
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
-                                                                  .descending());
+                .descending());
 
         // 페이지로 값 가져오기
         Page<CommunityResponseDto> data = communityRepository.findCommunityListBySearchAuthor(keyword, pageable);
@@ -244,17 +243,17 @@ public class CommunityService {
 
         // 페이지네이션 설정
         PaginationDto paginationDto = PaginationDto.builder()
-                                                   .totalPages(data.getTotalPages())
-                                                   .totalElements(data.getTotalElements())
-                                                   .pageNo(data.getNumber())
-                                                   .isLastPage(data.isLast())
-                                                   .build();
+                .totalPages(data.getTotalPages())
+                .totalElements(data.getTotalElements())
+                .pageNo(data.getNumber())
+                .isLastPage(data.isLast())
+                .build();
 
         // 페이지네이션을 포함한 커뮤니티 리스트 반환
         CommunityListResponseDto searchAuthorCommunityListResponseDto = CommunityListResponseDto.builder()
-                                                                                                .communityList(searchAuthorCommunityList)
-                                                                                                .paginationDto(paginationDto)
-                                                                                                .build();
+                .communityList(searchAuthorCommunityList)
+                .paginationDto(paginationDto)
+                .build();
 
         return commonService.successResponse(SuccessCode.SEARCH_COMMUNITY_AUTHOR_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, searchAuthorCommunityListResponseDto);
     }
@@ -264,17 +263,17 @@ public class CommunityService {
 
         // 이미지를 제외한 커뮤니티 정보 가져오기
         CommunityDetailResponseDto communityDetailResponseDto = communityRepository.findCommunityDetailByCommunityId(communityId)
-                                                                                   // 값이 없다면 오류 반환
-                                                                                   .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+                // 값이 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 커뮤니티 ID에 해당하는 이미지 가져오기
         List<CommunityImgResponseDto> communityImgResponseDtoList = communityImgRepository.findCommunityImgListByCommunityId(communityId);
 
         // 하나의 Dto로 커뮤니티 정보와 이미지 반환
         CommunityDetailAndImgResponseDto communityDetailAndImgResponseDto = CommunityDetailAndImgResponseDto.builder()
-                                                                                                            .communityDetail(communityDetailResponseDto)
-                                                                                                            .communityImgPathList(communityImgResponseDtoList)
-                                                                                                            .build();
+                .communityDetail(communityDetailResponseDto)
+                .communityImgPathList(communityImgResponseDtoList)
+                .build();
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, communityDetailAndImgResponseDto);
     }
@@ -305,7 +304,7 @@ public class CommunityService {
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
-                      .equals(nickName)) {
+                .equals(nickName)) {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
@@ -337,7 +336,7 @@ public class CommunityService {
         }
 
         if (community.getParticipant() < community.getMaxParticipant() && community.getStatus()
-                                                                                   .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) { // 상태가 모집 마감일 때
+                .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) { // 상태가 모집 마감일 때
             community.communityRecruitmentIng();
         }
 
@@ -396,28 +395,30 @@ public class CommunityService {
             }
 
             // isDelete 값을 true로 변경
-            communityRepository.deleteCommunityId(communityId, true);
+            communityRepository.deleteCommunityId(communityId, true, CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription());
 
             return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
         }
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
-        commentRepository.CommentDeleteByCommunityId(communityId, true);
+        commentRepository.commentDeleteByCommunityId(communityId, true);
         heartRepository.updateStatusByCommunityId(communityId, false);
-        posterRepository.PosterDeleteByCommunityId(communityId, true);
+        posterRepository.posterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
 
         // 게시글 이미지 삭제
 
         // 이미지 삭제 (s3삭제)
-        PosterImg posterImg = posterImgRepository.findByPosterByCommunityId(communityId);
-        String posterImgUrl = posterImg.getImagePath();
-        s3UploadService.deletePosterImg(posterImgUrl);
+        List<PosterImg> posterImgList = posterImgRepository.findByPosterListByCommunityId(communityId);
+        for (PosterImg eachPosterImg : posterImgList) {
+            String posterImgUrl = eachPosterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
 
-        // DB isDelete = true 로 변경
-        Long posterImgId = posterImg.getId();
-        posterImgRepository.deleteByPosterImgId(posterImgId, true);
-
+            // DB isDelete = true 로 변경
+            Long posterImgId = eachPosterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId, true);
+        }
+      
         // 커뮤니티 이미지 삭제
         // 이미지 url 값만 가져오기
         List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
@@ -434,7 +435,7 @@ public class CommunityService {
         }
 
         // isDelete 값을 true로 변경
-        communityRepository.deleteCommunityId(communityId, true);
+        communityRepository.deleteCommunityId(communityId, true, CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription());
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -448,8 +449,8 @@ public class CommunityService {
 
         // 유저 가져오기
         User user = userRepository.findById(userId)
-                                  // 유저가 없다면 오류 반환
-                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                // 유저가 없다면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 커뮤니티 재가입 회원인지
         Optional<CommunityUser> communityUserOptional = communityUserRepository.findByUserIdAndCommunityId(communityId, userId);
@@ -467,7 +468,7 @@ public class CommunityService {
 
             // 현재 상태가 모집 마감이면 오류 반환
             if (community.getStatus()
-                         .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
+                    .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
                 throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
             }
 
@@ -476,7 +477,7 @@ public class CommunityService {
 
             // 참가 인원 증가 후 모집 인원과 동일해지면 모집 마감으로 변경
             if (community.getParticipant()
-                         .equals(community.getMaxParticipant())) {
+                    .equals(community.getMaxParticipant())) {
                 community.communityRecruitmentEnd();
             }
 
@@ -490,21 +491,21 @@ public class CommunityService {
 
             // 커뮤니티 가져오기
             Community community = communityRepository.findById(communityId)
-                                                     // 커뮤니티가 없다면 오류 반환
-                                                     .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+                    // 커뮤니티가 없다면 오류 반환
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
             // 현재 상태가 모집 마감이면 오류 반환
             if (community.getStatus()
-                         .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
+                    .equals(CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription())) {
                 throw new BadRequestException(ErrorCode.COMMUNITY_RECRUITMENT_END_ERROR);
             }
 
             // 커뮤니티 유저 생성
             CommunityUser communityUser = CommunityUser.builder()
-                                                       .user(user)
-                                                       .community(community)
-                                                       .isWithdraw(false)
-                                                       .build();
+                    .user(user)
+                    .community(community)
+                    .isWithdraw(false)
+                    .build();
 
             // 커뮤니티 유저 저장
             communityUserRepository.save(communityUser);
@@ -514,7 +515,7 @@ public class CommunityService {
 
             // 참가 인원 증가 후 모집 인원과 동일해지면 모집 마감으로 변경
             if (community.getParticipant()
-                         .equals(community.getMaxParticipant())) {
+                    .equals(community.getMaxParticipant())) {
                 community.communityRecruitmentEnd();
             }
 
@@ -531,7 +532,7 @@ public class CommunityService {
 
         // 커뮤니티 유저 가져오기 (커뮤니티 아이디와 유저 둘 다 일치하는 값 가져오기)
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityId(communityId, userId)
-                                                             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
@@ -598,9 +599,9 @@ public class CommunityService {
 
         //유저Id에 해당되는 게시글 삭제/댓글 삭제
 
-        posterRepository.PosterDeleteByUserId(userId, true);
-        commentRepository.CommentDeleteByUserId(userId, true);
-      
+        posterRepository.posterDeleteByUserId(userId, true);
+        commentRepository.commentDeleteByUserId(userId, true);
+
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
@@ -616,11 +617,11 @@ public class CommunityService {
         // 이미지 번호 순차적으로 증가 시키며 db에 url과 함께 저장
         for (String imgPath : communityImageUrlList) {
             CommunityImg communityImg = CommunityImg.builder()
-                                                    .imagePath(imgPath)
-                                                    .imageNum(imgNum)
-                                                    .community(community)
-                                                    .isDelete(false)
-                                                    .build();
+                    .imagePath(imgPath)
+                    .imageNum(imgNum)
+                    .community(community)
+                    .isDelete(false)
+                    .build();
 
             communityImgRepository.save(communityImg);
 

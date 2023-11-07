@@ -2,7 +2,6 @@ package com.maple.volunteer.domain.user;
 
 import com.maple.volunteer.domain.common.BaseTime;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
-import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.type.Role;
 import lombok.Builder;
@@ -34,7 +33,7 @@ public class User extends BaseTime {
     private String phoneNumber; // 유저 핸드폰 번호
     private String nickname; // 유저 닉네임
     private String provider; // 구글, 카카오, 네이버
-    private boolean isDeleted; //탈퇴 유무
+    private boolean isDelete; //탈퇴 유무
 
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +46,7 @@ public class User extends BaseTime {
     private List<CommunityUser> communityUserList;
 
     @Builder
-    public User(String email, String profileImg, String name, String phoneNumber, Role role, String nickname, String provider, boolean isDeleted) {
+    public User(String email, String profileImg, String name, String phoneNumber, Role role, String nickname, String provider, boolean isDelete) {
         this.email = email;
         this.profileImg = profileImg;
         this.name = name;
@@ -55,7 +54,7 @@ public class User extends BaseTime {
         this.role = role;
         this.nickname = nickname;
         this.provider = provider;
-        this.isDeleted = isDeleted;
+        this.isDelete = isDelete;
     }
 
     public void updateProfileImg(String profileImg) {

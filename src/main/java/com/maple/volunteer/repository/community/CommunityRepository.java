@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
@@ -142,12 +143,19 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
     Page<CommunityResponseDto> findCommunityListByAuthor(@Param("author") String author, Pageable pageable);
 
+    @Query("SELECT c " +
+            "FROM Community c " +
+            "LEFT JOIN c.category cg " +
+            "LEFT JOIN c.communityImgList ci " +
+            "WHERE c.author = :author AND ci.imageNum = 1 AND c.isDelete = false ")
+    List<Community> findCommunitiesByAuthor(@Param("author") String author);
+
     // 커뮤니티 삭제
     @Query("UPDATE Community c " +
-            "SET c.isDelete = :status " +
+            "SET c.isDelete = :status, c.status = :recruitmentIng, c.participant = 0 " +
             "WHERE c.id = :communityId")
     @Modifying(clearAutomatically = true)
-    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
+    void deleteCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status, @Param("recruitmentIng") String recruitmentIng);
 
     // 참여 인원 증가
     @Query("UPDATE Community c " +
@@ -161,4 +169,17 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "FROM Community c " +
             "WHERE c.id = :communityId AND c.isDelete = false ")
     Optional<Community> findCommunityByFalse(@Param("communityId") Long communityId);
+
+    // 참여 인원 감소
+    @Query("UPDATE Community c " +
+            "SET c.participant = c.participant - 1, c.status = :recruitmentIng " +
+            "WHERE c.id = :communityId ")
+    @Modifying(clearAutomatically = true)
+    void participantDecrease(@Param("communityId") Long communityId, @Param("recruitmentIng") String recruitmentIng);
+
+    @Query("UPDATE Community c " +
+            "SET c.status = :recruitmentIng " +
+            "WHERE c.id = :communityId")
+    @Modifying(clearAutomatically = true)
+    void communityRecruitmentIng (@Param("communityId") Long communityId, @Param("recruitmentIng") String recruitmentIng);
 }
