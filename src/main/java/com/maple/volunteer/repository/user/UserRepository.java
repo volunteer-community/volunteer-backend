@@ -30,11 +30,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findPhone(@Param("phone") String phone);
 
     @Modifying
-    @Query("UPDATE User u set u.phoneNumber = :phone, u.nickname = :nickname where u.id = :id")
+    @Query("UPDATE User u SET u.phoneNumber = :phone, u.nickname = :nickname WHERE u.id = :id")
     void updateUserInfo(@Param("phone") String phone, @Param("nickname") String nickname, @Param("id") Long id);
 
     @Query("SELECT u FROM User u WHERE u.isDeleted = false AND u.email = :email AND u.provider = :provider")
     Optional<User> findActiveUserByEmailAndProvider(@Param("email") String email, @Param("provider") String provider);
 
     Optional<User> findByNickname(String nickname);
+
+    @Query("SELECT u FROM User u WHERE u.id = :userId AND u.isDelete = false")
+    Optional<User> findByIdAndIsDelete(@Param("userId") Long userId);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE User u SET u.isDelete = true WHERE u.id = :userId")
+    void updateUserIsDelete(@Param("userId") Long userId);
 }

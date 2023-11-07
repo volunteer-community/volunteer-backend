@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface PosterImgRepository extends JpaRepository<PosterImg, Long> {
 
     PosterImg findByPoster(Poster poster);
@@ -30,6 +32,14 @@ public interface PosterImgRepository extends JpaRepository<PosterImg, Long> {
             "LEFT JOIN cu.community c " +
             "WHERE c.id = :communityId " )
     PosterImg findByPosterByCommunityId(@Param("communityId") Long communityId);
+
+    @Query("SELECT pi " +
+            "FROM PosterImg  pi " +
+            "LEFT JOIN pi.poster p " +
+            "LEFT JOIN p.communityUser cu " +
+            "LEFT JOIN cu.community c " +
+            "WHERE c.id = :communityId " )
+    List<PosterImg> findByPosterListByCommunityId(@Param("communityId") Long communityId);
 
     @Query("SELECT pi " +
             "FROM PosterImg pi " +

@@ -47,6 +47,7 @@ public enum SuccessCode {
 
     // 마이 페이지
     MY_PAGE_INFO_SUCCESS("마이페이지 인포 조회에 성공했습니다."),
+    MY_PAGE_USER_WITHDRAWAL_SUCCESS("회원 탈퇴에 성공 했습니다."),
 
     // 유저
     USER_LOGIN_SUCCESS("로그인에 성공 했습니다."),

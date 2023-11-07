@@ -60,4 +60,13 @@ public class MyPageController {
 
         return ResponseEntity.status(allMyInfo.getHttpStatus()).body(result);
     }
+
+    @PostMapping("/mypage/withdrawal")
+    public ResponseEntity<ResultDto<Void>> withdraw(@RequestHeader("Authorization") String accessToken){
+
+        CommonResponseDto<Object> withdraw = myPageService.withdraw(accessToken);
+        ResultDto<Void> result = ResultDto.in(withdraw.getStatus(),withdraw.getMessage());
+
+        return ResponseEntity.status(withdraw.getHttpStatus()).body(result);
+    }
 }

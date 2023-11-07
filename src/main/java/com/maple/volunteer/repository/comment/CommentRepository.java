@@ -81,7 +81,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "   FROM CommunityUser cu " +
             "   WHERE cu.user.id = :userId)")
     @Modifying(clearAutomatically = true)
-    void CommentDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
+    void commentDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
     // 게시글 ID로 댓글 가져오기
     @Query("SELECT cm " +

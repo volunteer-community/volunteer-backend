@@ -13,7 +13,6 @@ import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.security.jwt.dto.GeneratedToken;
 import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
-import com.maple.volunteer.type.Role;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,9 +45,10 @@ public class UserService {
         String profileImg = user.getProfileImg();
         String role = user.getRole().getKey();
 
-        if (!user.getProfileImg().equals(profileImg)) {
-            user.updateProfileImg(profileImg);
-        }
+        // profileImg 검사 못함.
+//        if (!user.getProfileImg().equals(profileImg)) {
+//            user.updateProfileImg(profileImg);
+//        }
 
         Long userId = user.getId();
 
@@ -305,7 +305,7 @@ public class UserService {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImg(user.getProfileImg())
-                .isDeleted(user.isDeleted())
+                .isDeleted(user.isDelete())
                 .build();
 
         return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, userDto);
