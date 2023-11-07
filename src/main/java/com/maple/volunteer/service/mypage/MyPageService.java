@@ -16,12 +16,17 @@ import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.comment.CommentRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
+import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
+import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
+import com.maple.volunteer.repository.posterimg.PosterImgRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
+import com.maple.volunteer.service.s3upload.S3UploadService;
+import com.maple.volunteer.type.CommunityStatus;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

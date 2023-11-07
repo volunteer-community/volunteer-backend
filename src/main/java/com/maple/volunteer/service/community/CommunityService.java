@@ -1,7 +1,6 @@
 package com.maple.volunteer.service.community;
 
 import com.maple.volunteer.domain.category.Category;
-import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
@@ -402,9 +401,9 @@ public class CommunityService {
         }
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
-        commentRepository.CommentDeleteByCommunityId(communityId, true);
+        commentRepository.commentDeleteByCommunityId(communityId, true);
         heartRepository.updateStatusByCommunityId(communityId, false);
-        posterRepository.PosterDeleteByCommunityId(communityId, true);
+        posterRepository.posterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
 
         // 게시글 이미지 삭제

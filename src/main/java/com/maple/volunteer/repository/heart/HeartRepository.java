@@ -84,9 +84,13 @@ public interface HeartRepository extends JpaRepository<Heart, Long> {
             "FROM Heart h " +
             "LEFT JOIN h.communityUser cu " +
             "LEFT JOIN cu.user u " +
-            "WHERE u.id =:userId AND h.status = true ")
+            "WHERE u.id = :userId AND cu.isWithdraw = false AND h.status = true ")
     List<Heart> findHeartListUserId(@Param("userId") Long userId);
 
-
+    @Query("SELECT h " +
+            "FROM Heart h " +
+            "LEFT JOIN h.communityUser cu " +
+            "WHERE cu.id = :communityUserId AND cu.isWithdraw = false AND h.status = true ")
+    List<Heart> findHeartListCommunityUserId(Long communityUserId);
 }
 
