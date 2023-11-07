@@ -189,7 +189,7 @@ public class UserService {
                         .profileImg(signupDto.getPicture())
                         .nickname(signupDto.getNickname())
                         .provider(signupDto.getProvider())
-                        .isDeleted(false)
+                        .isDelete(false)
                         .build();
                 userRepository.save(user);
 
