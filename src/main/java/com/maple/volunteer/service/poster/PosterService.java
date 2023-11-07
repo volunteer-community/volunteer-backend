@@ -206,6 +206,7 @@ public class PosterService {
                 .imagePath(posterImgUrl)
                 .imageNum(imgNum)
                 .poster(poster)
+                .isDelete(false)
                 .build();
 
         posterImgRepository.save(posterImg);

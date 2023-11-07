@@ -593,6 +593,7 @@ public class CommunityService {
                                                     .imagePath(imgPath)
                                                     .imageNum(imgNum)
                                                     .community(community)
+                                                    .isDelete(false)
                                                     .build();
 
             communityImgRepository.save(communityImg);
