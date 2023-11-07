@@ -69,7 +69,7 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "LEFT JOIN cu.community c " +
             "LEFT JOIN c.category cg " +
             "LEFT JOIN c.communityImgList ci " +
-            "WHERE u.id = :userId AND cu.isWithdraw = false ")
+            "WHERE u.id = :userId AND cu.isWithdraw = false AND ci.imageNum = 1 ")
     Page<CommunityResponseDto> myCommunitySignList(@Param("userId") Long userId, Pageable pageable);
 
     // 내가 가입한 커뮤니티 개수
