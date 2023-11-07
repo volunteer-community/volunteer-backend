@@ -369,10 +369,37 @@ public class CommunityService {
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
-                      .equals(nickName)) {
+                .equals(nickName)) {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
+        // 게시글 가져오기
+        Boolean existsCommunityId = posterRepository.existsCommunityId(communityId);
+
+        if (!existsCommunityId) {
+
+            communityUserRepository.CommunityUserDelete(communityId, true);
+
+            // 커뮤니티 이미지 삭제
+            // 이미지 url 값만 가져오기
+            List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
+
+            // url 값 삭제
+            for (CommunityImg communityImgPath : communityImgPathList) {
+                String imgPath = communityImgPath.getImagePath();
+
+                // s3 이미지 삭제
+                s3UploadService.deleteCommunityImg(imgPath);
+
+                // DB isDelete = true 로 변경
+                communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(), true);
+            }
+
+            // isDelete 값을 true로 변경
+            communityRepository.deleteCommunityId(communityId, true);
+
+            return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
+        }
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
         commentRepository.CommentDeleteByCommunityId(communityId, true);
@@ -388,8 +415,8 @@ public class CommunityService {
         s3UploadService.deletePosterImg(posterImgUrl);
 
         // DB isDelete = true 로 변경
-        Long posterImgId= posterImg.getId();
-        posterImgRepository.deleteByPosterImgId(posterImgId,true);
+        Long posterImgId = posterImg.getId();
+        posterImgRepository.deleteByPosterImgId(posterImgId, true);
 
         // 커뮤니티 이미지 삭제
         // 이미지 url 값만 가져오기
@@ -403,9 +430,8 @@ public class CommunityService {
             s3UploadService.deleteCommunityImg(imgPath);
 
             // DB isDelete = true 로 변경
-            communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(),true);
+            communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(), true);
         }
-
 
         // isDelete 값을 true로 변경
         communityRepository.deleteCommunityId(communityId, true);

@@ -69,6 +69,14 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + "WHERE c.id = :communityId AND p.isDelete = false")
     Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 
+    // 게시글이 존재 여부 확인 (Nope Optional)
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
+            + "FROM Poster p "
+            + "LEFT JOIN p.communityUser cu "
+            + "LEFT JOIN cu.community c "
+            + "WHERE c.id = :communityId AND p.isDelete = false")
+    Boolean existsCommunityId(@Param("communityId") Long communityId);
+
 
     // 커뮤니티 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
