@@ -1,5 +1,6 @@
 package com.maple.volunteer.service.poster;
 
+import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.poster.Poster;
 
@@ -7,6 +8,7 @@ import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.poster.*;
 import com.maple.volunteer.exception.BadRequestException;
+import com.maple.volunteer.repository.community.CommunityRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+
 import com.maple.volunteer.domain.posterimg.PosterImg;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.poster.PosterRequestDto;
@@ -30,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -43,18 +47,19 @@ public class PosterService {
     private final PosterRepository posterRepository;
     private final CommunityUserRepository communityUserRepository;
     private final PosterImgRepository posterImgRepository;
+    private final CommunityRepository communityRepository;
 
 
-
-    //전체조회
+    // 게시글 전체 조회
     public CommonResponseDto<Object> allPosterInquiry(String accessToken, Long communityId, int page, int size, String sortBy) {
 
+        // 로그인한 사람
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                      .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                               .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
 
@@ -64,6 +69,22 @@ public class PosterService {
 
         PageRequest pageable = PageRequest.of(page - 1, size, Sort.by(sortBy)
                                                                   .descending());
+
+        // 커뮤니티 생성자
+
+        // CommunityHostResponseDto communityHostResponseDtoList = communityRepository.findCommunityHostInfo(communityId);
+        Community community = communityRepository.findAuthorByCommunityId(communityId);
+        String author = community.getAuthor();
+        String communityTitle = community.getTitle();
+        Optional<User> userOptional = userRepository.findByNickname(author);
+        User user = userOptional.get();
+
+        CommunityHostResponseDto communityHostResponseDto = CommunityHostResponseDto.builder()
+                                                                                    .communityId(communityId)
+                                                                                    .hostNickName(user.getNickname())
+                                                                                    .hostProfileImg(user.getProfileImg())
+                                                                                    .communityTitle(communityTitle)
+                                                                                    .build();
 
 
         Page<PosterResponseDto> data = posterRepository.findAllPosterList(communityId, pageable);
@@ -77,6 +98,7 @@ public class PosterService {
                                                    .build();
 
         PosterListResponseDto posterListResponseDto = PosterListResponseDto.builder()
+                                                                           .communityHostInfo(communityHostResponseDto)
                                                                            .posterList(posterResponseList)
                                                                            .paginationDto(paginationDto)
                                                                            .build();
@@ -84,17 +106,29 @@ public class PosterService {
         return commonService.successResponse(SuccessCode.ALL_POSTER_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterListResponseDto);
     }
 
-    //상세조회
+    // 게시글 상세 조회
     public CommonResponseDto<Object> posterDetailInquiry(String accessToken, Long posterId, Long communityId) {
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                               .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        User user = userOptional.get();
+        String commentUserProfileImg = user.getProfileImg();
+        String commentUserNickname = user.getNickname();
+
+        CommentUserResponseDto commentUserResponseDto = CommentUserResponseDto.builder()
+                                                                              .commentUserId(userId)
+                                                                              .commentUserNickName(commentUserNickname)
+                                                                              .commentUserProfileImg(commentUserProfileImg)
+                                                                              .build();
 
         PosterDetailResponseDto posterDetailResponseDto = posterRepository.findPosterDetailByCommunityIdAndPosterId(communityId, posterId)
                                                                           .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         PosterDetailListResponseDto posterDetailListResponseDto = PosterDetailListResponseDto.builder()
                                                                                              .posterDetail(posterDetailResponseDto)
+                                                                                             .commentUserResponseDto(commentUserResponseDto)
                                                                                              .build();
 
         return commonService.successResponse(SuccessCode.POSTER_DETAIL_INQUIRY_SUCCESS.getDescription(), HttpStatus.OK, posterDetailListResponseDto);
@@ -108,20 +142,20 @@ public class PosterService {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                                                             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         String nickName = user.getNickname();
 
         Poster poster = Poster.builder()
-                .title(posterRequestDto.getPosterTitle())
-                .content(posterRequestDto.getPosterContent())
-                .author(nickName)
-                .heartCount(0)
-                .isDelete(false)
-                .communityUser(communityUser)
-                .build();
+                              .title(posterRequestDto.getPosterTitle())
+                              .content(posterRequestDto.getPosterContent())
+                              .author(nickName)
+                              .heartCount(0)
+                              .isDelete(false)
+                              .communityUser(communityUser)
+                              .build();
 
 
         posterRepository.save(poster);
@@ -134,18 +168,19 @@ public class PosterService {
     // 게시글 수정
     @Transactional
     public CommonResponseDto<Object> posterUpdate(String accessToken, Long posterId, Long communityId,
-                                                   MultipartFile multipartFile, PosterRequestDto posterRequestDto) {
+                                                  MultipartFile multipartFile, PosterRequestDto posterRequestDto) {
 
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
-        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
+                               .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId, false)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
-        if (!poster.getAuthor().equals(nickName)){
+        if (!poster.getAuthor()
+                   .equals(nickName)) {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
@@ -172,15 +207,16 @@ public class PosterService {
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
         // 유저 가져오기
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
         communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
+                               .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
-        Poster poster = posterRepository.findByIdAndIsDelete(posterId,false)
-                                           .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
+        Poster poster = posterRepository.findByIdAndIsDelete(posterId, false)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.POSTER_NOT_FOUND));
 
         String nickName = user.getNickname();
-        if(!poster.getAuthor().equals(nickName)){
+        if (!poster.getAuthor()
+                   .equals(nickName)) {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
@@ -190,32 +226,32 @@ public class PosterService {
         s3UploadService.deletePosterImg(posterImgUrl);
 
         // DB isDelete = true 로 변경
-        Long posterImgId= posterImg.getId();
-        posterImgRepository.deleteByPosterImgId(posterImgId,true);
+        Long posterImgId = posterImg.getId();
+        posterImgRepository.deleteByPosterImgId(posterImgId, true);
 
         posterRepository.posterDeleteByPosterId(posterId);
-        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(),HttpStatus.OK,null);
+        return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
-    private void addPosterImg(MultipartFile multipartFile, Poster poster){
+    private void addPosterImg(MultipartFile multipartFile, Poster poster) {
 
         String posterImgUrl = s3UploadService.posterUpload(multipartFile);
         int imgNum = 1;
 
         PosterImg posterImg = PosterImg.builder()
-                .imagePath(posterImgUrl)
-                .imageNum(imgNum)
-                .poster(poster)
-                .isDelete(false)
-                .build();
+                                       .imagePath(posterImgUrl)
+                                       .imageNum(imgNum)
+                                       .poster(poster)
+                                       .isDelete(false)
+                                       .build();
 
         posterImgRepository.save(posterImg);
     }
 
-    private void updatePosterImg(MultipartFile multipartFile, Poster poster){
+    private void updatePosterImg(MultipartFile multipartFile, Poster poster) {
 
         //기존이미지 가져오기
-        if(multipartFile != null){
+        if (multipartFile != null) {
             PosterImg posterImg = posterImgRepository.findByPoster(poster);
 
             String posterImgUrl = posterImg.getImagePath();
