@@ -23,11 +23,10 @@ public class CommunityController {
     // 커뮤니티 생성 API
     @PostMapping("/community")
     public ResponseEntity<ResultDto<Void>> communityCreate(@RequestHeader("Authorization") String accessToken,
-                                                           @RequestParam(value = "categoryType") String categoryType,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
                                                            @RequestPart(value = "communityRequestDto") CommunityRequestDto communityRequestDto) {
 
-        CommonResponseDto<Object> communityCreate = communityService.communityCreate(accessToken, categoryType, multipartFileList, communityRequestDto);
+        CommonResponseDto<Object> communityCreate = communityService.communityCreate(accessToken, multipartFileList, communityRequestDto);
         ResultDto<Void> result = ResultDto.in(communityCreate.getStatus(), communityCreate.getMessage());
 
         return ResponseEntity.status(communityCreate.getHttpStatus()).body(result);
