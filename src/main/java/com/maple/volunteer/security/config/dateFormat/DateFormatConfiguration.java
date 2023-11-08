@@ -12,16 +12,16 @@ import java.util.TimeZone;
 @Configuration
 public class DateFormatConfiguration {
 
-    private static final String dateFormat = "yyyy-MM-dd";
+//    private static final String dateFormat = "yyyy-MM-dd";
     private static final String datetimeFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer(){
         return jacksonObjectMapperBuilder -> {
 //            jacksonObjectMapperBuilder.timeZone(TimeZone.getTimeZone("UTC"));
-            jacksonObjectMapperBuilder.timeZone(TimeZone.getTimeZone("Asia/Seoul"));
+//            jacksonObjectMapperBuilder.timeZone(TimeZone.getTimeZone("Asia/Seoul"));
             jacksonObjectMapperBuilder.simpleDateFormat(datetimeFormat);
-            jacksonObjectMapperBuilder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)));
+//            jacksonObjectMapperBuilder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)));
             jacksonObjectMapperBuilder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(datetimeFormat)));
         };
     }
