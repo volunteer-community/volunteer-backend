@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommunityRequestDto {
 
-    private Long categoryId;
+    private String categoryType;
     private String communityTitle;
     private Integer communityMaxParticipant;
     private String communityContent;
     private String communityLocation;
 
     @Builder
-    public CommunityRequestDto(Long categoryId, String communityTitle, Integer communityMaxParticipant, String communityContent, String communityLocation) {
-        this.categoryId = categoryId;
+    public CommunityRequestDto(String categoryType, String communityTitle, Integer communityMaxParticipant, String communityContent, String communityLocation) {
+        this.categoryType = categoryType;
         this.communityTitle = communityTitle;
         this.communityMaxParticipant = communityMaxParticipant;
         this.communityContent = communityContent;

@@ -59,7 +59,7 @@ public class CommunityService {
 
     // 커뮤니티 생성
     @Transactional
-    public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+    public CommonResponseDto<Object> communityCreate(String accessToken, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
 
         // UserId 가져오기
@@ -74,7 +74,7 @@ public class CommunityService {
         String nickName = user.getNickname();
 
         // 카테고리 가져오기
-        Category category = categoryRepository.findByCategoryType(categoryType)
+        Category category = categoryRepository.findByCategoryType(communityRequestDto.getCategoryType())
                 // 카테고리 값 없으면 오류 반환
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
@@ -283,7 +283,7 @@ public class CommunityService {
     public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
         // 카테고리 가져오기
-        Category category = categoryRepository.findByCategoryId(communityRequestDto.getCategoryId())
+        Category category = categoryRepository.findByCategoryType(communityRequestDto.getCategoryType())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_ID_NOT_FOUND));
 
         // UserId 가져오기
