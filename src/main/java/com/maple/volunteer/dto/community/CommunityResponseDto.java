@@ -22,11 +22,11 @@ public class CommunityResponseDto {
     private String communityContent;
     private String communityLocation;
     private String communityMainImgPath;
-    private ZonedDateTime communityCreatedAt;
-    private ZonedDateTime communityUpdatedAt;
+    private LocalDateTime communityCreatedAt;
+    private LocalDateTime communityUpdatedAt;
 
     @Builder
-    public CommunityResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath, ZonedDateTime communityCreatedAt, ZonedDateTime communityUpdatedAt) {
+    public CommunityResponseDto(Long categoryId, String categoryType, Long communityId, String communityTitle, Integer communityParticipant, Integer communityMaxParticipant, String communityAuthor, String communityStatus, String communityContent, String communityLocation, String communityMainImgPath, LocalDateTime communityCreatedAt, LocalDateTime communityUpdatedAt) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.communityId = communityId;
