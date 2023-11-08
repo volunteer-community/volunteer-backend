@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -17,9 +18,11 @@ public class PosterImg {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 게시글 이미지 ID
-
+    @NotNull
     private String imagePath; // 게시글 이미지 URL
+    @NotNull
     private Integer imageNum;   // 게시글 이미지 번호
+    @NotNull
     private boolean isDelete;
 
     @ManyToOne(fetch = FetchType.LAZY)

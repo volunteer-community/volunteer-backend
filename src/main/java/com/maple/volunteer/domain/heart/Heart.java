@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class Heart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 좋아요 ID
 
+    @NotNull
     private Boolean status; // 좋아요 상태 true +1 / false -1 // true ->false 변환과정
 
     @ManyToOne(fetch = FetchType.LAZY)

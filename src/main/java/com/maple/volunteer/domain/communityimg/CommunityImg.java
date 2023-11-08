@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -18,8 +19,11 @@ public class CommunityImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 커뮤니티 이미지 ID
 
+    @NotNull
     private String imagePath; // 커뮤니티 이미지 URL
+    @NotNull
     private Integer imageNum; // 커뮤니티 이미지 번호
+    @NotNull
     private Boolean isDelete;   // 커뮤니티 이미지 삭제 유무
 
     @ManyToOne(fetch = FetchType.LAZY)

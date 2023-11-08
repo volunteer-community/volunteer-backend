@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -27,14 +28,17 @@ public class Poster extends BaseTime {
 
     @Column(length = 50)
     @Size(min = 1, max = 50)
+    @NotNull
     private String title;   // 게시글 제목
 
     @Lob
-    private String content; // 게시글 내용
+    @NotNull
+    private String content;
+    @NotNull// 게시글 내용
     private String author;  // 게시글 작성자
-
+    @NotNull
     private Boolean isDelete; // 게시글 삭제 유무
-
+    @NotNull
     private Integer heartCount;  // 게시글 좋아요 수
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -21,22 +22,29 @@ public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 유저 ID
+    @NotNull
     private String email;   // 유저 이메일
+    @NotNull
     private String profileImg;  // 유저 프로필 이미지
 
     @Column(length = 20)
     @Size(max = 20)
+    @NotNull
     private String name;    // 유저 이름
 
     @Column(length = 11)
     @Size(min = 10, max = 11)
+    @NotNull
     private String phoneNumber; // 유저 핸드폰 번호
+    @NotNull
     private String nickname; // 유저 닉네임
+    @NotNull
     private String provider; // 구글, 카카오, 네이버
+    @NotNull
     private boolean isDelete; //탈퇴 유무
 
-
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Role role;  // 유저 역할
 
     @OneToOne(mappedBy = "user")
