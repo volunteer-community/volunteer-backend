@@ -6,6 +6,7 @@ import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.ResultDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.user.UserDto;
+import com.maple.volunteer.service.admin.AdminService;
 import com.maple.volunteer.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/maple/admin")
 public class AdminController {
 
-    private final UserService userService;
+    private final AdminService adminService;
 
     // 전체 회원 조회 (탈퇴 포함)
     @GetMapping("/allUser")
@@ -24,7 +25,7 @@ public class AdminController {
                                                                       @RequestParam(value = "size", defaultValue = "10", required = false) int size,
                                                                       @RequestParam(value = "sortBy", defaultValue = "updatedAt", required = false) String sortBy) {
 
-        CommonResponseDto<Object> allUserInquiry = userService.allUserInquiry(page, size, sortBy);
+        CommonResponseDto<Object> allUserInquiry = adminService.allUserInquiry(page, size, sortBy);
         ResultDto<AllUserListDto> result = ResultDto.in(allUserInquiry.getStatus(), allUserInquiry.getMessage());
         result.setData((AllUserListDto) allUserInquiry.getData());
 
@@ -35,7 +36,7 @@ public class AdminController {
     @GetMapping("/user")
     public ResponseEntity<ResultDto<UserDto>> userInquiry(@RequestParam("nickname") String nickname) {
 
-        CommonResponseDto<Object> userInquiry = userService.userInquiryByNickname(nickname);
+        CommonResponseDto<Object> userInquiry = adminService.userInquiryByNickname(nickname);
         ResultDto<UserDto> result = ResultDto.in(userInquiry.getStatus(), userInquiry.getMessage());
         result.setData((UserDto) userInquiry.getData());
 
