@@ -20,19 +20,8 @@ import java.time.format.DateTimeFormatter;
 public abstract class BaseTime {
 
     @CreatedDate
-    private String createdAt; // 생성 시간
+    private LocalDateTime createdAt; // 생성 시간
 
     @LastModifiedDate
-    private String updatedAt; // 수정 시간
-
-    @PrePersist
-    public void onPrePersist() {
-        this.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.updatedAt = this.createdAt;
-    }
-
-    @PreUpdate
-    public void onPreUpdate() {
-        this.updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
+    private LocalDateTime updatedAt; // 수정 시간
 }
