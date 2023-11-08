@@ -21,10 +21,8 @@ import java.time.format.DateTimeFormatter;
 public abstract class BaseTime {
 
     @CreatedDate
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt; // 생성 시간
 
     @LastModifiedDate
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt; // 수정 시간
 }
