@@ -3,6 +3,7 @@ package com.maple.volunteer.repository.community;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.dto.community.CommunityDetailResponseDto;
 import com.maple.volunteer.dto.community.CommunityResponseDto;
+import com.maple.volunteer.dto.poster.CommunityHostResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -182,4 +183,13 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.id = :communityId")
     @Modifying(clearAutomatically = true)
     void communityRecruitmentIng (@Param("communityId") Long communityId, @Param("recruitmentIng") String recruitmentIng);
+
+
+
+    // 커뮤니티 ID로 author 가져오기
+    @Query("SELECT c " +
+            "FROM Community c " +
+            "WHERE c.id = :communityId")
+    Community findAuthorByCommunityId(@Param("communityId") Long communityId);
+
 }
