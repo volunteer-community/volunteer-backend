@@ -90,6 +90,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE p.id = :posterId")
     List<Comment> findAllCommentByPosterId(@Param("posterId") Long posterId);
 
+    // userId 가 작성한 댓글 개수
     @Query("SELECT COUNT(cm) " +
             "FROM Comment cm " +
             "LEFT JOIN cm.communityUser cu " +

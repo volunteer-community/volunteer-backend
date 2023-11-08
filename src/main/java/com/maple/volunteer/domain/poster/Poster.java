@@ -37,8 +37,6 @@ public class Poster extends BaseTime {
 
     private Integer heartCount;  // 게시글 좋아요 수
 
-    //댓글 개수 추가해야함
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
     private CommunityUser communityUser;

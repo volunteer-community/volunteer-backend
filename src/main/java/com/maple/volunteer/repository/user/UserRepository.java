@@ -45,4 +45,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE User u SET u.isDelete = true WHERE u.id = :userId")
     void updateUserIsDelete(@Param("userId") Long userId);
+
+
 }

@@ -11,9 +11,11 @@ import java.util.List;
 public class PosterDetailListResponseDto {
 
     private PosterDetailResponseDto posterDetail;
+    private CommentUserResponseDto commentUserResponseDto;
 
     @Builder
-    public PosterDetailListResponseDto(PosterDetailResponseDto posterDetail){
+    public PosterDetailListResponseDto(PosterDetailResponseDto posterDetail ,CommentUserResponseDto commentUserResponseDto){
         this.posterDetail = posterDetail;
+        this.commentUserResponseDto = commentUserResponseDto;
     }
 }
