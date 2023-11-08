@@ -2,6 +2,7 @@ package com.maple.volunteer.repository.communityuser;
 
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.dto.community.CommunityResponseDto;
+import com.maple.volunteer.dto.poster.CommunityHostResponseDto;
 import com.maple.volunteer.dto.poster.PosterDetailResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -84,6 +85,12 @@ public interface CommunityUserRepository extends JpaRepository<CommunityUser, Lo
             "LEFT JOIN cu.user u " +
             "WHERE u.id = :userId AND cu.isWithdraw = false ")
     List<CommunityUser> findCommunityUserByUserId(@Param("userId") Long userId);
+
+    @Query("UPDATE CommunityUser cu " +
+            "SET cu.isWithdraw = :status " +
+            "WHERE cu.id = :communityUserId")
+    @Modifying(clearAutomatically = true)
+    void communityWithdraw(@Param("communityUserId") Long communityUserId, @Param("status") boolean status);
 
 
 }

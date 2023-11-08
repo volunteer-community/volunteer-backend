@@ -69,6 +69,14 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             + "WHERE c.id = :communityId AND p.isDelete = false")
     Optional<Boolean> existsByCommunityId(@Param("communityId") Long communityId);
 
+    // 게시글이 존재 여부 확인 (Nope Optional)
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END "
+            + "FROM Poster p "
+            + "LEFT JOIN p.communityUser cu "
+            + "LEFT JOIN cu.community c "
+            + "WHERE c.id = :communityId AND p.isDelete = false")
+    Boolean existsCommunityId(@Param("communityId") Long communityId);
+
 
     // 커뮤니티 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
@@ -79,9 +87,9 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "   FROM CommunityUser cu " +
             "   WHERE cu.community.id = :communityId)")
     @Modifying(clearAutomatically = true)
-    void PosterDeleteByCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
+    void posterDeleteByCommunityId(@Param("communityId") Long communityId, @Param("status") Boolean status);
 
-     // 유저 ID에 해당하는 모든 게시글 삭제
+    // 유저 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
             "SET p.isDelete = :status, p.heartCount = 0 " +
             "WHERE p.communityUser " +
@@ -90,7 +98,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "   FROM CommunityUser cu " +
             "   WHERE cu.user.id =:userId)")
     @Modifying(clearAutomatically = true)
-    void PosterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
+    void posterDeleteByUserId(@Param("userId") Long userId, @Param("status") Boolean status);
 
     @Query("SELECT p " +
             "FROM Poster p " +
@@ -143,7 +151,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "FROM Poster p " +
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.user u " +
-            "WHERE u.id = :userId ")
+            "WHERE u.id = :userId AND p.isDelete = false AND cu.isWithdraw = false ")
     List<Poster> findByPosterListUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(p.heartCount) " +
@@ -161,6 +169,22 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     @Query("SELECT (p.heartCount - 1)" +
             "FROM Poster p " +
-            "WHERE p.id =:posterId ")
+            "WHERE p.id = :posterId ")
     void heartDeleteByPosterId(@Param("posterId") Long posterId);
+
+    @Query("SELECT p " +
+            "FROM Poster p " +
+            "LEFT JOIN p.communityUser cu " +
+            "WHERE cu.id = :communityUserId AND p.isDelete = false AND cu.isWithdraw = false ")
+    List<Poster> findByPosterListCommunityUserId(@Param("communityUserId") Long communityUserId);
+
+    @Query("UPDATE Poster p " +
+            "SET p.isDelete = :status, p.heartCount = 0 " +
+            "WHERE p.communityUser " +
+            "IN " +
+            "(SELECT cu " +
+            "   FROM CommunityUser cu " +
+            "   WHERE cu.id =:communityUserId)")
+    @Modifying(clearAutomatically = true)
+    void posterDeleteByCommunityUserId(@Param("communityUserId") Long communityUserId, @Param("status") boolean status);
 }

@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -24,6 +25,7 @@ public class CommunityUser extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 커뮤니티_유저 ID
 
+    @NotNull
     private Boolean isWithdraw; // 커뮤니티 탈퇴 유무
 
     @ManyToOne(fetch = FetchType.LAZY)

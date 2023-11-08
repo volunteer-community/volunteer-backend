@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
@@ -21,8 +22,11 @@ public class Comment extends BaseTime {
     private Long id; // 댓글 ID
 
     @Lob
+    @NotNull
     private String content; // 댓글 내용
+    @NotNull
     private String author; // 작성자
+    @NotNull
     private Boolean isDelete;   // 댓글 삭제 유무
 
 

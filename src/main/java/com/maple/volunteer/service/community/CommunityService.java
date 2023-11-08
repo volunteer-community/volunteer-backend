@@ -1,12 +1,12 @@
 package com.maple.volunteer.service.community;
 
 import com.maple.volunteer.domain.category.Category;
-import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
 import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
+import com.maple.volunteer.domain.posterimg.PosterImg;
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.CommonResponseDto;
 import com.maple.volunteer.dto.common.PaginationDto;
@@ -20,6 +20,7 @@ import com.maple.volunteer.repository.communityimg.CommunityImgRepository;
 import com.maple.volunteer.repository.communityuser.CommunityUserRepository;
 import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.poster.PosterRepository;
+import com.maple.volunteer.repository.posterimg.PosterImgRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import com.maple.volunteer.service.common.CommonService;
@@ -51,13 +52,14 @@ public class CommunityService {
     private final PosterRepository posterRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PosterImgRepository posterImgRepository;
     private final S3UploadService s3UploadService;
     private final CommonService commonService;
     private final JwtUtil jwtUtil;
 
     // 커뮤니티 생성
     @Transactional
-    public CommonResponseDto<Object> communityCreate(String accessToken, String categoryType, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
+    public CommonResponseDto<Object> communityCreate(String accessToken, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
 
         // UserId 가져오기
@@ -65,16 +67,17 @@ public class CommunityService {
 
         // 유저 가져오기
         User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  // 유저가 없다면 오류 반환
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 유저 닉네임 가져오기
         String nickName = user.getNickname();
 
         // 카테고리 가져오기
-        Category category = categoryRepository.findByCategoryType(categoryType)
-                                              // 카테고리 값 없으면 오류 반환
-                                              .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
+
+        Category category = categoryRepository.findByCategoryType(communityRequestDto.getCategoryType())
+                // 카테고리 값 없으면 오류 반환
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_TYPE_NOT_FOUND));
 
 
         // 토큰 값으로 Author 추가
@@ -92,7 +95,8 @@ public class CommunityService {
                                        .build();
 
         // 커뮤니티 저장
-        Long communityId = communityRepository.save(community).getId();
+        Long communityId = communityRepository.save(community)
+                                              .getId();
 
         // S3에 이미지 저장
         createCommunityImage(multipartFileList, community);
@@ -101,15 +105,15 @@ public class CommunityService {
         // 생성한 인원은 바로 가입 처리
         // 커뮤니티 가져오기
         Community communityGet = communityRepository.findById(communityId)
-                // 커뮤니티가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+                                                    // 커뮤니티가 없다면 오류 반환
+                                                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 커뮤니티 유저 생성
         CommunityUser communityUser = CommunityUser.builder()
-                .user(user)
-                .community(communityGet)
-                .isWithdraw(false)
-                .build();
+                                                   .user(user)
+                                                   .community(communityGet)
+                                                   .isWithdraw(false)
+                                                   .build();
 
         // 커뮤니티 유저 저장
         communityUserRepository.save(communityUser);
@@ -264,11 +268,22 @@ public class CommunityService {
                                                                                    // 값이 없다면 오류 반환
                                                                                    .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
+        String author = communityDetailResponseDto.getCommunityAuthor();
+        User user = userRepository.findByNickname(author)
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        // 커뮤니티 상세에 유저 작성자, 유저 프로필 넣기
+        CommunityUserDetailDto communityUserDetailDto = CommunityUserDetailDto.builder()
+                                                                              .communityAuthor(user.getNickname())
+                                                                              .communityUserProfile(user.getProfileImg())
+                                                                              .build();
+
         // 커뮤니티 ID에 해당하는 이미지 가져오기
         List<CommunityImgResponseDto> communityImgResponseDtoList = communityImgRepository.findCommunityImgListByCommunityId(communityId);
 
         // 하나의 Dto로 커뮤니티 정보와 이미지 반환
         CommunityDetailAndImgResponseDto communityDetailAndImgResponseDto = CommunityDetailAndImgResponseDto.builder()
+                                                                                                            .communityUserDetail(communityUserDetailDto)
                                                                                                             .communityDetail(communityDetailResponseDto)
                                                                                                             .communityImgPathList(communityImgResponseDtoList)
                                                                                                             .build();
@@ -281,24 +296,26 @@ public class CommunityService {
     public CommonResponseDto<Object> communityUpdate(String accessToken, Long communityId, List<MultipartFile> multipartFileList, CommunityRequestDto communityRequestDto) {
 
         // 카테고리 가져오기
-        Category category = categoryRepository.findByCategoryId(communityRequestDto.getCategoryId())
+
+        Category category = categoryRepository.findByCategoryType(communityRequestDto.getCategoryType())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_ID_NOT_FOUND));
+
 
         // UserId 가져오기
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
 
         // 유저 가져오기
         User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  // 유저가 없다면 오류 반환
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 유저 닉네임 가져오기
         String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findCommunityByFalse(communityId)
-                // 커뮤니티가 없으면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+                                                 // 커뮤니티가 없으면 오류 반환
+                                                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
@@ -329,7 +346,8 @@ public class CommunityService {
                 communityRequestDto.getCommunityMaxParticipant(), community.getAuthor(),
                 community.getStatus(), communityRequestDto.getCommunityContent(), communityRequestDto.getCommunityLocation());
 
-        if (community.getParticipant().equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
+        if (community.getParticipant()
+                     .equals(communityRequestDto.getCommunityMaxParticipant())) {    // 참여 인원과 같을 때
             community.communityRecruitmentEnd();
         }
 
@@ -353,16 +371,16 @@ public class CommunityService {
 
         // 유저 가져오기
         User user = userRepository.findById(userId)
-                // 유저가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                                  // 유저가 없다면 오류 반환
+                                  .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 유저 닉네임 가져오기
         String nickName = user.getNickname();
 
         // 커뮤니티 가져오기
         Community community = communityRepository.findCommunityByFalse(communityId)
-                // 커뮤니티가 없다면 오류 반환
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+                                                 // 커뮤니티가 없다면 오류 반환
+                                                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         // 작성자와 현재 로그인한 유저의 닉네임이 일치한지
         if (!community.getAuthor()
@@ -370,15 +388,70 @@ public class CommunityService {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
 
+        // 게시글 가져오기
+        Boolean existsCommunityId = posterRepository.existsCommunityId(communityId);
+
+        if (!existsCommunityId) {
+
+            communityUserRepository.CommunityUserDelete(communityId, true);
+
+            // 커뮤니티 이미지 삭제
+            // 이미지 url 값만 가져오기
+            List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
+
+            // url 값 삭제
+            for (CommunityImg communityImgPath : communityImgPathList) {
+                String imgPath = communityImgPath.getImagePath();
+
+                // s3 이미지 삭제
+                s3UploadService.deleteCommunityImg(imgPath);
+
+                // DB isDelete = true 로 변경
+                communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(), true);
+            }
+
+            // isDelete 값을 true로 변경
+            communityRepository.deleteCommunityId(communityId, true, CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription());
+
+            return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
+        }
 
         // 해당 커뮤니티에 속하는 게시글, 댓글, 커뮤니티 유저, 좋아요 모두 삭제
-        commentRepository.CommentDeleteByCommunityId(communityId, true);
+        commentRepository.commentDeleteByCommunityId(communityId, true);
         heartRepository.updateStatusByCommunityId(communityId, false);
-        posterRepository.PosterDeleteByCommunityId(communityId, true);
+        posterRepository.posterDeleteByCommunityId(communityId, true);
         communityUserRepository.CommunityUserDelete(communityId, true);
-      
+
+        // 게시글 이미지 삭제
+
+        // 이미지 삭제 (s3삭제)
+        List<PosterImg> posterImgList = posterImgRepository.findByPosterListByCommunityId(communityId);
+        for (PosterImg eachPosterImg : posterImgList) {
+            String posterImgUrl = eachPosterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
+
+            // DB isDelete = true 로 변경
+            Long posterImgId = eachPosterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId, true);
+        }
+
+        // 커뮤니티 이미지 삭제
+        // 이미지 url 값만 가져오기
+        List<CommunityImg> communityImgPathList = communityImgRepository.findDeletedCommunityImgPathList(communityId);
+
+        // url 값 삭제
+        for (CommunityImg communityImgPath : communityImgPathList) {
+            String imgPath = communityImgPath.getImagePath();
+
+            // s3 이미지 삭제
+            s3UploadService.deleteCommunityImg(imgPath);
+
+            // DB isDelete = true 로 변경
+            communityImgRepository.deleteByCommunityImgId(communityImgPath.getId(), true);
+        }
+
         // isDelete 값을 true로 변경
-        communityRepository.deleteCommunityId(communityId, true);
+        communityRepository.deleteCommunityId(communityId, true, CommunityStatus.COMMUNITY_RECRUITMENT_END.getDescription());
 
         return commonService.successResponse(SuccessCode.COMMUNITY_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -480,11 +553,51 @@ public class CommunityService {
         // 커뮤니티 가져오기
         Community community = communityUser.getCommunity();
 
+        List<Poster> posterList = posterRepository.findByPosterListUserId(userId);
+
+
+/*        // 해당 레코드의 isWithdraw를 true로 변환
+        communityUser.communityWithdraw();
+
+        // 참가 인원 감소
+        community.communityParticipantDecrease();*/
+        // 해당 레코드의 isWithdraw를 true로 변환
+        Long communityUserId = communityUser.getId();
+        communityUserRepository.communityWithdraw(communityUserId, true);
+
+        // 참가 인원 감소 후 모집 중으로 변경
+        communityRepository.participantDecrease(communityId, CommunityStatus.COMMUNITY_RECRUITMENT_ING.getDescription());
+
+
         // 탈퇴하는 유저ID가 작성한 게시글 (게시글 좋아요, 좋아요 개수 0, 댓글 삭제) 삭제
 
         //1. 유저ID에 해당되는 게시글 리스트 가져오기
-        List<Poster> posterList = posterRepository.findByPosterListUserId(userId);
 
+        if (posterList.isEmpty()) {
+            // 탈퇴하는 유저의 게시글 없을 때
+            // 탈퇴하는 유저ID가 누른 타인의 게시글에서 좋아요 개수 -1 시키기 , 좋아요 false 시키기
+
+            List<Heart> heartListByPosterId = heartRepository.findHeartListUserId(userId);
+
+            for (Heart eachHeartPosterId : heartListByPosterId) {
+
+                Long heartId = eachHeartPosterId.getId();
+                Long posterId = eachHeartPosterId.getPoster()
+                                                 .getId();
+
+                heartRepository.updateStatus(heartId, false);
+                posterRepository.updateHeartCountDecrease(posterId);
+            }
+
+            //유저Id에 해당되는 게시글 삭제/댓글 삭제
+
+            commentRepository.commentDeleteByUserId(userId, true);
+
+            return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
+
+        }
+
+        // 탈퇴하는 유저의 게시글이 있을 때
         for (Poster eachPoster : posterList) {
             Long posterId = eachPoster.getId();
 
@@ -493,6 +606,15 @@ public class CommunityService {
 
             //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
             commentRepository.commentDeleteByPosterId(posterId);
+
+            // 이미지 삭제 (s3삭제)
+            PosterImg posterImg = posterImgRepository.findByPosterId(posterId);
+            String posterImgUrl = posterImg.getImagePath();
+            s3UploadService.deletePosterImg(posterImgUrl);
+
+            // DB isDelete = true 로 변경
+            Long posterImgId = posterImg.getId();
+            posterImgRepository.deleteByPosterImgId(posterImgId, true);
 
             //유저 ID에 해당하는 좋아요 리스트 가져오기
             List<Heart> heartList = heartRepository.findHeartListPosterId(posterId);
@@ -511,30 +633,20 @@ public class CommunityService {
 
         List<Heart> heartListByPosterId = heartRepository.findHeartListUserId(userId);
 
-        for(Heart eachHeartPosterId : heartListByPosterId){
+        for (Heart eachHeartPosterId : heartListByPosterId) {
 
             Long heartId = eachHeartPosterId.getId();
-            Long posterId = eachHeartPosterId.getPoster().getId();
+            Long posterId = eachHeartPosterId.getPoster()
+                                             .getId();
 
-            heartRepository.updateStatus(heartId,false);
+            heartRepository.updateStatus(heartId, false);
             posterRepository.updateHeartCountDecrease(posterId);
         }
 
         //유저Id에 해당되는 게시글 삭제/댓글 삭제
 
-        posterRepository.PosterDeleteByUserId(userId, true);
-        commentRepository.CommentDeleteByUserId(userId, true);
-
-        // 해당 레코드의 isWithdraw를 true로 변환
-        communityUser.communityWithdraw();
-
-        // 참가 인원 감소
-        community.communityParticipantDecrease();
-
-        // 참가 인원 감소 후 모집 인원보다 작으면 모집 중으로 변경
-        if (community.getParticipant() < community.getMaxParticipant()) {
-            community.communityRecruitmentIng();
-        }
+        posterRepository.posterDeleteByUserId(userId, true);
+        commentRepository.commentDeleteByUserId(userId, true);
 
         return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
@@ -554,6 +666,7 @@ public class CommunityService {
                                                     .imagePath(imgPath)
                                                     .imageNum(imgNum)
                                                     .community(community)
+                                                    .isDelete(false)
                                                     .build();
 
             communityImgRepository.save(communityImg);

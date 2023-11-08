@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,23 +28,29 @@ public class Community extends BaseTime {
 
     @Column(length = 30)
     @Size(min = 1, max = 30)
+    @NotNull
     private String title;   // 커뮤니티 제목
-
+    @NotNull
     private Integer participant;    // 커뮤니티 참여 인원
-
+    @NotNull
     private Integer maxParticipant; // 커뮤니티 모집 인원
+    @NotNull
     private String author;  // 커뮤니티 작성자
 
     @Column(length = 5)
     @Size(max = 5)
+    @NotNull
     private String status;  // 커뮤니티 활동 상태
 
     @Lob
+    @NotNull
     private String content; // 커뮤니티 내용
 
     @Column(length = 30)
     @Size(max = 30)
+    @NotNull
     private String location;   // 커뮤니티 지역명
+    @NotNull
     private Boolean isDelete;   // 커뮤니티 삭제 유무
 
     @ManyToOne(fetch = FetchType.LAZY)
