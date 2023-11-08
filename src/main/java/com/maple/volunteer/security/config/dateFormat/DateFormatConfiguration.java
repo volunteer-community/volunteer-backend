@@ -19,7 +19,7 @@ public class DateFormatConfiguration {
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer(){
         return jacksonObjectMapperBuilder -> {
 
-            jacksonObjectMapperBuilder.timeZone(TimeZone.getTimeZone("Asia/Seoul"));
+//            jacksonObjectMapperBuilder.timeZone(TimeZone.getTimeZone("As"));
             jacksonObjectMapperBuilder.simpleDateFormat(datetimeFormat);
             jacksonObjectMapperBuilder.serializers(new LocalDateSerializer(DateTimeFormatter.ofPattern(dateFormat)));
             jacksonObjectMapperBuilder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(datetimeFormat)));
