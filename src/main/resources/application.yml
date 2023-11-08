@@ -18,8 +18,10 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
+    database-platform: org.hibernate.dialect.MariaDB103Dialect
+
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
 
 logging:
   level:
