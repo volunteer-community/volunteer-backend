@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,4 +188,10 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "   WHERE cu.id =:communityUserId)")
     @Modifying(clearAutomatically = true)
     void posterDeleteByCommunityUserId(@Param("communityUserId") Long communityUserId, @Param("status") boolean status);
+
+    @Query("UPDATE Poster p " +
+            "SET p.author = :nickname " +
+            "WHERE p.author = :oldNickname AND p.isDelete = false")
+    @Modifying(clearAutomatically = true)
+    void updatePosterNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
 }

@@ -12,6 +12,7 @@ import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.community.CommunityListResponseDto;
 import com.maple.volunteer.dto.community.CommunityResponseDto;
 import com.maple.volunteer.dto.mypage.MyPageResponseDto;
+import com.maple.volunteer.dto.user.ViewUserDto;
 import com.maple.volunteer.exception.BadRequestException;
 import com.maple.volunteer.exception.NotFoundException;
 import com.maple.volunteer.repository.comment.CommentRepository;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -434,5 +436,45 @@ public class MyPageService {
         return commonService.successResponse(SuccessCode.MY_PAGE_USER_WITHDRAWAL_SUCCESS.getDescription(), HttpStatus.OK, null);
     }
 
+
+    public CommonResponseDto<Object> viewUserInfo(String accessToken) {
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()){
+            User user = userOptional.get();
+            ViewUserDto viewUserDto = new ViewUserDto();
+            viewUserDto.setNickname(user.getNickname());
+            viewUserDto.setName(user.getName());
+            viewUserDto.setPhone(user.getPhoneNumber());
+            viewUserDto.setPicture(user.getProfileImg());
+            viewUserDto.setEmail(user.getEmail());
+            return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, viewUserDto);
+        }else{
+            return commonService.errorResponse(ErrorCode.INVALID_USER_REQUEST.getDescription(), HttpStatus.BAD_REQUEST, null);
+        }
+    }
+
+    @Transactional
+    public CommonResponseDto<Object> modUserInfo(String accessToken, ViewUserDto viewUserDto) {
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()){
+            User user = userOptional.get();
+            if(userRepository.findByNicknameToMod(viewUserDto.getNickname(),user.getNickname()).isPresent()) return commonService.errorResponse(ErrorCode.EXISTED_NICKNAME.getDescription(), HttpStatus.BAD_REQUEST,null);
+            if(userRepository.findPhoneToMod(viewUserDto.getPhone(),user.getPhoneNumber()).isPresent()) return commonService.errorResponse(ErrorCode.EXISTED_PHONE_NUMBER.getDescription(),HttpStatus.BAD_REQUEST,null);
+            try {
+                userRepository.updateUserInfo(viewUserDto.getPhone(), viewUserDto.getNickname(), userId);
+                commentRepository.updateCommentNickname(viewUserDto.getNickname(),user.getNickname());
+                communityRepository.updateCommunityNickname(viewUserDto.getNickname(),user.getNickname());
+                posterRepository.updatePosterNickname(viewUserDto.getNickname(),user.getNickname());
+
+                return commonService.successResponse(SuccessCode.MODIFY_USERINFO_SUCCESS.getDescription(), HttpStatus.OK,null);
+            }catch (NotFoundException e){
+                return commonService.errorResponse(ErrorCode.MODIFY_USER_INFO_FAILED.getDescription(), HttpStatus.BAD_REQUEST,null);
+            }
+        }else{
+            return commonService.errorResponse(ErrorCode.INVALID_USER_REQUEST.getDescription(), HttpStatus.BAD_REQUEST, null);
+        }
+    }
 
 }
