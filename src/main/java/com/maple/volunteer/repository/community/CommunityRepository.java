@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -192,4 +193,9 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "WHERE c.id = :communityId")
     Community findAuthorByCommunityId(@Param("communityId") Long communityId);
 
+    @Query("UPDATE Community c " +
+            "SET c.author = :nickname " +
+            "WHERE c.author = :oldNickname AND c.isDelete = false")
+    @Modifying(clearAutomatically = true)
+    void updateCommunityNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
 }

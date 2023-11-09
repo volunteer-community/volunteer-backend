@@ -1,14 +1,18 @@
 package com.maple.volunteer.service.poster;
 
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
+import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.domain.poster.Poster;
 
 import com.maple.volunteer.domain.user.User;
 import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.poster.*;
 import com.maple.volunteer.exception.BadRequestException;
+import com.maple.volunteer.repository.comment.CommentRepository;
 import com.maple.volunteer.repository.community.CommunityRepository;
+import com.maple.volunteer.repository.heart.HeartRepository;
 import com.maple.volunteer.repository.user.UserRepository;
 import com.maple.volunteer.security.jwt.service.JwtUtil;
 import org.springframework.data.domain.Page;
@@ -48,6 +52,8 @@ public class PosterService {
     private final CommunityUserRepository communityUserRepository;
     private final PosterImgRepository posterImgRepository;
     private final CommunityRepository communityRepository;
+    private final CommentRepository commentRepository;
+    private final HeartRepository heartRepository;
 
 
     // 게시글 전체 조회
@@ -228,6 +234,23 @@ public class PosterService {
         // DB isDelete = true 로 변경
         Long posterImgId = posterImg.getId();
         posterImgRepository.deleteByPosterImgId(posterImgId, true);
+
+        // 게시글 Id에 해당되는 heartCount = 0 으로 변경
+        posterRepository.updateHeartCountZero(posterId);
+        // posterId에 해당되는 댓글 리스트로 받아오기
+        List<Comment> commentList = commentRepository.findAllCommentByPosterId(posterId);
+        for (Comment eachComment : commentList){
+            commentRepository.commentDeleteByPosterId(posterId);
+        }
+        // posterId에 해당되는 좋아요 리스트 받아오기
+        List<Heart> heartList = heartRepository.findHeartListPosterId(posterId);
+
+        for (Heart eachHeart : heartList) {
+            Long heartId = eachHeart.getId();
+
+            //가져온 좋아요를 false로 바꿔주기(좋아요 삭제)
+            heartRepository.updateStatus(heartId, false);
+        }
 
         posterRepository.posterDeleteByPosterId(posterId);
         return commonService.successResponse(SuccessCode.POSTER_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);

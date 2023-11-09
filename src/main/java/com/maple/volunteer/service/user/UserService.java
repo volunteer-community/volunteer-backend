@@ -2,9 +2,7 @@ package com.maple.volunteer.service.user;
 
 import com.maple.volunteer.domain.login.Login;
 import com.maple.volunteer.domain.user.User;
-import com.maple.volunteer.dto.admin.AllUserListDto;
 import com.maple.volunteer.dto.common.CommonResponseDto;
-import com.maple.volunteer.dto.common.PaginationDto;
 import com.maple.volunteer.dto.user.*;
 import com.maple.volunteer.repository.login.LoginRepository;
 import com.maple.volunteer.exception.NotFoundException;
@@ -15,9 +13,6 @@ import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.type.ErrorCode;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -276,26 +271,5 @@ public class UserService {
         }
     }
 
-    public CommonResponseDto<Object> viewUserInfo(String accessToken) {
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()){
-            User user = userOptional.get();
-            ViewUserDto viewUserDto = new ViewUserDto();
-            viewUserDto.setNickname(user.getNickname());
-            viewUserDto.setName(user.getName());
-            viewUserDto.setPhone(user.getPhoneNumber());
-            viewUserDto.setPicture(user.getProfileImg());
-            viewUserDto.setEmail(user.getEmail());
-            return commonService.successResponse(SuccessCode.VIEW_USERINFO_SUCCESS.getDescription(), HttpStatus.OK, viewUserDto);
-        }else{
-            return commonService.errorResponse(ErrorCode.INVALID_USER_REQUEST.getDescription(), HttpStatus.BAD_REQUEST, null);
-        }
-    }
 
-    public CommonResponseDto<Object> modUserInfo(String accessToken, ViewUserDto viewUserDto) {
-        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
-        userRepository.updateUserInfo(viewUserDto.getPhone(), viewUserDto.getNickname(), userId);
-        return commonService.successResponse(SuccessCode.MODIFY_USERINFO_SUCCESS.getDescription(), HttpStatus.OK,null);
-    }
 }
