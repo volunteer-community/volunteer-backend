@@ -22,29 +22,27 @@ public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 유저 ID
-    @NotNull
+    @Column(nullable = false)
     private String email;   // 유저 이메일
-    @NotNull
+    @Column(nullable = false)
     private String profileImg;  // 유저 프로필 이미지
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     @Size(max = 20)
-    @NotNull
     private String name;    // 유저 이름
 
-    @Column(length = 11)
+    @Column(length = 11, nullable = false)
     @Size(min = 10, max = 11)
-    @NotNull
     private String phoneNumber; // 유저 핸드폰 번호
-    @NotNull
+    @Column(nullable = false)
     private String nickname; // 유저 닉네임
-    @NotNull
+    @Column(nullable = false)
     private String provider; // 구글, 카카오, 네이버
-    @NotNull
+    @Column(nullable = false)
     private boolean isDelete; //탈퇴 유무
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Column(nullable = false)
     private Role role;  // 유저 역할
 
     @OneToOne(mappedBy = "user")

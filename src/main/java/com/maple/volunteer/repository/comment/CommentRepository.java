@@ -118,6 +118,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "SET c.author = :nickname " +
             "WHERE c.author = :oldNickname AND c.isDelete = false")
     @Modifying(clearAutomatically = true)
-    void updateCommentNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
+    void updateCommentNickname(@Param("nickname")String nickname, @Param("oldNickname") String userNickname);
 
 }

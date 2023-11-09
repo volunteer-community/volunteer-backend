@@ -22,11 +22,11 @@ public class Comment extends BaseTime {
     private Long id; // 댓글 ID
 
     @Lob
-    @NotNull
+    @Column(nullable = false)
     private String content; // 댓글 내용
-    @NotNull
+    @Column(nullable = false)
     private String author; // 작성자
-    @NotNull
+    @Column(nullable = false)
     private Boolean isDelete;   // 댓글 삭제 유무
 
 

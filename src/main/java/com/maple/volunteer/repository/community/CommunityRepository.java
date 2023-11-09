@@ -197,5 +197,5 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
             "SET c.author = :nickname " +
             "WHERE c.author = :oldNickname AND c.isDelete = false")
     @Modifying(clearAutomatically = true)
-    void updateCommunityNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
+    void updateCommunityNickname(@Param("nickname")String nickname, @Param("oldNickname") String userNickname);
 }
