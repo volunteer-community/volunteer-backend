@@ -229,12 +229,18 @@ public class MyPageService {
     // 마이페이지 INFO
     public CommonResponseDto<Object> getMyInfo(String accessToken) {
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         MyPageResponseDto myPageResponseDto = MyPageResponseDto.builder()
-                                                               .communityUserCount(findCommunityUserCount(userId))
-                                                               .countOfPosterLike(numberOfPosterthatILike(userId))
-                                                               .countOfLikedPoster(numberOfLikedPoster(userId))
-                                                               .commentCount(findCommentCount(userId))
-                                                               .build();
+                    .picture(user.getProfileImg())
+                    .email(user.getEmail())
+                    .nickname(user.getNickname())
+                    .communityUserCount(findCommunityUserCount(userId))
+                    .countOfPosterLike(numberOfPosterthatILike(userId))
+                    .countOfLikedPoster(numberOfLikedPoster(userId))
+                    .commentCount(findCommentCount(userId))
+                    .build();
 
         return commonService.successResponse(SuccessCode.MY_PAGE_INFO_SUCCESS.getDescription(), HttpStatus.OK, myPageResponseDto);
     }
