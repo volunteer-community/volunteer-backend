@@ -147,24 +147,7 @@ public class UserController {
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
 
-    // 유저 정보 수정 페이지에 정보 넘기기
-    @PostMapping("/viewUserInfo")
-    public ResponseEntity<ResultDto<ViewUserDto>> viewUserInfo(@RequestHeader("Authorization") String accessToken){
-        CommonResponseDto<Object> commonResponseDto = userService.viewUserInfo(accessToken);
-        ResultDto<ViewUserDto> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-        result.setData((ViewUserDto) commonResponseDto.getData());
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-    }
 
-    // 유저 정보 수정하기
-    @GetMapping("/modUserInfo")
-    public ResponseEntity<ResultDto<Void>> modUserInfo(@RequestHeader("Authorization") String accessToken,
-                                                       @RequestBody ViewUserDto viewUserDto){
-        CommonResponseDto<Object> commonResponseDto = userService.modUserInfo(accessToken, viewUserDto);
-        ResultDto<Void> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
-
-        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
-    }
 
     private String createHttpOnlyCookieWithExpirationDate(String name, String value, boolean secure, LocalDateTime expirationDateTime) {
         ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");

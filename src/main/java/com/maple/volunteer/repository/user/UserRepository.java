@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,5 +46,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.isDelete = true WHERE u.id = :userId")
     void updateUserIsDelete(@Param("userId") Long userId);
 
+    @Query("SELECT u FROM User u WHERE u.nickname = :nickname AND NOT u.nickname = :oldNickname")
+    Optional<User> findByNicknameToMod(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
 
+    @Query("SELECT u FROM User u WHERE u.phoneNumber = :phone AND NOT u.phoneNumber = :oldPhone")
+    Optional<Object> findPhoneToMod(@Param("phone")String phone, @Param("oldPhone") @NotNull String userPhone);
 }

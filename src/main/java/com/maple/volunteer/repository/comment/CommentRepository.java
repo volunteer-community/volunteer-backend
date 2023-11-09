@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,4 +113,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "   WHERE cu.id = :communityUserId)")
     @Modifying(clearAutomatically = true)
     void commentDeleteByCommunityUserId(@Param("communityUserId") Long communityUserId, @Param("status") boolean status);
+
+    @Query("UPDATE Comment c " +
+            "SET c.author = :nickname " +
+            "WHERE c.author = :oldNickname AND c.isDelete = false")
+    @Modifying(clearAutomatically = true)
+    void updateCommentNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
+
 }
