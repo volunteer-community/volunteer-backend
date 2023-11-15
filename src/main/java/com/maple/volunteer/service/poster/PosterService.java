@@ -159,10 +159,10 @@ public class PosterService {
                               .content(posterRequestDto.getPosterContent())
                               .author(nickName)
                               .heartCount(0)
+                              .commentCount(0)
                               .isDelete(false)
                               .communityUser(communityUser)
                               .build();
-
 
         posterRepository.save(poster);
 
@@ -239,7 +239,7 @@ public class PosterService {
         posterRepository.updateHeartCountZero(posterId);
         // posterId에 해당되는 댓글 리스트로 받아오기
         List<Comment> commentList = commentRepository.findAllCommentByPosterId(posterId);
-        for (Comment eachComment : commentList){
+        for (Comment eachComment : commentList) {
             commentRepository.commentDeleteByPosterId(posterId);
         }
         // posterId에 해당되는 좋아요 리스트 받아오기

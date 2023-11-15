@@ -28,12 +28,13 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "p.content AS posterContent, " +
             "p.author AS posterAuthor, " +
             "p.heartCount AS heartCount, " +
+            "p.commentCount AS commentCount, " +
             "pi.imagePath AS posterImgPath, " +
             "u.profileImg AS profileImg, " +
             "p.createdAt AS posterCreatedAt, " +
             "p.updatedAt AS posterUpdatedAt) " +
             "FROM Poster p " +
-            "LEFT JOIN p.posterImgList pi "+
+            "LEFT JOIN p.posterImgList pi " +
             "LEFT JOIN p.communityUser cu " +
             "LEFT JOIN cu.community c " +
             "LEFT JOIN cu.user u " +
@@ -49,6 +50,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "p.author AS posterAuthor, " +
             "p.content AS posterContent, " +
             "p.heartCount AS heartCount, " +
+            "p.commentCount AS commentCount, " +
             "pi.imagePath AS posterImgPath, " +
             "u.profileImg AS profileImg, " +
             "p.createdAt AS posterCreatedAt, " +
@@ -108,7 +110,6 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "LEFT JOIN cu.user u " +
             "LEFT JOIN cu.heartList hl " +
             "WHERE u.id = :userId AND c.id = :communityId AND hl.status = true ")
-
     void heartDelete(@Param("userId") Long userId, @Param("communityId") Long communityId);
 
     // 좋아요 개수 증가
@@ -194,4 +195,31 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "WHERE p.author = :oldNickname AND p.isDelete = false")
     @Modifying(clearAutomatically = true)
     void updatePosterNickname(@Param("nickname")String nickname, @Param("oldNickname") String userNickname);
+
+    // 댓글 개수 증가
+    @Query("UPDATE Poster p " +
+            "SET p.commentCount = p.commentCount +1" +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateCommnetCountIncrease(@Param("posterId") Long posterId);
+
+
+    // 댓글 개수 감소
+    @Query("UPDATE Poster p " +
+            "SET p.commentCount = CASE WHEN p.commentCount > 0 " +
+            "THEN (p.commentCount -1) " +
+            "ELSE 0 END " +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateCommentCountDecrease(@Param("posterId") Long posterId);
+
+
+    // 댓글 id로 poster 불러오기
+    @Query("SELECT p " +
+            "FROM Poster p " +
+            "LEFT JOIN p.commentList cm " +
+            "WHERE cm.id =:commentId AND p.isDelete = false ")
+    Optional<Poster> findbyIdByCommentId(@Param("commentId") Long commentId);
+
+
 }
