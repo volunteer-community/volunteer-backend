@@ -40,7 +40,7 @@ public class UserService {
         String profileImg = user.getProfileImg();
         String role = user.getRole().getKey();
 
-        // profileImg 검사 못함.
+        // profileImg 검사
 //        if (!user.getProfileImg().equals(profileImg)) {
 //            user.updateProfileImg(profileImg);
 //        }
@@ -176,6 +176,7 @@ public class UserService {
         if(findByPhoneNumber(signupDto.getPhoneNumber())){
             if(findByNickName(signupDto.getNickname())){
                 // email로 User(false) get
+
                 User user = User.builder()
                         .phoneNumber(signupDto.getPhoneNumber())
                         .name(signupDto.getName())
@@ -189,9 +190,11 @@ public class UserService {
                 userRepository.save(user);
 
                 //회원가입한 사람을 로그인시키기
+
                 List<User> loginedUserList = userRepository.findActiveUserByEmail2(signupDto.getEmail(),signupDto.getProvider());
                 if(loginedUserList.isEmpty())return commonService.errorResponse(ErrorCode.USER_NOT_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
                 else if(loginedUserList.size()>1) return commonService.errorResponse(ErrorCode.MULTIPLE_USER_FOUND.getDescription(), HttpStatus.BAD_REQUEST,null);
+
 
                 User loginUser = loginedUserList.get(0);
                 Long userId = loginUser.getId();
@@ -214,6 +217,7 @@ public class UserService {
                         .build();
 
                 return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+
             }
             else{
                 //이미 가입한 닉네임

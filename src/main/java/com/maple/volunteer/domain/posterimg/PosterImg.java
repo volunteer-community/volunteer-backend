@@ -18,11 +18,11 @@ public class PosterImg {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 게시글 이미지 ID
-    @NotNull
+    @Column(nullable = false)
     private String imagePath; // 게시글 이미지 URL
-    @NotNull
+    @Column(nullable = false)
     private Integer imageNum;   // 게시글 이미지 번호
-    @NotNull
+    @Column(nullable = false)
     private boolean isDelete;
 
     @ManyToOne(fetch = FetchType.LAZY)

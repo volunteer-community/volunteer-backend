@@ -26,19 +26,18 @@ public class Poster extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 게시글 ID
 
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     @Size(min = 1, max = 50)
-    @NotNull
     private String title;   // 게시글 제목
 
     @Lob
-    @NotNull
-    private String content;
-    @NotNull// 게시글 내용
+    @Column(nullable = false)
+    private String content; // 게시글 내용
+    @Column(nullable = false)
     private String author;  // 게시글 작성자
-    @NotNull
+    @Column(nullable = false)
     private Boolean isDelete; // 게시글 삭제 유무
-    @NotNull
+    @Column(nullable = false)
     private Integer heartCount;  // 게시글 좋아요 수
 
     @ManyToOne(fetch = FetchType.LAZY)

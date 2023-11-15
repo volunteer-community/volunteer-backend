@@ -193,5 +193,5 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "SET p.author = :nickname " +
             "WHERE p.author = :oldNickname AND p.isDelete = false")
     @Modifying(clearAutomatically = true)
-    void updatePosterNickname(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
+    void updatePosterNickname(@Param("nickname")String nickname, @Param("oldNickname") String userNickname);
 }

@@ -26,31 +26,28 @@ public class Community extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 커뮤니티 ID
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     @Size(min = 1, max = 30)
-    @NotNull
     private String title;   // 커뮤니티 제목
-    @NotNull
+    @Column(nullable = false)
     private Integer participant;    // 커뮤니티 참여 인원
-    @NotNull
+    @Column(nullable = false)
     private Integer maxParticipant; // 커뮤니티 모집 인원
-    @NotNull
+    @Column(nullable = false)
     private String author;  // 커뮤니티 작성자
 
-    @Column(length = 5)
+    @Column(length = 5, nullable = false)
     @Size(max = 5)
-    @NotNull
     private String status;  // 커뮤니티 활동 상태
 
     @Lob
-    @NotNull
+    @Column(nullable = false)
     private String content; // 커뮤니티 내용
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     @Size(max = 30)
-    @NotNull
     private String location;   // 커뮤니티 지역명
-    @NotNull
+    @Column(nullable = false)
     private Boolean isDelete;   // 커뮤니티 삭제 유무
 
     @ManyToOne(fetch = FetchType.LAZY)

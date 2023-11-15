@@ -47,8 +47,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateUserIsDelete(@Param("userId") Long userId);
 
     @Query("SELECT u FROM User u WHERE u.nickname = :nickname AND NOT u.nickname = :oldNickname")
-    Optional<User> findByNicknameToMod(@Param("nickname")String nickname, @Param("oldNickname") @NotNull String userNickname);
+    Optional<User> findByNicknameToMod(@Param("nickname")String nickname, @Param("oldNickname")  String userNickname);
 
     @Query("SELECT u FROM User u WHERE u.phoneNumber = :phone AND NOT u.phoneNumber = :oldPhone")
-    Optional<Object> findPhoneToMod(@Param("phone")String phone, @Param("oldPhone") @NotNull String userPhone);
+    Optional<Object> findPhoneToMod(@Param("phone")String phone, @Param("oldPhone")  String userPhone);
 }

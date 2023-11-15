@@ -6,10 +6,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
@@ -20,6 +24,5 @@ public abstract class BaseTime {
     private LocalDateTime createdAt; // 생성 시간
 
     @LastModifiedDate
-    @UpdateTimestamp
     private LocalDateTime updatedAt; // 수정 시간
 }

@@ -25,7 +25,7 @@ public class CommunityUser extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 커뮤니티_유저 ID
 
-    @NotNull
+    @Column(nullable = false)
     private Boolean isWithdraw; // 커뮤니티 탈퇴 유무
 
     @ManyToOne(fetch = FetchType.LAZY)
