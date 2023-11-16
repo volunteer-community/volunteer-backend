@@ -53,10 +53,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
-        } else {
-            response.sendRedirect("https://ecof.o-r.kr");
         }
-
 //        } else {
 //            // 이미 로그인 했던 회원
 //            TokenDto login = userService.login(email, role, provider, picture);
