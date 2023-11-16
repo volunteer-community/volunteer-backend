@@ -1,6 +1,7 @@
 package com.maple.volunteer.repository.comment;
 
 import com.maple.volunteer.domain.comment.Comment;
+import com.maple.volunteer.domain.heart.Heart;
 import com.maple.volunteer.dto.comment.CommentResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -119,5 +120,20 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.author = :oldNickname AND c.isDelete = false")
     @Modifying(clearAutomatically = true)
     void updateCommentNickname(@Param("nickname")String nickname, @Param("oldNickname") String userNickname);
+
+    //userId에 해당되는 commentList 가져오기
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "LEFT JOIN cm.communityUser cu " +
+            "LEFT JOIN cu.user u " +
+            "WHERE u.id = :userId AND cm.isDelete = false ")
+    List<Comment> findCommentListUserId(@Param("userId") Long userId);
+
+
+    @Query("SELECT cm " +
+            "FROM Comment cm " +
+            "LEFT JOIN cm.communityUser cu " +
+            "WHERE cu.id = :communityUserId AND cm.isDelete = false ")
+    List<Comment> findCommentListCommunityUserId(@Param("communityUserId") Long communityUserId);
 
 }
