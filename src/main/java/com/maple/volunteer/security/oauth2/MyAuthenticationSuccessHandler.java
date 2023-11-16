@@ -53,6 +53,8 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        } else {
+            response.sendRedirect("https://ecof.o-r.kr");
         }
 
 //        } else {
