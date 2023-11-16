@@ -1,5 +1,6 @@
 package com.maple.volunteer.service.mypage;
 
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
@@ -269,7 +270,7 @@ public class MyPageService {
                 // 게시글 가져오기
                 Boolean existsCommunityId = posterRepository.existsCommunityId(communityId);
 
-                // 게시글이 없우경는
+                // 게시글이 없는 경우
                 if (!existsCommunityId) {
 
                     communityUserRepository.CommunityUserDelete(communityId, true);
@@ -333,6 +334,7 @@ public class MyPageService {
             }
         }
 
+
         // 다른 사람의 커뮤니티
         //userid 로 communityId를 불러와서 조회하고 탈퇴
         List<CommunityUser> communityUserList= communityUserRepository.findCommunityUserByUserId(userId);
@@ -369,6 +371,18 @@ public class MyPageService {
                         posterRepository.updateHeartCountDecrease(posterId);
                     }
 
+                    // 내가 쓴 게시글이 아닌 타인의 글
+                    // 탈퇴하는 유저ID가 누른 타인의 게시글에서 댓글 개수 -1 시키기
+                    List<Comment> commentListByPosterId = commentRepository.findCommentListCommunityUserId(communityUserId);
+
+                    for (Comment eachCommentPosterId : commentListByPosterId) {
+
+                        Long posterId = eachCommentPosterId.getPoster().getId();
+                        posterRepository.updateCommnetCountDecrease(posterId);
+
+                    }
+
+
                     // 타인의 글에서 댓글 삭제
                     commentRepository.commentDeleteByCommunityUserId(communityUserId, true);
 
@@ -387,8 +401,8 @@ public class MyPageService {
                 for (Poster eachPoster : posterList) {
                     Long posterId = eachPoster.getId();
 
-                    //게시글 Id에 해당되는 heartCount = 0 으로 변경
-                    posterRepository.updateHeartCountZero(posterId);
+                    //게시글 Id에 해당되는 heartCount = 0, commentCount = 0  으로 변경
+                    posterRepository.updateHeartandCommnetCountZero(posterId);
 
                     //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
                     commentRepository.commentDeleteByPosterId(posterId);
@@ -429,8 +443,17 @@ public class MyPageService {
                     posterRepository.updateHeartCountDecrease(posterId);
                 }
 
-                // 유저Id에 해당되는 게시글 삭제/댓글 삭제
+                // 내가 쓴 게시글이 아닌 타인의 글
+                // 탈퇴하는 유저ID가 누른 타인의 게시글에서 댓글 개수 -1 시키기
+                List<Comment> commentListByPosterId = commentRepository.findCommentListCommunityUserId(communityUserId);
 
+                for (Comment eachCommentPosterId : commentListByPosterId) {
+
+                    Long posterId = eachCommentPosterId.getPoster().getId();
+                    posterRepository.updateCommnetCountDecrease(posterId);
+                }
+
+                // 유저Id에 해당되는 게시글 삭제/댓글 삭제
                 posterRepository.posterDeleteByCommunityUserId(communityUserId, true);
                 commentRepository.commentDeleteByCommunityUserId(communityUserId, true);
             }

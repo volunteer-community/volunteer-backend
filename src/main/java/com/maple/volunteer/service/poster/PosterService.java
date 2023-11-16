@@ -236,7 +236,7 @@ public class PosterService {
         posterImgRepository.deleteByPosterImgId(posterImgId, true);
 
         // 게시글 Id에 해당되는 heartCount = 0 으로 변경
-        posterRepository.updateHeartCountZero(posterId);
+        posterRepository.updateHeartandCommnetCountZero(posterId);
         // posterId에 해당되는 댓글 리스트로 받아오기
         List<Comment> commentList = commentRepository.findAllCommentByPosterId(posterId);
         for (Comment eachComment : commentList) {

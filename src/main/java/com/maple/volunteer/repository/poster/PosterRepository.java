@@ -14,7 +14,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +82,7 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
 
     // 커뮤니티 ID에 해당하는 모든 게시글 삭제
     @Query("UPDATE Poster p " +
-            "SET p.isDelete = :status, p.heartCount = 0 " +
+            "SET p.isDelete = :status, p.heartCount = 0 ,p.commentCount = 0 " +
             "WHERE p.communityUser " +
             "IN " +
             "(SELECT cu " +
@@ -129,12 +128,21 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
     @Modifying(clearAutomatically = true)
     void updateHeartCountDecrease(@Param("posterId") Long posterId);
 
-    // 좋아요 개수 0
+    // 댓글 개수 감소
     @Query("UPDATE Poster p " +
-            "SET p.heartCount = 0 " +
+            "SET p.commentCount = CASE WHEN p.commentCount > 0 " +
+            "THEN (p.commentCount -1) " +
+            "ELSE 0 END " +
             "WHERE p.id = :posterId")
     @Modifying(clearAutomatically = true)
-    void updateHeartCountZero(@Param("posterId") Long posterId);
+    void updateCommnetCountDecrease(@Param("posterId") Long posterId);
+
+    // 좋아요 개수 , 댓글 개수 0
+    @Query("UPDATE Poster p " +
+            "SET p.heartCount = 0 , p.commentCount = 0 " +
+            "WHERE p.id = :posterId")
+    @Modifying(clearAutomatically = true)
+    void updateHeartandCommnetCountZero(@Param("posterId") Long posterId);
 
     // 게시글 posterId에 해당 되는 글만 삭제
     @Query("UPDATE Poster p " +
