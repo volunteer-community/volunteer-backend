@@ -66,7 +66,7 @@ public class UserService {
 
     // 로그인 테스트
     @Transactional
-    public CommonResponseDto<Object> loginTest(String email, String role, String provider, String profileImg) {
+    public TokenDto loginTest(String email, String role, String provider, String profileImg) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -91,7 +91,7 @@ public class UserService {
                 .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
 
-        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+        return tokenDto;
     }
 
     // 로그아웃
