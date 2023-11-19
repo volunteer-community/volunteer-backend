@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,7 +31,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request Header에서 AccessToken get
-        String atc = request.getHeader("Authorization");
+//        String atc = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
+
+        String atc = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    atc = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
         // 토큰 검사 생략
         if (!StringUtils.hasText(atc)) {
