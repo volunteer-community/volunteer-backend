@@ -62,8 +62,8 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
 
             // 쿠키를 HttpServletResponse에 추가
-            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, true, accessTokenExpiration, "None");
-            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, true, refreshTokenExpiration, "None");
+            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, false, accessTokenExpiration, "None");
+            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, false, refreshTokenExpiration, "None");
 
             // redirect url
             response.sendRedirect("http://localhost:3000");
