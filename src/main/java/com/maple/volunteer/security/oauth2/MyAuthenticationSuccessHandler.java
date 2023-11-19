@@ -54,28 +54,41 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
-            // 이미 로그인 했던 회원
-            TokenDto login = userService.loginTest(email, role, provider, picture);
-            String accessToken = login.getAccessToken();
-            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
-            String refreshToken = login.getRefreshToken();
-            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
 
-            // 쿠키를 HttpServletResponse에 추가
-            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, true, accessTokenExpiration, "None");
-            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, true, refreshTokenExpiration, "None");
+            TokenDto tokenDto = userService.login(email, provider);
 
-            // redirect url
-            response.sendRedirect("http://localhost:3000");
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
+                    .queryParam("trigger", true)
+                    .queryParam("accessToken", tokenDto.getAccessToken())
+                    .queryParam("refreshToken", tokenDto.getRefreshToken())
+                    .build()
+                    .encode(StandardCharsets.UTF_8)
+                    .toUriString();
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
+//        else {
+//            // 이미 로그인 했던 회원
+//            TokenDto login = userService.loginTest(email, role, provider, picture);
+//            String accessToken = login.getAccessToken();
+//            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
+//            String refreshToken = login.getRefreshToken();
+//            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
+//
+//            // 쿠키를 HttpServletResponse에 추가
+//            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, true, true, accessTokenExpiration, "None");
+//            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, true, true, refreshTokenExpiration, "None");
+//
+//            // redirect url
+//            response.sendRedirect("http://localhost:3000");
+//        }
     }
 
     // 쿠키 생성 후 response에 추가
-    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, boolean httpOnly, LocalDateTime expirationDateTime, String sameSite) {
-        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
-        Instant instant = zonedDateTime.toInstant();
-        long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
+//    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, boolean httpOnly, LocalDateTime expirationDateTime, String sameSite) {
+//        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+//        ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
+//        Instant instant = zonedDateTime.toInstant();
+//        long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
 
 
 //        Cookie cookie = new Cookie(name, value);
@@ -86,7 +99,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 //
 //        response.addCookie(cookie);
 
-        String cookieValue = String.format("%s=%s; Secure=%b; HttpOnly=%b; Max-Age=%d; Path=/; SameSite=%s", name, value, secure, httpOnly, maxAge, sameSite);
-        response.addHeader("Set-Cookie", cookieValue);
-    }
+//        String cookieValue = String.format("%s=%s; Secure=%b; HttpOnly=%b; Max-Age=%d; Path=/; SameSite=%s", name, value, secure, httpOnly, maxAge, sameSite);
+//        response.addHeader("Set-Cookie", cookieValue);
+//    }
 }

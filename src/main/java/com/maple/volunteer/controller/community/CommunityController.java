@@ -120,20 +120,9 @@ public class CommunityController {
 
     // 커뮤니티 참가 API
     @PostMapping("/community/{communityId}")
-    public ResponseEntity<ResultDto<Void>> communitySignup(HttpServletRequest request,
+    public ResponseEntity<ResultDto<Void>> communitySignup(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable(value = "communityId") Long communityId) {
 
-        Cookie[] cookies = request.getCookies();
-
-        String accessToken = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-                    accessToken = cookie.getValue();
-                    break;
-                }
-            }
-        }
         CommonResponseDto<Object> communitySignup = communityService.communitySignup(accessToken, communityId);
         ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
 

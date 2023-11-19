@@ -31,18 +31,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request Header에서 AccessToken get
-//        String atc = request.getHeader("Authorization");
-        Cookie[] cookies = request.getCookies();
-
-        String atc = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("accessToken".equals(cookie.getName())) {
-                    atc = cookie.getValue();
-                    break;
-                }
-            }
-        }
+        String atc = request.getHeader("Authorization");
 
         // 토큰 검사 생략
         if (!StringUtils.hasText(atc)) {
