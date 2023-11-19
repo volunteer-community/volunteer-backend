@@ -60,7 +60,9 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
                     .queryParam("trigger", true)
                     .queryParam("accessToken", tokenDto.getAccessToken())
+                    .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
                     .queryParam("refreshToken", tokenDto.getRefreshToken())
+                    .queryParam("refreshTokenExpireTime", tokenDto.getRefreshTokenExpireTime())
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
