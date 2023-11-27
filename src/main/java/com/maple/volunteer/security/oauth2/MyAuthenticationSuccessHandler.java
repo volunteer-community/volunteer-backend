@@ -35,11 +35,11 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                 .getAuthority();
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
-        String currentServerName = request.getServerName();
 
+        String getScheme = request.getScheme();
 
         String baseUrl;
-        boolean isLocalHost = "localhost:3000".equals(currentServerName) || "127.0.0.1:3000".equals(currentServerName);
+        boolean isLocalHost = getScheme.equals("http");
 
         if (isLocalHost) {
             baseUrl = "http://localhost:3000";
