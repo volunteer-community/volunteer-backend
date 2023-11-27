@@ -39,7 +39,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
 
         String baseUrl;
-        boolean isLocalHost = "localhost".equals(currentServerName) || "127.0.0.1".equals(currentServerName);
+        boolean isLocalHost = "localhost:3000".equals(currentServerName) || "127.0.0.1:3000".equals(currentServerName);
 
         if (isLocalHost) {
             baseUrl = "http://localhost:3000";
