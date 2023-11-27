@@ -41,15 +41,15 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         String baseUrl;
         boolean isLocalHost = getScheme.equals("http");
 
-        if (isLocalHost) {
-            baseUrl = "http://localhost:3000";
-        } else {
-            baseUrl = "https://volunteer-frontend.vercel.app";
-        }
+//        if (isLocalHost) {
+//            baseUrl = "http://localhost:3000";
+//        } else {
+//            baseUrl = "https://volunteer-frontend.vercel.app";
+//        }
 
         // 회원이 존재하지 않으면
         if (!isExist) {
-            String targetUrl = UriComponentsBuilder.fromUriString(baseUrl + "/signup/add")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/signup/add")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
@@ -62,7 +62,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         } else {
             TokenDto tokenDto = userService.login(email, provider);
 
-            String targetUrl = UriComponentsBuilder.fromUriString(baseUrl + "/login/loading")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
                     .queryParam("trigger", true)
                     .queryParam("accessToken", tokenDto.getAccessToken())
                     .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
