@@ -49,7 +49,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
         // 회원이 존재하지 않으면
         if (!isExist) {
-            String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/signup/add")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup/add")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
@@ -62,7 +62,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         } else {
             TokenDto tokenDto = userService.login(email, provider);
 
-            String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
                     .queryParam("trigger", true)
                     .queryParam("accessToken", tokenDto.getAccessToken())
                     .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
