@@ -194,7 +194,7 @@ public class MyPageService {
         return totalPosterLikedCount;
     }*/
 
-    // 좋아요 받은 게시글 개수
+    // 총 받은 좋아요 수
     private Integer numberOfLikedPoster(Long userId) {
         // 게시글이 있을때 /없을 때
 //        Boolean posterStatus =  posterRepository.exitsByIdAndIsDelete(userId);
@@ -227,6 +227,26 @@ public class MyPageService {
         }
     }
 
+    // 내가 쓴 게시글 개수
+    private Integer findPosterCount(Long userId) {
+
+        List<CommunityUser> AllCommunityUser = communityUserRepository.findCommunityUserByUserId(userId);
+
+        if(communityUserRepository.findCommunityUserByUserId(userId) !=null) {
+            int totalPosterCount = 0;
+            for (CommunityUser eachCommunityUser : AllCommunityUser) {
+                Long communityUserId = eachCommunityUser.getId();
+                Integer posterCount = posterRepository.countByCommunityUserId(communityUserId);
+                totalPosterCount += posterCount;
+            }
+
+            return totalPosterCount;
+        }else {
+            return 0;
+        }
+    }
+
+
     // 마이페이지 INFO
     public CommonResponseDto<Object> getMyInfo(String accessToken) {
         Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
@@ -241,6 +261,7 @@ public class MyPageService {
                     .countOfPosterLike(numberOfPosterthatILike(userId))
                     .countOfLikedPoster(numberOfLikedPoster(userId))
                     .commentCount(findCommentCount(userId))
+                    .posterCount(findPosterCount(userId))
                     .build();
 
         return commonService.successResponse(SuccessCode.MY_PAGE_INFO_SUCCESS.getDescription(), HttpStatus.OK, myPageResponseDto);

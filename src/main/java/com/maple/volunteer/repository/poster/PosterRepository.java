@@ -169,6 +169,13 @@ public interface PosterRepository extends JpaRepository<Poster, Long> {
             "WHERE p.id = :posterId AND p.isDelete = false ")
     Integer countByPosterId(@Param("posterId") Long posterId);
 
+    // userId 가 작성한 게시글 개수
+    @Query("SELECT COUNT(p) " +
+            "FROM Poster p " +
+            "LEFT JOIN p.communityUser cu " +
+            "WHERE cu.id = :communityUserId AND p.isDelete = false ")
+    Integer countByCommunityUserId(@Param("communityUserId") Long communityUserId);
+
     // 마이페이지 - 좋아요 받은 게시글 개수
     @Query("SELECT SUM(p.heartCount)" +
             "FROM Poster p " +

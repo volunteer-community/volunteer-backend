@@ -15,8 +15,9 @@ public class MyPageResponseDto {
     private String email;
     private int communityUserCount; // 내가 가입한 커뮤니티 개수
     private int countOfPosterLike; // 좋아요한 게시글 개수
-    private int countOfLikedPoster; // 좋아요 받은 게시글 개수
+    private int countOfLikedPoster; // 총 받은 좋아요 수
     private int commentCount; // 내가 쓴 댓글 개수
+    private int posterCount; // 내가 쓴 게시글 개수
 
 
 //    public MyPageResponseDto(String picture, String nickname, String email,
