@@ -39,6 +39,9 @@ public class Poster extends BaseTime {
     private Boolean isDelete; // 게시글 삭제 유무
     @Column(nullable = false)
     private Integer heartCount;  // 게시글 좋아요 수
+    @Column(nullable = false)
+    private Integer commentCount;  // 게시글 해당 댓글 수
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_user_id")
@@ -54,11 +57,12 @@ public class Poster extends BaseTime {
 
 
     @Builder
-    public Poster(String title, String content, String author, Integer heartCount, Boolean isDelete, CommunityUser communityUser) {
+    public Poster(String title, String content, String author, Integer heartCount,Integer commentCount, Boolean isDelete, CommunityUser communityUser) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.heartCount = heartCount;
+        this.commentCount = commentCount;
         this.isDelete = isDelete;
         this.communityUser = communityUser;
     }

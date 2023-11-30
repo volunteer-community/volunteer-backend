@@ -1,6 +1,7 @@
 package com.maple.volunteer.service.community;
 
 import com.maple.volunteer.domain.category.Category;
+import com.maple.volunteer.domain.comment.Comment;
 import com.maple.volunteer.domain.community.Community;
 import com.maple.volunteer.domain.communityimg.CommunityImg;
 import com.maple.volunteer.domain.communityuser.CommunityUser;
@@ -593,6 +594,7 @@ public class CommunityService {
 
             commentRepository.commentDeleteByUserId(userId, true);
 
+
             return commonService.successResponse(SuccessCode.COMMUNITY_WITHDRAW_SUCCESS.getDescription(), HttpStatus.OK, null);
 
         }
@@ -601,8 +603,9 @@ public class CommunityService {
         for (Poster eachPoster : posterList) {
             Long posterId = eachPoster.getId();
 
-            //게시글 Id에 해당되는 heartCount = 0 으로 변경
-            posterRepository.updateHeartCountZero(posterId);
+            //게시글 Id에 해당되는 heartCount = 0 ,commentCount = 0 으로 변경
+            posterRepository.updateHeartandCommnetCountZero(posterId);
+
 
             //게시글 ID에 해당되는 댓글 삭제(isDeleted = true)
             commentRepository.commentDeleteByPosterId(posterId);
@@ -641,6 +644,18 @@ public class CommunityService {
 
             heartRepository.updateStatus(heartId, false);
             posterRepository.updateHeartCountDecrease(posterId);
+
+        }
+
+        // 탈퇴하는 유저ID가 누른 타인의 게시글에서 댓글 개수 -1 시키기
+
+        List<Comment> commentListByPosterId = commentRepository.findCommentListUserId(userId);
+
+        for (Comment eachCommentPosterId : commentListByPosterId) {
+            Long posterId = eachCommentPosterId.getPoster()
+                                             .getId();
+
+            posterRepository.updateCommnetCountDecrease(posterId);
         }
 
         //유저Id에 해당되는 게시글 삭제/댓글 삭제

@@ -64,7 +64,7 @@ public class PosterService {
         userRepository.findById(userId)
                       .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
@@ -79,7 +79,8 @@ public class PosterService {
         // 커뮤니티 생성자
 
         // CommunityHostResponseDto communityHostResponseDtoList = communityRepository.findCommunityHostInfo(communityId);
-        Community community = communityRepository.findAuthorByCommunityId(communityId);
+        //Community community = communityRepository.findAuthorByCommunityId(communityId);
+        Community community = communityUser.getCommunity();
         String author = community.getAuthor();
         String communityTitle = community.getTitle();
         Optional<User> userOptional = userRepository.findByNickname(author);
@@ -159,10 +160,10 @@ public class PosterService {
                               .content(posterRequestDto.getPosterContent())
                               .author(nickName)
                               .heartCount(0)
+                              .commentCount(0)
                               .isDelete(false)
                               .communityUser(communityUser)
                               .build();
-
 
         posterRepository.save(poster);
 
@@ -236,10 +237,10 @@ public class PosterService {
         posterImgRepository.deleteByPosterImgId(posterImgId, true);
 
         // 게시글 Id에 해당되는 heartCount = 0 으로 변경
-        posterRepository.updateHeartCountZero(posterId);
+        posterRepository.updateHeartandCommnetCountZero(posterId);
         // posterId에 해당되는 댓글 리스트로 받아오기
         List<Comment> commentList = commentRepository.findAllCommentByPosterId(posterId);
-        for (Comment eachComment : commentList){
+        for (Comment eachComment : commentList) {
             commentRepository.commentDeleteByPosterId(posterId);
         }
         // posterId에 해당되는 좋아요 리스트 받아오기
