@@ -42,6 +42,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     // 댓글 생성
+    @Transactional
     public CommonResponseDto<Object> commentCreate(String accessToken, Long posterId, Long communityId, CommentRequestDto commentRequestDto) {
 
 
@@ -68,6 +69,9 @@ public class CommentService {
                                  .build();
 
         commentRepository.save(comment);
+
+        // 게시글 댓글 cnt ++
+        posterRepository.updateCommnetCountIncrease(posterId);
 
         return commonService.successResponse(SuccessCode.COMMENT_CREATE_SUCCESS.getDescription(), HttpStatus.CREATED, null);
     }
@@ -149,12 +153,19 @@ public class CommentService {
         Comment comment = commentRepository.findByIdAndIsDelete(commentId,false)
                                            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
 
+        Poster poster = posterRepository.findbyIdByCommentId(commentId)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
+
         String nickName = user.getNickname();
         if (!comment.getAuthor()
                     .equals(nickName)) {
             throw new BadRequestException(ErrorCode.AUTHOR_NOT_EQUAL);
         }
         commentRepository.commentDeleteByCommentId(commentId);
+
+        // 게시글 댓글 cnt --
+        Long posterId = poster.getId();
+        posterRepository.updateCommentCountDecrease(posterId);
 
         return commonService.successResponse(SuccessCode.COMMENT_DELETE_SUCCESS.getDescription(), HttpStatus.OK, null);
     }

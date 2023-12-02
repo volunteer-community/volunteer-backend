@@ -1,6 +1,7 @@
 package com.maple.volunteer.repository.user;
 
 import com.maple.volunteer.domain.user.User;
+import com.maple.volunteer.type.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,4 +52,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.phoneNumber = :phone AND NOT u.phoneNumber = :oldPhone")
     Optional<Object> findPhoneToMod(@Param("phone")String phone, @Param("oldPhone")  String userPhone);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE User u SET u.role = :role WHERE u.id = :userId")
+    void rankUp(@Param("userId") Long userId , @Param("role")Role host); //이렇게 쓰면 롤의 값으로 들어가긴할텐데 한번해보고 안되면 바꾸죵
 }
