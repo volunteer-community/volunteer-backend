@@ -5,6 +5,8 @@ spring:
       - aws
       - jwt
       - oauth
+    active:
+      - prod
 
   servlet:
     multipart:
