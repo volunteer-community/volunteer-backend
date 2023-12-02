@@ -19,6 +19,16 @@ public class OAuth2Attribute {
     private String picture;
     private String provider;
 
+    @Builder
+    public OAuth2Attribute(Map<String, Object> attributes, String attributeKey, String email, String name, String picture, String provider) {
+        this.attributes = attributes;
+        this.attributeKey = attributeKey;
+        this.email = email;
+        this.name = name;
+        this.picture = picture;
+        this.provider = provider;
+    }
+
     static OAuth2Attribute of(String provider, String attributeKey, Map<String, Object> attributes) {
         switch (provider) {
             case "google":

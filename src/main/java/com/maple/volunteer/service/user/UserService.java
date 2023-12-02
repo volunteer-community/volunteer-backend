@@ -32,7 +32,7 @@ public class UserService {
 
     // 로그인
     @Transactional
-    public CommonResponseDto<Object> login(String email, String provider) {
+    public CommonResponseDto<Object> login1(String email, String provider) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -40,10 +40,10 @@ public class UserService {
         String profileImg = user.getProfileImg();
         String role = user.getRole().getKey();
 
-        // profileImg 검사
-//        if (!user.getProfileImg().equals(profileImg)) {
-//            user.updateProfileImg(profileImg);
-//        }
+//         profileImg 검사
+        if (!user.getProfileImg().equals(profileImg)) {
+            user.updateProfileImg(profileImg);
+        }
 
         Long userId = user.getId();
 
@@ -64,9 +64,43 @@ public class UserService {
         return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
     }
 
+    // 로그인
+    @Transactional
+    public TokenDto login(String email, String provider) {
+        // email, provider로 User(false) get
+        User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        String profileImg = user.getProfileImg();
+        String role = user.getRole().getKey();
+
+//         profileImg 검사
+        if (!user.getProfileImg().equals(profileImg)) {
+            user.updateProfileImg(profileImg);
+        }
+
+        Long userId = user.getId();
+
+        // accessToken, refreshToken 발행
+        GeneratedToken token = jwtUtil.generateToken(userId, role);
+
+        // 기존 refreshToken 변경
+        Login login = user.getLogin();
+        loginRepository.updateRefreshTokenById(login.getId(), token.getRefreshToken());
+
+        return TokenDto.builder()
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .accessTokenExpireTime(token.getAccessTokenExpireTime())
+                .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
+                .build();
+    }
+
+
+
     // 로그인 테스트
     @Transactional
-    public CommonResponseDto<Object> loginTest(String email, String role, String provider, String profileImg) {
+    public TokenDto loginTest(String email, String role, String provider, String profileImg) {
         // email, provider로 User(false) get
         User user = userRepository.findActiveUserByEmailAndProvider(email, provider)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -91,7 +125,7 @@ public class UserService {
                 .refreshTokenExpireTime(token.getRefreshTokenExpireTime())
                 .build();
 
-        return commonService.successResponse(SuccessCode.USER_LOGIN_SUCCESS.getDescription(), HttpStatus.OK, tokenDto);
+        return tokenDto;
     }
 
     // 로그아웃

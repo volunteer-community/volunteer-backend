@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -119,6 +122,7 @@ public class CommunityController {
     @PostMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communitySignup(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable(value = "communityId") Long communityId) {
+
         CommonResponseDto<Object> communitySignup = communityService.communitySignup(accessToken, communityId);
         ResultDto<Void> result = ResultDto.in(communitySignup.getStatus(), communitySignup.getMessage());
 

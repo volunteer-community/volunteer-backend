@@ -83,7 +83,7 @@ public class UserController {
     public ResponseEntity<ResultDto<TokenDto>> userLogin(@RequestParam("email") String email,
                                                          @RequestParam("provider") String provider){ // provider 추가
 
-        CommonResponseDto<Object> login = userService.login(email,provider);
+        CommonResponseDto<Object> login = userService.login1(email,provider);
         ResultDto<TokenDto> result = ResultDto.in(login.getStatus(), login.getMessage());
         result.setData((TokenDto) login.getData());
 

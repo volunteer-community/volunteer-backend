@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/maple/**").permitAll()
+                .antMatchers("/maple/**").permitAll()
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정
                 .userInfoEndpoint().userService(customOAuth2UserService)
@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://volunteer-frontend.vercel.app/"));
         configuration.setAllowCredentials(true);  // 토큰 주고 받을 때
         configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PATCH", "PUT", "DELETE", "OPTIONS"));
