@@ -64,7 +64,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             TokenDto tokenDto = (TokenDto) userService.login(email, provider).getData();
 
             // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup/add")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
                     .queryParam("trigger", true)
                     .queryParam("accessToken", tokenDto.getAccessToken())
                     .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
