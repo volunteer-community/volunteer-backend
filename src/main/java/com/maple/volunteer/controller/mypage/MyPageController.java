@@ -89,4 +89,16 @@ public class MyPageController {
 
         return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
     }
+
+    // 회원 등업
+    @PostMapping("/mypage/rankUp")
+    public ResponseEntity<ResultDto<Void>> rankUp(@RequestHeader("Authorization") String accessToken){
+
+        CommonResponseDto<Object> commonResponseDto = myPageService.rankUp(accessToken);
+        ResultDto<Void> result = ResultDto.in(commonResponseDto.getStatus(), commonResponseDto.getMessage());
+
+        return ResponseEntity.status(commonResponseDto.getHttpStatus()).body(result);
+    }
 }
+
+

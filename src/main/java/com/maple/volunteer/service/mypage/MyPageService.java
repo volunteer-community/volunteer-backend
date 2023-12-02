@@ -30,6 +30,7 @@ import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.service.s3upload.S3UploadService;
 import com.maple.volunteer.type.CommunityStatus;
 import com.maple.volunteer.type.ErrorCode;
+import com.maple.volunteer.type.Role;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -527,4 +528,12 @@ public class MyPageService {
         }
     }
 
+    // Host로 등업
+    @Transactional
+    public CommonResponseDto<Object> rankUp(String accessToken) {
+        Long userId = Long.valueOf(jwtUtil.getUserId(accessToken));
+        Role host = Role.HOST;
+        userRepository.rankUp(userId, host);
+        return commonService.successResponse(SuccessCode.MY_PAGE_RANK_UP_SUCCESS.getDescription(), HttpStatus.OK,null);
+    }
 }

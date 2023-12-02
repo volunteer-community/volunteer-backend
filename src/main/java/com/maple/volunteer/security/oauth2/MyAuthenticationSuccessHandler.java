@@ -9,15 +9,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -41,8 +36,20 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
+        String getScheme = request.getScheme();
+
+        String baseUrl;
+        boolean isLocalHost = getScheme.equals("http");
+
+//        if (isLocalHost) {
+//            baseUrl = "http://localhost:3000";
+//        } else {
+//            baseUrl = "https://volunteer-frontend.vercel.app";
+//        }
+
         // 회원이 존재하지 않으면
         if (!isExist) {
+            // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/signup/add")
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup/add")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
@@ -53,42 +60,20 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        } else {
+            TokenDto tokenDto = (TokenDto) userService.login(email, provider).getData();
+
+            // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
+                    .queryParam("trigger", true)
+                    .queryParam("accessToken", tokenDto.getAccessToken())
+                    .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
+                    .queryParam("refreshToken", tokenDto.getRefreshToken())
+                    .queryParam("refreshTokenExpireTime", tokenDto.getRefreshTokenExpireTime())
+                    .build()
+                    .encode(StandardCharsets.UTF_8)
+                    .toUriString();
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
-
-//        } else {
-//            // 이미 로그인 했던 회원
-//            TokenDto login = userService.login(email, role, provider, picture);
-//            String accessToken = login.getAccessToken();
-//            LocalDateTime accessTokenExpiration = login.getAccessTokenExpireTime();
-//            String refreshToken = login.getRefreshToken();
-//            LocalDateTime refreshTokenExpiration = login.getRefreshTokenExpireTime();
-//
-//            // 쿠키를 HttpServletResponse에 추가
-//            createHttpOnlyCookieWithExpirationDate(response, "accessToken", accessToken, false, false, accessTokenExpiration, "None");
-//            createHttpOnlyCookieWithExpirationDate(response, "refreshToken", refreshToken, false, false, refreshTokenExpiration, "None");
-//
-//            // redirect url
-//            response.sendRedirect("http://localhost:3000");
-//        }
-    }
-
-    // 쿠키 생성 후 response에 추가
-    private void createHttpOnlyCookieWithExpirationDate(HttpServletResponse response, String name, String value, boolean secure, boolean httpOnly, LocalDateTime expirationDateTime, String sameSite) {
-        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime zonedDateTime = expirationDateTime.atZone(seoulZoneId);
-        Instant instant = zonedDateTime.toInstant();
-        long maxAge = instant.getEpochSecond() - Instant.now().getEpochSecond();
-
-
-//        Cookie cookie = new Cookie(name, value);
-//        cookie.setHttpOnly(false);
-//        cookie.setDomain("localhost");
-//        cookie.setPath("/"); // Set the path according to your requirement
-//        cookie.setMaxAge((int) maxAge); // Set the expiration date in seconds from now
-//
-//        response.addCookie(cookie);
-
-        String cookieValue = String.format("%s=%s; Secure=%b; HttpOnly=%b; Max-Age=%d; Path=/; SameSite=%s", name, value, secure, httpOnly, maxAge, sameSite);
-        response.addHeader("Set-Cookie", cookieValue);
     }
 }
