@@ -30,6 +30,7 @@ import com.maple.volunteer.service.common.CommonService;
 import com.maple.volunteer.service.s3upload.S3UploadService;
 import com.maple.volunteer.type.CommunityStatus;
 import com.maple.volunteer.type.ErrorCode;
+import com.maple.volunteer.type.Role;
 import com.maple.volunteer.type.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
