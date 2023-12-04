@@ -63,7 +63,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
 
-            TokenDto tokenDto = (TokenDto) userService.login(email, provider).getData();
+            TokenDto tokenDto = userService.login(email, provider);
 
             // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
