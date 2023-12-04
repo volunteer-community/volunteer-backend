@@ -64,7 +64,7 @@ public class PosterService {
         userRepository.findById(userId)
                       .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        CommunityUser communityUser = communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
+        communityUserRepository.findByUserIdAndCommunityIdAndIsWithdraw(communityId, userId)
                                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_USER_NOT_FOUND));
 
         Optional<Boolean> posterExists = posterRepository.existsByCommunityId(communityId);
@@ -79,8 +79,8 @@ public class PosterService {
         // 커뮤니티 생성자
 
         // CommunityHostResponseDto communityHostResponseDtoList = communityRepository.findCommunityHostInfo(communityId);
-        //Community community = communityRepository.findAuthorByCommunityId(communityId);
-        Community community = communityUser.getCommunity();
+        Community community = communityRepository.findAuthorByCommunityId(communityId);
+        //Community community = communityUser.getCommunity();
         String author = community.getAuthor();
         String communityTitle = community.getTitle();
         Optional<User> userOptional = userRepository.findByNickname(author);
