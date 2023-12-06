@@ -49,6 +49,7 @@ public class AdminService {
                     .phoneNumber(user.getPhoneNumber())
                     .profileImg(user.getProfileImg())
                     .provider(user.getProvider())
+                    .isDeleted(user.isDelete())
                     .build();
             userDtoList.add(userDto);
         }
