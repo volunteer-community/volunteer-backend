@@ -36,26 +36,10 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
-        boolean testName = name.equals("김현묵") || name.equals("이민혁") || name.equals("다니다니");
+        boolean testEamil = email.equals("1mwdkim1@gmail.com") || email.equals("alsgur990104@gmail.com") || email.equals("koogoori54@gmail.com");
 
-        boolean local = testName && provider.equals("google");
+        boolean local = testEamil && provider.equals("google");
 
-
-        if (local) {
-
-            TokenDto tokenDto = userService.login(email, provider);
-
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
-                    .queryParam("trigger", true)
-                    .queryParam("accessToken", tokenDto.getAccessToken())
-                    .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
-                    .queryParam("refreshToken", tokenDto.getRefreshToken())
-                    .queryParam("refreshTokenExpireTime", tokenDto.getRefreshTokenExpireTime())
-                    .build()
-                    .encode(StandardCharsets.UTF_8)
-                    .toUriString();
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
-        }
 
         // 회원이 존재하지 않으면
         if (!isExist) {
@@ -71,6 +55,22 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
+
+            if (local) {
+
+                TokenDto tokenDto = userService.login(email, provider);
+
+                String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
+                        .queryParam("trigger", true)
+                        .queryParam("accessToken", tokenDto.getAccessToken())
+                        .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
+                        .queryParam("refreshToken", tokenDto.getRefreshToken())
+                        .queryParam("refreshTokenExpireTime", tokenDto.getRefreshTokenExpireTime())
+                        .build()
+                        .encode(StandardCharsets.UTF_8)
+                        .toUriString();
+                getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            }
 
             TokenDto tokenDto = userService.login(email, provider);
 
