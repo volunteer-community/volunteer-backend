@@ -36,22 +36,16 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
 
-        String getScheme = request.getScheme();
+        boolean testName = name.equals("김현묵") || name.equals("이민혁") || name.equals("김다희");
 
-        String baseUrl;
-        boolean isLocalHost = getScheme.equals("http");
+        boolean local = testName && provider.equals("kakao");
 
-//        if (isLocalHost) {
-//            baseUrl = "http://localhost:3000";
-//        } else {
-//            baseUrl = "https://volunteer-frontend.vercel.app";
-//        }
+
 
         // 회원이 존재하지 않으면
         if (!isExist) {
 
-            // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/signup/add")
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup/add")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://ecof.site/signup/add")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .queryParam("role", role)
@@ -63,10 +57,25 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
 
+            if (local) {
+
+                TokenDto tokenDto = userService.login(email, provider);
+
+                 String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
+                        .queryParam("trigger", true)
+                        .queryParam("accessToken", tokenDto.getAccessToken())
+                        .queryParam("accessTokenExpireTime", tokenDto.getAccessTokenExpireTime())
+                        .queryParam("refreshToken", tokenDto.getRefreshToken())
+                        .queryParam("refreshTokenExpireTime", tokenDto.getRefreshTokenExpireTime())
+                        .build()
+                        .encode(StandardCharsets.UTF_8)
+                        .toUriString();
+                getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            }
+
             TokenDto tokenDto = userService.login(email, provider);
 
-            // String targetUrl = UriComponentsBuilder.fromUriString("https://volunteer-frontend.vercel.app/login/loading")
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/loading")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://ecof.site/login/loading")
 
                     .queryParam("trigger", true)
                     .queryParam("accessToken", tokenDto.getAccessToken())
