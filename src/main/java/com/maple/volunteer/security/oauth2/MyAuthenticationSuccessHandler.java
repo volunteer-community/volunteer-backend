@@ -38,7 +38,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
 
         boolean testName = name.equals("김현묵") || name.equals("이민혁") || name.equals("김다희");
 
-        boolean local = testName && provider.equals("kakao");
+        boolean local = testName && provider.equals("google");
 
 
 
