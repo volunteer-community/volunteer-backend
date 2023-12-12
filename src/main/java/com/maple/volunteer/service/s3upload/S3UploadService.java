@@ -128,6 +128,8 @@ public class S3UploadService {
             // 이미지 리사이징
             BufferedImage resized = Thumbnails.of(image)
                     .size(targetWidth, targetHeight)
+                    .keepAspectRatio(true)
+                    .outputQuality(1.0)
                     .asBufferedImage();
 
             // 임시 파일을 생성 후 리사이징된 이미지를 저장
