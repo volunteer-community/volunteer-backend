@@ -26,8 +26,8 @@ public class Community extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 커뮤니티 ID
 
-    @Column(length = 30, nullable = false)
-    @Size(min = 1, max = 30)
+    @Column(length = 50, nullable = false)
+    @Size(min = 1, max = 50)
     private String title;   // 커뮤니티 제목
     @Column(nullable = false)
     private Integer participant;    // 커뮤니티 참여 인원
