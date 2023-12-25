@@ -31,18 +31,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request Header에서 AccessToken get
-        String atc = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization");
 
         // 토큰 검사 생략
-        if (!StringUtils.hasText(atc)) {
+        if (!StringUtils.hasText(token)) {
             doFilter(request, response, filterChain);
             return;
         }
 
         // AccessToken을 검증 후 만료시 예외 발생
-        if (!jwtUtil.verifyToken(atc)) {
-            // AccessToken 내부의 payload에 있는 email로 user 조회. 없으면 예외
-            User findUser = userRepository.findByEmail(jwtUtil.getUserId(atc))
+        if (jwtUtil.verifyToken(token)) {
+            // AccessToken 내부의 payload에 있는 id로 user 조회. 없으면 예외
+            User findUser = userRepository.findById(Long.parseLong(jwtUtil.getUserId(token)))
                     .orElseThrow(IllegalStateException::new);
 
             // SecurityContext에 등록할 User 객체 생성
@@ -53,6 +53,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .nickname(findUser.getNickname())
                     .build();
 
+            System.out.println("여기 오냐?");
+
             // SecurityContext에 인증 객체 등록
             Authentication authentication = getAuthentication(securityUserDto);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -62,7 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     public Authentication getAuthentication(SecurityUserDto securityUserDto) {
-        return new UsernamePasswordAuthenticationToken(securityUserDto, "",
-                List.of(new SimpleGrantedAuthority(securityUserDto.getRole().getKey())));
+        return new UsernamePasswordAuthenticationToken(securityUserDto, null,
+                securityUserDto.getAuthorities());
     }
 }
