@@ -5,6 +5,7 @@ import com.maple.volunteer.security.jwt.config.JwtExceptionFilter;
 import com.maple.volunteer.security.oauth2.CustomOAuth2UserService;
 import com.maple.volunteer.security.oauth2.MyAuthenticationFailureHandler;
 import com.maple.volunteer.security.oauth2.MyAuthenticationSuccessHandler;
+import com.maple.volunteer.type.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,9 +46,20 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .antMatchers("/maple/**").permitAll()
-                .and()
+//                .authorizeRequests()
+//                .antMatchers("/maple/user/login",
+//                        "/maple/user/signup",
+//                        "/maple/community/category",
+//                        "/maple/community/search/{type}",
+//                        "maple/community/{communityId}").permitAll()
+//                .antMatchers(HttpMethod.GET, "/maple/category").permitAll()
+//                .antMatchers(HttpMethod.GET, "/maple/community").permitAll()
+//                .antMatchers("/maple/admin/**").hasAuthority(Role.ADMIN.getKey())
+//                .antMatchers(HttpMethod.POST, "/maple/community").hasAuthority(Role.HOST.getKey())
+//                .antMatchers(HttpMethod.PUT, "/maple/community/{communityId}").hasAuthority(Role.HOST.getKey())
+//                .antMatchers(HttpMethod.DELETE, "/maple/community/{communityId}").hasAuthority(Role.HOST.getKey())
+//                .anyRequest().hasAuthority(Role.USER.getKey())
+//                .and()
                 .oauth2Login() // OAuth2 로그인 설정
                 .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
