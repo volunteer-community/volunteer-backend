@@ -53,8 +53,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .nickname(findUser.getNickname())
                     .build();
 
-            System.out.println("여기 오냐?");
-
             // SecurityContext에 인증 객체 등록
             Authentication authentication = getAuthentication(securityUserDto);
             SecurityContextHolder.getContext().setAuthentication(authentication);
