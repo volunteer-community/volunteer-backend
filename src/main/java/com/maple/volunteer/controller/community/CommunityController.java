@@ -8,6 +8,7 @@ import com.maple.volunteer.dto.community.CommunityRequestDto;
 import com.maple.volunteer.service.community.CommunityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ public class CommunityController {
     private final CommunityService communityService;
 
     // 커뮤니티 생성 API
+    @Secured({"ROLE_HOST", "ROLE_ADMIN"})
     @PostMapping("/community")
     public ResponseEntity<ResultDto<Void>> communityCreate(@RequestHeader("Authorization") String accessToken,
                                                            @RequestPart(value = "imageList") List<MultipartFile> multipartFileList,
@@ -95,6 +97,7 @@ public class CommunityController {
     }
 
     // 커뮤니티 수정 API
+    @Secured({"ROLE_HOST", "ROLE_ADMIN"})
     @PutMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communityUpdate(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable(value = "communityId") Long communityId,
@@ -108,6 +111,7 @@ public class CommunityController {
     }
 
     // 커뮤니티 삭제 API
+    @Secured({"ROLE_HOST", "ROLE_ADMIN"})
     @DeleteMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communityDelete(@RequestHeader("Authorization") String accessToken,
                                                                         @PathVariable(value = "communityId") Long communityId) {
@@ -119,6 +123,7 @@ public class CommunityController {
     }
 
     // 커뮤니티 참가 API
+    @Secured({"ROLE_HOST", "ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/community/{communityId}")
     public ResponseEntity<ResultDto<Void>> communitySignup(@RequestHeader("Authorization") String accessToken,
                                                            @PathVariable(value = "communityId") Long communityId) {
@@ -130,6 +135,7 @@ public class CommunityController {
     }
 
     // 커뮤니티 나가기 API
+    @Secured({"ROLE_HOST", "ROLE_ADMIN", "ROLE_USER"})
     @DeleteMapping("/community/withdraw/{communityId}")
     public ResponseEntity<ResultDto<Void>> communityWithdraw(@RequestHeader("Authorization") String accessToken,
                                                              @PathVariable(value = "communityId") Long communityId) {

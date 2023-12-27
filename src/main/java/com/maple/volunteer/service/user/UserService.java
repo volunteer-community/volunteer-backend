@@ -41,9 +41,9 @@ public class UserService {
         String role = user.getRole().getKey();
 
 //         profileImg 검사
-        if (!user.getProfileImg().equals(profileImg)) {
-            user.updateProfileImg(profileImg);
-        }
+//        if (!user.getProfileImg().equals(profileImg)) {
+//            user.updateProfileImg(profileImg);
+//        }
 
         Long userId = user.getId();
 
